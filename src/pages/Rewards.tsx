@@ -266,7 +266,7 @@ const Rewards = () => {
         </div>
 
         {/* Wallet Connection */}
-        <WalletConnect />
+        <WalletConnect onWalletConnected={loadData} />
 
         {/* Withdrawal History Stats */}
         {rewards.length > 0 && (

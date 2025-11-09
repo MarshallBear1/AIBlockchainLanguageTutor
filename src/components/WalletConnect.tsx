@@ -2,9 +2,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, ExternalLink, CheckCircle2 } from "lucide-react";
 import { useMetaMask } from "@/hooks/useMetaMask";
+import { useEffect } from "react";
 
-export const WalletConnect = () => {
+interface WalletConnectProps {
+  onWalletConnected?: () => void;
+}
+
+export const WalletConnect = ({ onWalletConnected }: WalletConnectProps) => {
   const { account, isConnecting, connectWallet, disconnectWallet, isMetaMaskInstalled } = useMetaMask();
+
+  // Trigger callback when wallet connects
+  useEffect(() => {
+    if (account && onWalletConnected) {
+      onWalletConnected();
+    }
+  }, [account, onWalletConnected]);
 
   const shortenAddress = (address: string) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
