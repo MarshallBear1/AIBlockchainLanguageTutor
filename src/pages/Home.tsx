@@ -4,6 +4,7 @@ import { LessonPath } from "@/components/LessonPath";
 import LiveConversation from "@/components/LiveConversation";
 import { getUnitsWithProgress, Unit } from "@/data/lessonData";
 import { supabase } from "@/integrations/supabase/client";
+import TokiMascot from "@/components/TokiMascot";
 
 const levelNames: Record<number, string> = {
   1: "Beginner",
@@ -90,7 +91,7 @@ const Home = () => {
       <div className="min-h-screen bg-background flex flex-col">
         <TopBar />
         <main className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading...</p>
+          <TokiMascot state="flicker" size="lg" />
         </main>
       </div>
     );
