@@ -41,13 +41,20 @@ const LiveConversationPage = () => {
       // Request microphone permission first
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      chatRef.current = new RealtimeChat(handleMessage, language, level);
+      chatRef.current = new RealtimeChat(
+        handleMessage, 
+        language, 
+        level,
+        () => {
+          // Connect lipsync when audio is ready
+          const audioElement = chatRef.current?.getAudioElement();
+          if (audioElement) {
+            lipsyncManager.connectAudio(audioElement);
+            console.log("Connected lipsync manager to realtime audio");
+          }
+        }
+      );
       await chatRef.current.init();
-
-      // Connect realtime audio to lipsync manager for mouth movements
-      const audioElement = chatRef.current.getAudioElement();
-      lipsyncManager.connectAudio(audioElement);
-      console.log("Connected realtime audio to lipsync manager");
 
       setIsConnected(true);
       setIsConnecting(false);

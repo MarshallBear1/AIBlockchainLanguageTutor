@@ -65,14 +65,22 @@ export class RealtimeChat {
   private dc: RTCDataChannel | null = null;
   private audioEl: HTMLAudioElement;
   private recorder: AudioRecorder | null = null;
+  private audioContext: AudioContext | null = null;
+  private audioSource: MediaStreamAudioSourceNode | null = null;
+  private onAudioReady?: () => void;
 
   constructor(
     private onMessage: (message: any) => void,
     private language: string,
-    private level: string
+    private level: string,
+    onAudioReady?: () => void
   ) {
     this.audioEl = document.createElement("audio");
     this.audioEl.autoplay = true;
+    // Append to body to ensure it plays
+    document.body.appendChild(this.audioEl);
+    this.audioEl.style.display = 'none';
+    this.onAudioReady = onAudioReady;
   }
 
   // Get audio element for lipsync connection
@@ -107,6 +115,26 @@ export class RealtimeChat {
       this.pc.ontrack = e => {
         console.log("Received remote audio track");
         this.audioEl.srcObject = e.streams[0];
+        
+        // Create audio context and connect for lipsync
+        if (!this.audioContext) {
+          this.audioContext = new AudioContext();
+        }
+        
+        // Connect the stream to audio context for analysis
+        try {
+          this.audioSource = this.audioContext.createMediaStreamSource(e.streams[0]);
+          console.log("Audio source created for lipsync analysis");
+          
+          // Notify that audio is ready for lipsync connection
+          if (this.onAudioReady) {
+            setTimeout(() => {
+              this.onAudioReady?.();
+            }, 100); // Small delay to ensure audio is fully initialized
+          }
+        } catch (error) {
+          console.error("Error creating audio source:", error);
+        }
       };
 
       // Add local audio track
@@ -157,8 +185,24 @@ export class RealtimeChat {
 
   disconnect() {
     this.recorder?.stop();
+    
+    if (this.audioSource) {
+      this.audioSource.disconnect();
+      this.audioSource = null;
+    }
+    
+    if (this.audioContext) {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
+    
     this.dc?.close();
     this.pc?.close();
     this.audioEl.srcObject = null;
+    
+    // Remove audio element from DOM
+    if (this.audioEl.parentNode) {
+      this.audioEl.parentNode.removeChild(this.audioEl);
+    }
   }
 }
