@@ -59,7 +59,7 @@ const TokiMascot = ({ state = "idle", size = "md", className }: TokiMascotProps)
           animationClasses[state]
         )}
       >
-        <span className="text-4xl">🦜</span>
+        {/* Loading indicator without emoji */}
       </div>
     </div>
   );
