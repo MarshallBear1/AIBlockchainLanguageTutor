@@ -39,6 +39,63 @@ interface Reward {
   paid_at: string | null;
 }
 
+// Simplified Wallet Connection Component
+const WalletConnectionSimplified = ({ 
+  walletAddress, 
+  onWalletConnected 
+}: { 
+  walletAddress: string | null; 
+  onWalletConnected: () => void;
+}) => {
+  const { connectWallet, disconnectWallet, isConnecting } = useMetaMask();
+
+  useEffect(() => {
+    if (walletAddress && onWalletConnected) {
+      onWalletConnected();
+    }
+  }, [walletAddress, onWalletConnected]);
+
+  const handleDisconnect = async () => {
+    await disconnectWallet();
+    onWalletConnected();
+  };
+
+  return (
+    <div className="animate-fade-in space-y-3">
+      {!walletAddress ? (
+        <Button
+          onClick={connectWallet}
+          disabled={isConnecting}
+          size="lg"
+          variant="outline"
+          className="w-full h-12"
+        >
+          {isConnecting ? 'Connecting...' : 'Connect to MetaMask'}
+        </Button>
+      ) : (
+        <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-5 h-5 text-green-500" />
+            <div>
+              <p className="text-sm font-semibold">Wallet Connected</p>
+              <p className="text-xs text-muted-foreground font-mono">
+                {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDisconnect}
+          >
+            Disconnect
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Rewards = () => {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
