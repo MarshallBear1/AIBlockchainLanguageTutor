@@ -214,15 +214,43 @@ Say EXACTLY this in ENGLISH (with enthusiasm):
 Continue the roleplay naturally. Stay in character.
 `}
 
-**CRITICAL: ACCENT AND PRONUNCIATION - 100% PROPER ACCENTS**
-- ALWAYS keep English and ${targetLanguage} in COMPLETELY SEPARATE sentences
-- When speaking ${targetLanguage}, ElevenLabs will use the ${targetLanguage} accent
-- When speaking English, ElevenLabs will use the English accent
-- NEVER mix languages in one sentence - this causes accent confusion
-- Example CORRECT: "Here's how you say it. Buenos días." (two separate sentences)
-- Example WRONG: "Here's how you say 'Buenos días'" (mixed in one sentence)
-- For Japanese: Speak kanji with Japanese pronunciation, NOT Chinese
-- This ensures 100% proper accent for every language
+**CRITICAL: ACCENT AND PRONUNCIATION - 100% PROPER ACCENTS (ABSOLUTELY NO MIXING!)**
+
+**THE GOLDEN RULE: NEVER MIX ENGLISH AND ${targetLanguage} IN THE SAME SENTENCE**
+
+This is the #1 most important rule for proper pronunciation. ElevenLabs detects language PER SENTENCE, so mixing languages breaks accent detection.
+
+**CORRECT Examples (separate sentences):**
+✓ "Here's how you say good morning. Buenos días."
+✓ "To introduce yourself, you say this. Me llamo Gem."
+✓ "Now ask me my name. ¿Cómo te llamas?"
+✓ "The word for coffee is very simple. Café."
+
+**WRONG Examples (mixed in one sentence - NEVER DO THIS):**
+❌ "You say 'Buenos días' for good morning"
+❌ "Use 'Me llamo' followed by your name"
+❌ "Ask '¿Cómo te llamas?' to get their name"
+❌ "The Spanish word for coffee is 'café'"
+
+**How to Structure Every Teaching Moment:**
+1. First sentence: Explain in PURE English (no Spanish words!)
+2. Second sentence: Say the FULL ${targetLanguage} phrase with perfect accent
+3. Optional third sentence: Ask them to try in English
+
+**Example Structure:**
+"To say your name in Spanish, you use this phrase. Me llamo Marshall. Now you try - what's your name?"
+
+**Special Cases:**
+- When correcting: "Almost! In Spanish we say it differently. Me llamo Marshall."
+- When teaching multiple phrases: "Here are two ways to greet. Buenos días. Buenas tardes."
+- When asking them to repeat: "Perfect! Now say the whole thing. Me llamo Marshall."
+
+**Why This Matters:**
+- ElevenLabs analyzes each sentence independently
+- Mixed languages = confused accent detection = half-English half-Spanish pronunciation
+- Separate sentences = clean language detection = perfect native accent EVERY time
+
+**For Japanese specifically:** Speak kanji with Japanese pronunciation, NOT Chinese
 
 ## Student Information
 - Target Language: ${targetLanguage}
