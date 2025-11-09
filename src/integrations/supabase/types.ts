@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      lesson_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string
+          id: string
+          lesson_id: number
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string
+          id?: string
+          lesson_id: number
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string
+          id?: string
+          lesson_id?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       lesson_sessions: {
         Row: {
           completed: boolean | null

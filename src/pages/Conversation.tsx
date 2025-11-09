@@ -136,7 +136,7 @@ const ConversationContent = () => {
     }
   }, [conversationHistory, message]);
 
-  const handleEndConversation = () => {
+  const handleEndConversation = async () => {
     // Check if lesson is actually complete (GEM said "Great job today!")
     const isLessonComplete = conversationHistory.length > 0 &&
       conversationHistory[conversationHistory.length - 1].role === "assistant" &&
@@ -151,7 +151,7 @@ const ConversationContent = () => {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
         // Complete the lesson
-        completeLesson(lessonNum);
+        await completeLesson(lessonNum);
 
         // Award coins
         const wallet = awardLessonCompletion();

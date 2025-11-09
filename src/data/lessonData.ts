@@ -590,42 +590,72 @@ export const units: Unit[] = [
   },
 ];
 
-// Helper function to get user progress
-export function getUserProgress(): {
+import { supabase } from "@/integrations/supabase/client";
+
+// Helper function to get user progress from database
+export async function getUserProgress(): Promise<{
   completedLessons: number[];
   currentLesson: number;
-} {
-  const saved = localStorage.getItem("lessonProgress");
-  if (saved) {
-    return JSON.parse(saved);
+}> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return { completedLessons: [], currentLesson: 1 };
+    }
+
+    const { data, error } = await supabase
+      .from('lesson_progress')
+      .select('lesson_id')
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error fetching progress:', error);
+      return { completedLessons: [], currentLesson: 1 };
+    }
+
+    const completedLessons = data?.map(p => p.lesson_id) || [];
+    const currentLesson = completedLessons.length > 0 
+      ? Math.max(...completedLessons) + 1 
+      : 1;
+
+    return { completedLessons, currentLesson };
+  } catch (error) {
+    console.error('Error in getUserProgress:', error);
+    return { completedLessons: [], currentLesson: 1 };
   }
-  return {
-    completedLessons: [],
-    currentLesson: 1,
-  };
 }
 
-// Helper function to save progress
-export function saveProgress(completedLessons: number[], currentLesson: number) {
-  localStorage.setItem(
-    "lessonProgress",
-    JSON.stringify({ completedLessons, currentLesson })
-  );
-}
+// Helper function to save lesson completion to database
+export async function completeLesson(lessonId: number): Promise<boolean> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
 
-// Helper function to unlock next lesson
-export function completeLesson(lessonId: number) {
-  const progress = getUserProgress();
-  if (!progress.completedLessons.includes(lessonId)) {
-    progress.completedLessons.push(lessonId);
+    const { error } = await supabase
+      .from('lesson_progress')
+      .upsert({ 
+        user_id: user.id, 
+        lesson_id: lessonId,
+        completed: true
+      }, {
+        onConflict: 'user_id,lesson_id'
+      });
+
+    if (error) {
+      console.error('Error saving progress:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error in completeLesson:', error);
+    return false;
   }
-  progress.currentLesson = lessonId + 1;
-  saveProgress(progress.completedLessons, progress.currentLesson);
 }
 
 // Get units with progress applied, filtered by user level
-export function getUnitsWithProgress(userLevel?: number): Unit[] {
-  const progress = getUserProgress();
+export async function getUnitsWithProgress(userLevel?: number): Promise<Unit[]> {
+  const progress = await getUserProgress();
   const level = userLevel || parseInt(localStorage.getItem("selectedLevel") || "1");
   
   // Filter units by level

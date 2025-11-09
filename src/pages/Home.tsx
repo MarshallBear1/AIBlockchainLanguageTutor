@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import TopBar from "@/components/TopBar";
 import { LessonPath } from "@/components/LessonPath";
-import { getUnitsWithProgress } from "@/data/lessonData";
+import { getUnitsWithProgress, Unit } from "@/data/lessonData";
 import { supabase } from "@/integrations/supabase/client";
 
 const levelNames: Record<number, string> = {
@@ -14,41 +14,54 @@ const levelNames: Record<number, string> = {
 
 const Home = () => {
   const [userLevel, setUserLevel] = useState<number>(1);
-  const [units, setUnits] = useState(getUnitsWithProgress(1));
+  const [units, setUnits] = useState<Unit[]>([]);
   const [currentUnitIndex, setCurrentUnitIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get user's level from localStorage first
-    const savedLevel = parseInt(localStorage.getItem("selectedLevel") || "1");
-    setUserLevel(savedLevel);
-    const loadedUnits = getUnitsWithProgress(savedLevel);
-    setUnits(loadedUnits);
-    
-    // Find first unit with incomplete lessons
-    const firstIncompleteUnit = loadedUnits.findIndex(unit => 
-      unit.lessons.some(lesson => !lesson.completed)
-    );
-    setCurrentUnitIndex(firstIncompleteUnit >= 0 ? firstIncompleteUnit : 0);
-    
-    // Then sync from Supabase
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const loadProgress = async () => {
+      setLoading(true);
+      
+      // Get user's level from localStorage first
+      const savedLevel = parseInt(localStorage.getItem("selectedLevel") || "1");
+      setUserLevel(savedLevel);
+      
+      // Load units with progress from database
+      const loadedUnits = await getUnitsWithProgress(savedLevel);
+      setUnits(loadedUnits);
+      
+      // Find first unit with incomplete lessons
+      const firstIncompleteUnit = loadedUnits.findIndex(unit => 
+        unit.lessons.some(lesson => !lesson.completed)
+      );
+      setCurrentUnitIndex(firstIncompleteUnit >= 0 ? firstIncompleteUnit : 0);
+      setLoading(false);
+      
+      // Then sync from Supabase
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        supabase.from("profiles").select("selected_level").eq("id", user.id).single()
-          .then(({ data }) => {
-            if (data?.selected_level) {
-              setUserLevel(data.selected_level);
-              localStorage.setItem("selectedLevel", data.selected_level.toString());
-              const updatedUnits = getUnitsWithProgress(data.selected_level);
-              setUnits(updatedUnits);
-              
-              const firstIncomplete = updatedUnits.findIndex(unit => 
-                unit.lessons.some(lesson => !lesson.completed)
-              );
-              setCurrentUnitIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
-            }
-          });
+        const { data } = await supabase
+          .from("profiles")
+          .select("selected_level")
+          .eq("id", user.id)
+          .single();
+          
+        if (data?.selected_level && data.selected_level !== savedLevel) {
+          setUserLevel(data.selected_level);
+          localStorage.setItem("selectedLevel", data.selected_level.toString());
+          
+          const updatedUnits = await getUnitsWithProgress(data.selected_level);
+          setUnits(updatedUnits);
+          
+          const firstIncomplete = updatedUnits.findIndex(unit => 
+            unit.lessons.some(lesson => !lesson.completed)
+          );
+          setCurrentUnitIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
+        }
       }
-    });
+    };
+    
+    loadProgress();
   }, []);
 
   const currentUnit = units[currentUnitIndex];
@@ -56,7 +69,7 @@ const Home = () => {
   // Calculate relative unit number (1-based for current level)
   const relativeUnitNumber = currentUnitIndex + 1;
 
-  if (!currentUnit) {
+  if (loading || !currentUnit) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <TopBar />
