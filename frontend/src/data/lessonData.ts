@@ -255,9 +255,7 @@ export const units: Unit[] = [
         locked: true,
         learningGoals: [
           "Student can order a drink (e.g., 'I would like a coffee, please')",
-          "Student can understand and respond to size/type questions",
-          "Student can ask 'How much does it cost?'",
-          "Student can complete a full order transaction"
+          "Student can ask 'How much does it cost?'"
         ],
       },
       {
