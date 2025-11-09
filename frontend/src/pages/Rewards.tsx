@@ -75,9 +75,20 @@ const WalletConnectionSimplified = ({
           disabled={isConnecting}
           size="lg"
           variant="outline"
-          className="w-full h-12"
+          className="w-full h-12 flex items-center justify-center gap-2"
         >
-          {isConnecting ? 'Connecting...' : 'Connect to Coinbase'}
+          {isConnecting ? (
+            'Connecting...'
+          ) : (
+            <>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_code-lens-3/artifacts/2zhg7ea5_image.png" 
+                alt="MetaMask" 
+                className="w-6 h-6"
+              />
+              Connect to MetaMask
+            </>
+          )}
         </Button>
       ) : (
         <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
