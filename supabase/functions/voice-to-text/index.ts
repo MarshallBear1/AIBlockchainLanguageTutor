@@ -49,26 +49,12 @@ serve(async (req) => {
       throw new Error("No audio data provided");
     }
 
-    // Map language codes to Whisper language codes
-    const languageMap: Record<string, string> = {
-      "es": "es",
-      "fr": "fr",
-      "de": "de",
-      "it": "it",
-      "pt": "pt",
-      "ja": "ja",
-      "ko": "ko",
-      "zh": "zh",
-    };
-
-    const targetLanguage = language && languageMap[language] ? languageMap[language] : "en";
-
     const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAIApiKey) {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    console.log("Transcribing audio with Whisper...");
+    console.log("Transcribing audio with Whisper (auto-detect language)...");
 
     // Decode base64 audio using chunked processing
     const bytes = processBase64Chunks(audio);
@@ -79,11 +65,11 @@ serve(async (req) => {
     const audioBlob = new Blob([bytes], { type: "audio/webm" });
     formData.append("file", audioBlob, "audio.webm");
     formData.append("model", "whisper-1");
-    formData.append("language", targetLanguage);
+    // No language parameter - let Whisper auto-detect for bilingual conversations
 
     // Add prompt to prevent hallucinations (common YouTube subtitle watermarks, etc.)
     // This guides Whisper to focus on actual speech content
-    formData.append("prompt", "This is a language learning conversation in " + targetLanguage + ".");
+    formData.append("prompt", "This is a language learning conversation. Transcribe exactly what is spoken.");
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {

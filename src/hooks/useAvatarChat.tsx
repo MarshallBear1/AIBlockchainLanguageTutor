@@ -12,6 +12,7 @@ interface AvatarChatContextType {
   chat: (message: string, isFirstMessage?: boolean, lessonGoal?: string) => Promise<void>;
   message: AvatarMessage | null;
   onMessagePlayed: () => void;
+  stopSpeaking: () => void;
   loading: boolean;
   cameraZoomed: boolean;
   setCameraZoomed: (zoomed: boolean) => void;
@@ -101,6 +102,12 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
     setMessages((messages) => messages.slice(1));
   }, []);
 
+  const stopSpeaking = useCallback(() => {
+    // Clear all queued messages and stop current message
+    setMessages([]);
+    setMessage(null);
+  }, []);
+
   useEffect(() => {
     if (messages.length > 0) {
       setMessage(messages[0]);
@@ -115,6 +122,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
         chat,
         message,
         onMessagePlayed,
+        stopSpeaking,
         loading,
         cameraZoomed,
         setCameraZoomed,

@@ -29,7 +29,7 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
   }, [showCoins, count, coinsEarned]);
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center space-y-8">
         {/* Celebration Stars */}
         <motion.div
@@ -39,26 +39,26 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           className="flex justify-center"
         >
           <div className="relative">
-            <Star className="w-24 h-24 text-yellow-300 fill-yellow-300" />
+            <Star className="w-24 h-24 text-blue-500 fill-blue-500" />
             <div className="absolute -top-4 -right-4">
-              <Star className="w-12 h-12 text-yellow-200 fill-yellow-200" />
+              <Star className="w-12 h-12 text-blue-400 fill-blue-400" />
             </div>
             <div className="absolute -bottom-4 -left-4">
-              <Star className="w-12 h-12 text-yellow-200 fill-yellow-200" />
+              <Star className="w-12 h-12 text-blue-400 fill-blue-400" />
             </div>
           </div>
         </motion.div>
 
-        {/* Lesson Complete Text */}
+        {/* Good Job Today Text */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h1 className="text-5xl font-bold text-white mb-3">
-            Lesson Complete!
+          <h1 className="text-5xl font-bold text-blue-600 mb-3">
+            Good job today!
           </h1>
-          <p className="text-xl text-white/90">You did amazing! 🎉</p>
+          <p className="text-xl text-gray-600">You're making great progress! 🎉</p>
         </motion.div>
 
         {/* Coins Earned */}
@@ -66,16 +66,16 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           initial={{ scale: 0 }}
           animate={{ scale: showCoins ? 1 : 0 }}
           transition={{ delay: 0.6, type: "spring" }}
-          className="bg-white/20 backdrop-blur-lg rounded-3xl p-8 border-4 border-white/30"
+          className="bg-blue-50 rounded-3xl p-8 border-4 border-blue-200"
         >
           <div className="flex items-center justify-center gap-4 mb-4">
-            <Coins className="w-16 h-16 text-yellow-300" />
+            <Coins className="w-16 h-16 text-yellow-500" />
             <div className="text-left">
-              <p className="text-white/80 text-sm font-medium">You Earned</p>
-              <p className="text-6xl font-bold text-white">{count}</p>
+              <p className="text-gray-600 text-sm font-medium">You Earned</p>
+              <p className="text-6xl font-bold text-blue-600">{count}</p>
             </div>
           </div>
-          <p className="text-white/90 text-lg font-semibold">Vibe Coins</p>
+          <p className="text-blue-700 text-lg font-semibold">Vibe Coins</p>
         </motion.div>
 
         {/* Achievements */}
@@ -85,9 +85,9 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           transition={{ delay: 1 }}
           className="space-y-3"
         >
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3">
-            <Award className="w-6 h-6 text-yellow-300" />
-            <span className="text-white font-medium">Lesson Mastered</span>
+          <div className="bg-blue-100 rounded-xl p-4 flex items-center gap-3 border-2 border-blue-200">
+            <Award className="w-6 h-6 text-blue-600" />
+            <span className="text-blue-700 font-medium">Lesson Mastered</span>
           </div>
         </motion.div>
 
@@ -100,7 +100,7 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           <Button
             onClick={onContinue}
             size="lg"
-            className="w-full h-14 text-lg bg-white text-purple-600 hover:bg-white/90 rounded-full font-bold shadow-2xl"
+            className="w-full h-14 text-lg bg-blue-600 text-white hover:bg-blue-700 rounded-full font-bold shadow-lg"
           >
             Continue Learning
           </Button>
@@ -126,7 +126,7 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
               }}
               className="absolute"
             >
-              <Coins className="w-8 h-8 text-yellow-300" />
+              <Coins className="w-8 h-8 text-blue-500" />
             </motion.div>
           ))}
         </>

@@ -3,6 +3,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, HelpCircle, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { AvatarCanvas } from "@/components/avatar/AvatarCanvas";
 import { AvatarChatProvider, useAvatarChat } from "@/hooks/useAvatarChat";
 import { useVoiceRecording } from "@/hooks/useVoiceRecording";
@@ -25,10 +35,11 @@ const ConversationContent = () => {
   const [showReward, setShowReward] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [showExitWarning, setShowExitWarning] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   
   // Avatar chat context
-  const { chat, loading, conversationHistory } = useAvatarChat();
+  const { chat, loading, conversationHistory, message, stopSpeaking } = useAvatarChat();
   
   // Voice recording
   const { state: recordingState, startRecording, stopRecording, error: recordingError } = useVoiceRecording();
@@ -78,7 +89,7 @@ const ConversationContent = () => {
       // Trigger AI to speak first with lesson scenario
       chat("START_CONVERSATION", true, lessonScenario);
     }
-  }, [isFirstLoad, lessonScenario]);
+  }, [isFirstLoad]); // Only run once on mount
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -98,12 +109,13 @@ const ConversationContent = () => {
     }
   }, [recordingError, toast]);
 
-  // Auto-detect lesson completion when GEM says "Great job today!"
+  // Auto-detect lesson completion when GEM says "Great job today!" AND finishes speaking
   useEffect(() => {
-    if (conversationHistory.length > 0) {
+    if (conversationHistory.length > 0 && message === null) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
 
       // Check if GEM's last message contains the completion phrase
+      // Only trigger when avatar has finished speaking all messages (message === null)
       if (
         lastMessage.role === "assistant" &&
         lastMessage.text.includes("Great job today!")
@@ -114,12 +126,20 @@ const ConversationContent = () => {
         }, 3000);
       }
     }
-  }, [conversationHistory]);
+  }, [conversationHistory, message]);
 
   const handleEndConversation = () => {
-    // Mark lesson as complete if this is a lesson conversation
+    // Check if lesson is actually complete (GEM said "Great job today!")
+    const isLessonComplete = conversationHistory.length > 0 &&
+      conversationHistory[conversationHistory.length - 1].role === "assistant" &&
+      conversationHistory[conversationHistory.length - 1].text.includes("Great job today!");
+
+    // Stop any current speech
+    stopSpeaking();
+
+    // Mark lesson as complete if this is a lesson conversation AND it's actually complete
     const currentLessonId = localStorage.getItem("currentLessonId");
-    if (currentLessonId) {
+    if (currentLessonId && isLessonComplete) {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
         // Complete the lesson
@@ -135,8 +155,23 @@ const ConversationContent = () => {
       }
     }
 
+    // If lesson is not complete but they're trying to exit, show warning
+    if (currentLessonId && !isLessonComplete) {
+      setShowExitWarning(true);
+      return;
+    }
+
     // If not a lesson, just navigate back
     navigate("/home");
+  };
+
+  const handleConfirmExit = () => {
+    setShowExitWarning(false);
+    navigate("/home");
+  };
+
+  const handleCancelExit = () => {
+    setShowExitWarning(false);
   };
 
   const handleRewardContinue = () => {
@@ -378,6 +413,26 @@ const ConversationContent = () => {
       {showReward && (
         <RewardScreen coinsEarned={coinsEarned} onContinue={handleRewardContinue} />
       )}
+
+      {/* Exit Warning Dialog */}
+      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End lesson early?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You haven't finished this lesson yet. If you leave now, you won't earn any Vibe Coins and will need to redo the lesson from the start.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelExit}>
+              Keep Learning
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmExit}>
+              Leave Anyway
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
