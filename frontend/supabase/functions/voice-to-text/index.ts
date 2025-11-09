@@ -54,7 +54,25 @@ serve(async (req) => {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    console.log("Transcribing audio with Whisper (auto-detect language)...");
+    // Map language codes to ISO 639-1 codes for Whisper
+    const languageMap: Record<string, string> = {
+      "es": "es", // Spanish
+      "fr": "fr", // French
+      "de": "de", // German
+      "it": "it", // Italian
+      "pt": "pt", // Portuguese
+      "ja": "ja", // Japanese
+      "ko": "ko", // Korean
+      "zh": "zh", // Chinese
+    };
+
+    const whisperLanguage = language && languageMap[language] ? languageMap[language] : undefined;
+    
+    if (whisperLanguage) {
+      console.log(`Transcribing audio with Whisper for ${whisperLanguage} + English bilingual support...`);
+    } else {
+      console.log("Transcribing audio with Whisper (auto-detect language)...");
+    }
 
     // Decode base64 audio using chunked processing
     const bytes = processBase64Chunks(audio);
@@ -65,11 +83,28 @@ serve(async (req) => {
     const audioBlob = new Blob([bytes], { type: "audio/webm" });
     formData.append("file", audioBlob, "audio.webm");
     formData.append("model", "whisper-1");
-    // No language parameter - let Whisper auto-detect for bilingual conversations
+    
+    // Add language parameter to help Whisper focus on the target language + English
+    if (whisperLanguage) {
+      formData.append("language", whisperLanguage);
+    }
 
-    // Add prompt to prevent hallucinations (common YouTube subtitle watermarks, etc.)
-    // STRONG anti-hallucination prompt to prevent "Learn English for free www.engvid.com" etc.
-    formData.append("prompt", "Language learning practice. Only transcribe actual human speech. Ignore any background noise, silence, or artifacts. If nothing is said, return empty.");
+    // Enhanced prompt for bilingual language learning
+    // Helps Whisper recognize both the target language and English in the same sentence
+    const languageNames: Record<string, string> = {
+      "es": "Spanish",
+      "fr": "French", 
+      "de": "German",
+      "it": "Italian",
+      "pt": "Portuguese",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "zh": "Chinese",
+    };
+    
+    const targetLanguageName = whisperLanguage && languageNames[whisperLanguage] ? languageNames[whisperLanguage] : "the target language";
+    
+    formData.append("prompt", `This is language learning practice. The speaker may use both ${targetLanguageName} and English in the same sentence. Transcribe all words accurately, including mixed language phrases. Only transcribe actual human speech. Ignore background noise or silence.`);
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
