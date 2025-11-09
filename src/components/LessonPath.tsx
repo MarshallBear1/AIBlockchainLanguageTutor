@@ -72,7 +72,7 @@ export const LessonPath = ({ lessons }: LessonPathProps) => {
                       ? "bg-gray-300 dark:bg-gray-700"
                       : lesson.completed
                       ? "bg-gradient-to-br from-green-400 to-green-600 shadow-green-200 dark:shadow-green-900"
-                      : "bg-gradient-to-br from-primary to-purple-600 shadow-primary/50 animate-pulse"
+                      : "bg-gradient-to-br from-primary to-purple-600 shadow-primary/50"
                   )}
                   onClick={() => handleLessonClick(lesson)}
                 >

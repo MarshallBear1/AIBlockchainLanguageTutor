@@ -14,6 +14,7 @@ import vibecoinLogo from "@/assets/vibecoin-logo.png";
 
 const TopBar = () => {
   const [vibeCoins, setVibeCoins] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
   const selectedLevel = localStorage.getItem("selectedLevel") || "1";
 
@@ -36,15 +37,17 @@ const TopBar = () => {
     "5": "Fluent"
   };
 
-  // Load wallet balance on mount and whenever component re-renders
+  // Load wallet balance and streak on mount and whenever component re-renders
   useEffect(() => {
     const wallet = getWallet();
     setVibeCoins(wallet.vibeCoins);
+    setCurrentStreak(wallet.currentStreak);
 
     // Listen for storage changes (when coins are added in other tabs/windows)
     const handleStorageChange = () => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
+      setCurrentStreak(updatedWallet.currentStreak);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -53,6 +56,7 @@ const TopBar = () => {
     const interval = setInterval(() => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
+      setCurrentStreak(updatedWallet.currentStreak);
     }, 1000);
 
     return () => {
@@ -70,11 +74,18 @@ const TopBar = () => {
           <ChevronDown className="w-4 h-4" />
         </Button>
 
-        {/* Vibe Coins */}
-        <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">
-          <img src={vibecoinLogo} alt="VibeCoin" className="w-5 h-5 object-contain" />
-          <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Streak */}
+          <div className="text-sm font-medium text-muted-foreground">
+            day {currentStreak}
+          </div>
+
+          {/* Vibe Coins */}
+          <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">
+            <img src={vibecoinLogo} alt="VibeCoin" className="w-5 h-5 object-contain" />
+            <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );

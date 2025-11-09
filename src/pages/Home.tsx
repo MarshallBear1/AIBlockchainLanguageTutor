@@ -3,7 +3,7 @@ import TopBar from "@/components/TopBar";
 import { LessonPath } from "@/components/LessonPath";
 import { getUnitsWithProgress } from "@/data/lessonData";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Flame } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { getWallet } from "@/utils/wallet";
@@ -20,13 +20,8 @@ const Home = () => {
   const [userLevel, setUserLevel] = useState<number>(1);
   const [units, setUnits] = useState(getUnitsWithProgress(1));
   const [expandedUnits, setExpandedUnits] = useState<number[]>([1]); // First unit expanded by default
-  const [currentStreak, setCurrentStreak] = useState(0);
 
   useEffect(() => {
-    // Get wallet data for streak
-    const wallet = getWallet();
-    setCurrentStreak(wallet.currentStreak);
-
     // Get user's level from localStorage first
     const savedLevel = parseInt(localStorage.getItem("selectedLevel") || "1");
     setUserLevel(savedLevel);
