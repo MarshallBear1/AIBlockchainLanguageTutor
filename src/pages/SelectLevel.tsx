@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import tokiTeacher from "@/assets/toki-teacher.png";
 
 const levels = [
   {
@@ -97,8 +98,8 @@ const SelectLevel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto">
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -116,37 +117,60 @@ const SelectLevel = () => {
           Back
         </Button>
 
-        <h1 className="text-3xl font-bold mb-2">What's your level?</h1>
-        <p className="text-muted-foreground mb-8">Choose the level that best describes you</p>
+        {/* Main Layout with Toki and Content */}
+        <div className="flex flex-col md:flex-row gap-4 items-start justify-center">
+          {/* Toki Avatar - Left Side */}
+          <div className="flex-shrink-0 mx-auto md:mx-0 w-32 md:w-36">
+            <img 
+              src={tokiTeacher} 
+              alt="Toki" 
+              className="w-full h-auto object-contain animate-fade-in"
+            />
+          </div>
 
-        {/* Level Cards */}
-        <div className="space-y-4 mb-8">
-          {levels.map((level) => (
-            <Card
-              key={level.level}
-              onClick={() => setSelected(level.level)}
-              className={`p-6 cursor-pointer transition-all hover:scale-[1.02] ${
-                selected === level.level
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card hover:bg-accent"
-              }`}
+          {/* Speech Bubble and Levels - Right Side */}
+          <div className="flex-1 max-w-md space-y-6">
+            {/* Speech Bubble */}
+            <div className="relative bg-card border-2 border-border rounded-2xl p-6 shadow-lg animate-fade-in">
+              {/* Speech bubble tail pointing to Toki */}
+              <div className="absolute -left-3 top-6 w-0 h-0 border-t-[12px] border-t-transparent border-r-[16px] border-r-border border-b-[12px] border-b-transparent"></div>
+              <div className="absolute -left-2 top-6 w-0 h-0 border-t-[12px] border-t-transparent border-r-[16px] border-r-card border-b-[12px] border-b-transparent"></div>
+              
+              <h1 className="text-2xl md:text-3xl font-bold mb-2">What's your level?</h1>
+              <p className="text-lg text-muted-foreground">Choose the level that best describes you</p>
+            </div>
+
+            {/* Level Cards */}
+            <div className="space-y-3">
+              {levels.map((level) => (
+                <Card
+                  key={level.level}
+                  onClick={() => setSelected(level.level)}
+                  className={`p-4 cursor-pointer transition-all hover:scale-[1.02] ${
+                    selected === level.level
+                      ? "bg-primary text-primary-foreground border-primary ring-2 ring-primary"
+                      : "bg-card hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-bold text-lg mb-1">{level.title}</div>
+                  <div className={`text-sm ${selected === level.level ? "text-primary-foreground/90" : "text-muted-foreground"}`}>
+                    {level.description}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Start Button */}
+            <Button
+              onClick={handleNext}
+              disabled={!selected || isStarting}
+              className="w-full h-12 text-lg"
+              size="lg"
             >
-              <div className="font-bold text-xl mb-2">{level.title}</div>
-              <div className={selected === level.level ? "text-primary-foreground/90" : "text-muted-foreground"}>
-                {level.description}
-              </div>
-            </Card>
-          ))}
+              {isStarting ? "Starting your journey..." : "Start Learning"}
+            </Button>
+          </div>
         </div>
-
-        <Button
-          onClick={handleNext}
-          disabled={!selected || isStarting}
-          className="w-full h-12 text-lg"
-          size="lg"
-        >
-          {isStarting ? "Starting your journey..." : "Start Learning"}
-        </Button>
       </div>
     </div>
   );

@@ -56,18 +56,18 @@ const SelectLanguage = () => {
         </Button>
 
         {/* Main Layout with Toki and Content */}
-        <div className="flex flex-col md:flex-row gap-6 items-start">
+        <div className="flex flex-col md:flex-row gap-4 items-start justify-center">
           {/* Toki Avatar - Left Side */}
-          <div className="flex-shrink-0 mx-auto md:mx-0">
+          <div className="flex-shrink-0 mx-auto md:mx-0 w-32 md:w-36">
             <img 
               src={tokiTeacher} 
               alt="Toki" 
-              className="w-40 h-40 md:w-48 md:h-48 object-contain animate-fade-in"
+              className="w-full h-auto object-contain animate-fade-in"
             />
           </div>
 
           {/* Speech Bubble and Languages - Right Side */}
-          <div className="flex-1 space-y-6">
+          <div className="flex-1 max-w-md space-y-6">
             {/* Speech Bubble */}
             <div className="relative bg-card border-2 border-border rounded-2xl p-6 shadow-lg animate-fade-in">
               {/* Speech bubble tail pointing to Toki */}
