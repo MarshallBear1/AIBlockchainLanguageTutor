@@ -104,7 +104,11 @@ serve(async (req) => {
     
     const targetLanguageName = whisperLanguage && languageNames[whisperLanguage] ? languageNames[whisperLanguage] : "the target language";
     
-    formData.append("prompt", `This is language learning practice. The speaker may use both ${targetLanguageName} and English in the same sentence. Transcribe all words accurately, including mixed language phrases. Only transcribe actual human speech. Ignore background noise or silence.`);
+    // Enhanced prompt with strict noise filtering instructions
+    formData.append("prompt", `Language learning practice session. Speaker uses ${targetLanguageName} and English. CRITICAL: Only transcribe clear human speech. Completely ignore: background music, static, ambient noise, clicks, breaths, silence, keyboard sounds. If audio contains only noise or unclear sounds, return empty string. Transcribe actual spoken words ONLY.`);
+    
+    // Add temperature for more conservative transcription
+    formData.append("temperature", "0");
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
