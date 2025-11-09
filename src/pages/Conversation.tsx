@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, BookOpen, HelpCircle, Mic, Send, Keyboard } from "lucide-react";
+import { ArrowLeft, BookOpen, HelpCircle, Mic, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AvatarCanvas } from "@/components/avatar/AvatarCanvas";
@@ -8,8 +8,6 @@ import { AvatarChatProvider, useAvatarChat } from "@/hooks/useAvatarChat";
 import { useVoiceRecording } from "@/hooks/useVoiceRecording";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
@@ -23,7 +21,6 @@ const ConversationContent = () => {
   const { toast } = useToast();
   const [showHelp, setShowHelp] = useState(false);
   const [showWordBank, setShowWordBank] = useState(false);
-  const [showTextInput, setShowTextInput] = useState(false);
   const [textMessage, setTextMessage] = useState("");
   const [showReward, setShowReward] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
@@ -171,7 +168,6 @@ const ConversationContent = () => {
     try {
       await chat(textMessage);
       setTextMessage("");
-      setShowTextInput(false);
     } catch (err) {
       console.error("Text chat error:", err);
       toast({
@@ -183,9 +179,9 @@ const ConversationContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="h-screen fixed inset-0 bg-background flex flex-col overflow-hidden">
       {/* Top Bar */}
-      <div className="sticky top-0 z-10 bg-background border-b border-border p-4">
+      <div className="flex-shrink-0 bg-background border-b border-border p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-4 h-4" />
@@ -202,87 +198,91 @@ const ConversationContent = () => {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col relative overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden">
         {/* 3D Avatar Section - Upper portion */}
-        <div className="relative w-full h-[35vh] md:h-[40vh] flex-shrink-0">
+        <div className="relative w-full h-[35vh] flex-shrink-0">
           <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
-        {/* Chat History Section - Below Avatar */}
-        <div className="flex-1 flex flex-col bg-background px-4 pb-2 overflow-hidden">
-          <ScrollArea className="flex-1 rounded-lg border border-border bg-card/50">
-            <div ref={chatScrollRef} className="p-3 space-y-2 min-h-full">
-              {conversationHistory.length === 0 ? (
-                <div className="flex items-center justify-center h-full min-h-[150px]">
-                  <p className="text-center text-muted-foreground text-sm">
-                    Start speaking or typing to begin your conversation
-                  </p>
-                </div>
-              ) : (
-                conversationHistory.map((msg, idx) => (
-                  <ConversationBubble
-                    key={idx}
-                    role={msg.role}
-                    text={msg.text}
-                    timestamp={msg.timestamp}
-                  />
-                ))
-              )}
+        {/* Chat History Section - Scrollable */}
+        <div 
+          ref={chatScrollRef}
+          className="flex-1 overflow-y-auto px-4 py-3 space-y-2"
+        >
+          {conversationHistory.length === 0 ? (
+            <div className="flex items-center justify-center h-full min-h-[150px]">
+              <p className="text-center text-muted-foreground text-sm">
+                Your conversation will appear here
+              </p>
             </div>
-          </ScrollArea>
+          ) : (
+            conversationHistory.map((msg, idx) => (
+              <ConversationBubble
+                key={idx}
+                role={msg.role}
+                text={msg.text}
+                timestamp={msg.timestamp}
+              />
+            ))
+          )}
         </div>
       </main>
 
-      {/* Bottom Controls */}
-      <div className="p-3 space-y-2 border-t border-border bg-background">
-        {/* Voice/Text Input Controls */}
-        <div className="flex gap-2 items-center justify-center">
-          {/* Voice Input Button */}
-          <Button
-            onClick={handleVoiceInput}
-            disabled={loading || recordingState === "processing"}
-            size="lg"
-            className={`h-14 w-14 rounded-full transition-all ${
-              recordingState === "recording"
-                ? "bg-destructive hover:bg-destructive/90 animate-pulse"
-                : "bg-primary hover:bg-primary/90"
-            }`}
-          >
-            {recordingState === "processing" ? (
-              <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Mic className="w-5 h-5" />
-            )}
-          </Button>
-
-          {/* Text Input Button */}
-          <Button
-            onClick={() => setShowTextInput(true)}
+      {/* Bottom Controls - Fixed Footer */}
+      <div className="flex-shrink-0 p-3 space-y-2 border-t border-border bg-background">
+        {/* Text Input - Always Visible */}
+        <div className="flex gap-2">
+          <Input
+            value={textMessage}
+            onChange={(e) => setTextMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
+            placeholder="Type your message..."
+            className="flex-1"
             disabled={loading || recordingState !== "idle"}
-            variant="outline"
-            size="lg"
-            className="h-14 w-14 rounded-full"
+          />
+          <Button
+            onClick={handleTextSubmit}
+            disabled={!textMessage.trim() || loading || recordingState !== "idle"}
+            size="icon"
           >
-            <Keyboard className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </Button>
         </div>
+
+        {/* Voice Input Button */}
+        <Button
+          onClick={handleVoiceInput}
+          disabled={loading || recordingState === "processing"}
+          size="lg"
+          className={`w-full h-12 transition-all ${
+            recordingState === "recording"
+              ? "bg-destructive hover:bg-destructive/90 animate-pulse"
+              : ""
+          }`}
+        >
+          {recordingState === "processing" ? (
+            <>
+              <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+              Processing...
+            </>
+          ) : recordingState === "recording" ? (
+            <>
+              <Mic className="w-5 h-5 mr-2" />
+              Stop Recording
+            </>
+          ) : (
+            <>
+              <Mic className="w-5 h-5 mr-2" />
+              Tap to Speak
+            </>
+          )}
+        </Button>
 
         {/* Status Text */}
         <div className="text-center text-xs text-muted-foreground">
-          {recordingState === "idle" && !loading && "Tap mic to speak or keyboard to type"}
-          {recordingState === "recording" && "Recording... Tap to stop"}
-          {recordingState === "processing" && "Processing your speech..."}
           {loading && "AI is thinking..."}
+          {!loading && recordingState === "idle" && "Type or tap to speak"}
         </div>
-
-        {/* End Conversation */}
-        <Button
-          onClick={handleEndConversation}
-          variant="outline"
-          className="w-full h-10 text-sm rounded-full"
-        >
-          End Conversation
-        </Button>
 
         {/* Help & Word Bank */}
         <div className="flex gap-2">
@@ -306,33 +306,16 @@ const ConversationContent = () => {
             Word Bank
           </Button>
         </div>
-      </div>
 
-      {/* Text Input Sheet */}
-      <Sheet open={showTextInput} onOpenChange={setShowTextInput}>
-        <SheetContent side="bottom" className="h-auto">
-          <SheetHeader>
-            <SheetTitle>Type your message</SheetTitle>
-          </SheetHeader>
-          <div className="flex gap-2 mt-4">
-            <Input
-              value={textMessage}
-              onChange={(e) => setTextMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
-              placeholder="Type your message..."
-              className="flex-1"
-              autoFocus
-            />
-            <Button
-              onClick={handleTextSubmit}
-              disabled={!textMessage.trim() || loading}
-              size="icon"
-            >
-              <Send className="w-4 h-4" />
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
+        {/* End Conversation */}
+        <Button
+          onClick={handleEndConversation}
+          variant="outline"
+          className="w-full h-9 text-sm"
+        >
+          End Conversation
+        </Button>
+      </div>
 
       <HelpSheet open={showHelp} onOpenChange={setShowHelp} />
       <WordBankSheet open={showWordBank} onOpenChange={setShowWordBank} />

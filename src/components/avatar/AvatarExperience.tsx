@@ -1,7 +1,18 @@
-import { CameraControls, ContactShadows, Environment, Text } from "@react-three/drei";
+import { CameraControls, ContactShadows, Environment, Text, Html } from "@react-three/drei";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useAvatarChat } from "@/hooks/useAvatarChat";
 import { Avatar3D } from "./Avatar3D";
+
+const LoadingFallback = () => {
+  return (
+    <Html center>
+      <div className="flex flex-col items-center gap-2">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm text-foreground font-medium">Loading your teacher...</p>
+      </div>
+    </Html>
+  );
+};
 
 const LoadingDots = (props: any) => {
   const { loading } = useAvatarChat();
@@ -62,10 +73,10 @@ export const AvatarExperience = ({ modelPath }: AvatarExperienceProps) => {
     <>
       <CameraControls ref={cameraControls} />
       <Environment preset="sunset" />
-      <Suspense fallback={null}>
+      <Suspense fallback={<LoadingFallback />}>
         <LoadingDots position-y={1.75} position-x={-0.02} />
+        <Avatar3D modelPath={modelPath} />
       </Suspense>
-      <Avatar3D modelPath={modelPath} />
       <ContactShadows opacity={0.7} />
     </>
   );
