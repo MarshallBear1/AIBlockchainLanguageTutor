@@ -45,10 +45,14 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
     try {
       // Get auth session for authenticated function calls
       const { data: { session } } = await supabase.auth.getSession();
-      
-      // Call Supabase Edge Function for AI chat
+
+      // Call Supabase Edge Function for AI chat with conversation history
       const { data, error } = await supabase.functions.invoke("ai-chat", {
-        body: { message: userMessage, isFirstMessage },
+        body: {
+          message: userMessage,
+          isFirstMessage,
+          conversationHistory: conversationHistory,
+        },
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
         },
@@ -60,7 +64,6 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
         const fallbackMessage: AvatarMessage = {
           text: "I'm having trouble connecting right now. Please try again!",
           audio: "",
-          lipsync: { mouthCues: [] },
           facialExpression: "sad" as const,
           animation: "Idle" as const,
         };
