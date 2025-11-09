@@ -186,15 +186,15 @@ const Rewards = () => {
         </div>
 
         {/* Top Row Stats - Three columns */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-6 py-4">
           {/* Vibe Earned */}
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-4 text-center">
+          <div className="text-center">
             <div className="text-xs text-muted-foreground mb-2">Vibe Earned</div>
             <div className="text-4xl font-bold text-primary">{bankedVibe}</div>
           </div>
 
           {/* Streak Multiplier */}
-          <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-4 text-center">
+          <div className="text-center">
             <div className="text-xs text-muted-foreground mb-2">Streak Multiplier</div>
             <div className="text-4xl font-bold text-orange-500">
               {formatMultiplier(multiplier)}
@@ -202,7 +202,7 @@ const Rewards = () => {
           </div>
 
           {/* Potential Payout */}
-          <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-4 text-center">
+          <div className="text-center">
             <div className="text-xs text-muted-foreground mb-2">Potential Payout</div>
             <div className="text-4xl font-bold text-green-600 dark:text-green-400">
               {potentialPayout}
