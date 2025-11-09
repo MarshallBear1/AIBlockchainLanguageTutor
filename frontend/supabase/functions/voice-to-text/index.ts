@@ -148,18 +148,34 @@ serve(async (req) => {
     
     // Post-processing: Filter out common noise/hallucination patterns
     const noisePatterns = [
+      // Common YouTube/video artifacts
       /thank you/gi,
       /thanks for watching/gi,
       /subscribe/gi,
       /like and subscribe/gi,
+      /click the bell/gi,
+      
+      // Empty/minimal content
       /^\s*$/,  // Empty or whitespace only
       /^\.+$/,  // Just dots
       /^[,\.\!\?]+$/,  // Just punctuation
       /^\[.*\]$/,  // Bracketed text (often subtitle artifacts)
-      /^you$/gi,  // Single word "you" (common noise)
-      /^okay$/gi, // Single word "okay" without context
-      /^um+$/gi,  // Just um/umm
-      /^uh+$/gi,  // Just uh/uhh
+      /^\(.*\)$/,  // Parenthesized text
+      
+      // Common single-word noise
+      /^(you|okay|um+|uh+|ah+|er+|hmm+)$/gi,
+      
+      // Music/sound effect artifacts
+      /\[music\]/gi,
+      /\[applause\]/gi,
+      /\[laughter\]/gi,
+      
+      // Silence indicators
+      /^\.\.\.$/, // Just "..."
+      /^silence$/gi,
+      
+      // Non-speech sounds
+      /^(cough|sigh|breath|click)$/gi,
     ];
     
     // Check if transcription matches any noise pattern
@@ -171,9 +187,25 @@ serve(async (req) => {
       }
     }
     
-    // Additional check: if transcription is very short (1-3 characters), might be noise
-    if (transcribedText.trim().length > 0 && transcribedText.trim().length < 3) {
-      console.log("Transcription too short, filtering out:", transcribedText);
+    // Additional validation checks
+    const trimmed = transcribedText.trim();
+    
+    // Too short - likely noise
+    if (trimmed.length > 0 && trimmed.length < 2) {
+      console.log("Transcription too short (< 2 chars), filtering out:", transcribedText);
+      transcribedText = "";
+    }
+    
+    // Check if it's mostly non-alphabetic (numbers, symbols, etc.)
+    const alphabeticChars = trimmed.replace(/[^a-zA-Z]/g, '').length;
+    if (trimmed.length > 0 && alphabeticChars < trimmed.length * 0.3) {
+      console.log("Transcription has too few letters, filtering out:", transcribedText);
+      transcribedText = "";
+    }
+    
+    // Check for repetitive characters (e.g., "aaaaaa")
+    if (trimmed.length > 0 && /(.)\1{4,}/.test(trimmed)) {
+      console.log("Transcription has repetitive characters, filtering out:", transcribedText);
       transcribedText = "";
     }
     
