@@ -39,6 +39,9 @@
     --light-blue: 220 100% 97%; /* #E8F0FF */
     --light-pink: 337 100% 97%; /* #FFE8F3 */
     --light-yellow: 45 100% 95%; /* #FFF8E1 */
+    --light-green: 140 60% 95%; /* Light mint green */
+    --light-purple: 260 60% 97%; /* Light lavender */
+    --light-orange: 25 100% 95%; /* Light peach */
   }
 
   .dark {
@@ -73,6 +76,9 @@
     --light-blue: 220 40% 20%;
     --light-pink: 337 40% 20%;
     --light-yellow: 45 40% 20%;
+    --light-green: 140 30% 20%;
+    --light-purple: 260 30% 20%;
+    --light-orange: 25 40% 20%;
   }
 }
 

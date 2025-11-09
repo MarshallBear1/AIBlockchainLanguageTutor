@@ -57,6 +57,7 @@ const ConversationContent = () => {
         goal: localStorage.getItem("lessonGoal") || "Custom conversation",
         scenario: localStorage.getItem("lessonGoal") || "Custom conversation",
         learningGoals: undefined,
+        vocabulary: undefined,
       };
     }
 
@@ -70,6 +71,7 @@ const ConversationContent = () => {
             goal: lesson.title,
             scenario: lesson.scenario,
             learningGoals: lesson.learningGoals,
+            vocabulary: lesson.vocabulary,
           };
         }
       }
@@ -79,6 +81,7 @@ const ConversationContent = () => {
       goal: "Conversation",
       scenario: "Have a natural conversation practice",
       learningGoals: undefined,
+      vocabulary: undefined,
     };
   };
 
@@ -86,6 +89,7 @@ const ConversationContent = () => {
   const lessonGoal = lessonInfo.goal;
   const lessonScenario = lessonInfo.scenario;
   const learningGoals = lessonInfo.learningGoals;
+  const vocabulary = lessonInfo.vocabulary;
 
   // Auto-start conversation with GEM speaking first
   useEffect(() => {
@@ -434,7 +438,7 @@ const ConversationContent = () => {
       </div>
 
       <HelpSheet open={showHelp} onOpenChange={setShowHelp} />
-      <WordBankSheet open={showWordBank} onOpenChange={setShowWordBank} />
+      <WordBankSheet open={showWordBank} onOpenChange={setShowWordBank} vocabulary={vocabulary} />
 
       {/* Reward Screen */}
       {showReward && (

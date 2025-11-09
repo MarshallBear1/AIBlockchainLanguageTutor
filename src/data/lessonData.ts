@@ -1,3 +1,9 @@
+export interface VocabularyItem {
+  word: string;
+  translation: string;
+  category: 'greeting' | 'question' | 'answer' | 'phrase' | 'verb' | 'noun';
+}
+
 export interface Lesson {
   id: number;
   unitId: number;
@@ -9,6 +15,7 @@ export interface Lesson {
   completed: boolean;
   locked: boolean;
   learningGoals?: string[]; // Specific goals for the lesson
+  vocabulary?: VocabularyItem[]; // Key vocabulary for this lesson
 }
 
 export interface Unit {
@@ -44,6 +51,12 @@ export const units: Unit[] = [
           "Student can ask someone else for their name",
           "Student can have a complete name exchange conversation"
         ],
+        vocabulary: [
+          { word: "Me llamo", translation: "My name is", category: "phrase" },
+          { word: "¿Cómo te llamas?", translation: "What's your name?", category: "question" },
+          { word: "Mucho gusto", translation: "Nice to meet you", category: "greeting" },
+          { word: "Encantado/a", translation: "Pleased to meet you", category: "greeting" },
+        ],
       },
       {
         id: 2,
@@ -60,6 +73,11 @@ export const units: Unit[] = [
           "Student knows when to use morning greetings (morning time)",
           "Student can greet someone in the morning naturally",
           "Student understands morning greetings when greeted"
+        ],
+        vocabulary: [
+          { word: "Buenos días", translation: "Good morning", category: "greeting" },
+          { word: "Hola", translation: "Hello", category: "greeting" },
+          { word: "¿Qué tal?", translation: "How's it going?", category: "question" },
         ],
       },
       {
@@ -78,6 +96,11 @@ export const units: Unit[] = [
           "Student knows when to use afternoon vs evening greetings",
           "Student can greet appropriately at different times of day"
         ],
+        vocabulary: [
+          { word: "Buenas tardes", translation: "Good afternoon", category: "greeting" },
+          { word: "Buenas noches", translation: "Good evening/night", category: "greeting" },
+          { word: "Hasta luego", translation: "See you later", category: "phrase" },
+        ],
       },
       {
         id: 4,
@@ -94,6 +117,12 @@ export const units: Unit[] = [
           "Student understands the question when asked",
           "Student can use it naturally in conversation",
           "Student knows when to ask how someone is doing"
+        ],
+        vocabulary: [
+          { word: "¿Cómo estás?", translation: "How are you?", category: "question" },
+          { word: "Bien", translation: "Good/Well", category: "answer" },
+          { word: "Muy bien", translation: "Very good", category: "answer" },
+          { word: "¿Y tú?", translation: "And you?", category: "question" },
         ],
       },
       {
