@@ -137,10 +137,45 @@ serve(async (req) => {
     }
 
     const result = await response.json();
-    console.log("Transcription result:", result.text);
+    let transcribedText = result.text || "";
+    
+    console.log("Raw transcription result:", transcribedText);
+    
+    // Post-processing: Filter out common noise/hallucination patterns
+    const noisePatterns = [
+      /thank you/gi,
+      /thanks for watching/gi,
+      /subscribe/gi,
+      /like and subscribe/gi,
+      /^\s*$/,  // Empty or whitespace only
+      /^\.+$/,  // Just dots
+      /^[,\.\!\?]+$/,  // Just punctuation
+      /^\[.*\]$/,  // Bracketed text (often subtitle artifacts)
+      /^you$/gi,  // Single word "you" (common noise)
+      /^okay$/gi, // Single word "okay" without context
+      /^um+$/gi,  // Just um/umm
+      /^uh+$/gi,  // Just uh/uhh
+    ];
+    
+    // Check if transcription matches any noise pattern
+    for (const pattern of noisePatterns) {
+      if (pattern.test(transcribedText.trim())) {
+        console.log("Filtered out noise pattern:", transcribedText);
+        transcribedText = "";
+        break;
+      }
+    }
+    
+    // Additional check: if transcription is very short (1-3 characters), might be noise
+    if (transcribedText.trim().length > 0 && transcribedText.trim().length < 3) {
+      console.log("Transcription too short, filtering out:", transcribedText);
+      transcribedText = "";
+    }
+    
+    console.log("Final transcription:", transcribedText);
 
     return new Response(
-      JSON.stringify({ text: result.text }),
+      JSON.stringify({ text: transcribedText }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
