@@ -340,6 +340,16 @@ const TopBar = () => {
     <div className="sticky top-0 z-10 bg-background border-b border-border p-4">
       <div className="flex items-center justify-between max-w-2xl mx-auto">
         <div className="flex items-center gap-2">
+          {/* Home Button */}
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="rounded-full"
+            onClick={() => navigate('/home')}
+          >
+            <Home className="w-5 h-5" />
+          </Button>
+
           {/* Language Selector */}
           <Popover>
             <PopoverTrigger asChild>
