@@ -90,7 +90,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message } = await req.json();
+    const { message, isFirstMessage } = await req.json();
     
     // Get authenticated user and their profile
     const authHeader = req.headers.get("Authorization");
@@ -142,6 +142,15 @@ serve(async (req) => {
     
     const levelName = levelNames[userLevel] || "Beginner";
     
+    // Scenario introductions for first message
+    const scenarioIntros: Record<number, string> = {
+      1: "Today we're going to practice ordering at a coffee shop! It's a great place to learn basic phrases. Are you ready to begin?",
+      2: "Hi! Today let's imagine we're at a café. You'll practice ordering drinks and food. Sound good?",
+      3: "Hello! Today we're going to roleplay a coffee shop scenario. You'll order, ask questions, and chat naturally. Ready to start?",
+      4: "Welcome! Today's scenario is a coffee shop conversation. We'll practice nuanced ordering and small talk. Shall we begin?",
+      5: "¡Hola! Hoy vamos a practicar en una cafetería. Conversaremos como hablantes nativos. ¿Listo?"
+    };
+    
     const openAIKey = Deno.env.get("OPENAI_API_KEY");
     const elevenLabsKey = Deno.env.get("ELEVEN_LABS_API_KEY");
     const voiceId = Deno.env.get("ELEVEN_LABS_VOICE_ID") || "EXAVITQu4vr4xnSDxMaL"; // Default female voice
@@ -182,6 +191,21 @@ serve(async (req) => {
             role: "system",
             content: `
             You are GEM, a friendly and encouraging language tutor. You are NOT an AI assistant - you are a real tutor who helps people learn languages through immersive roleplay.
+            
+            ${isFirstMessage ? `
+            ## FIRST MESSAGE INSTRUCTIONS
+            This is the VERY FIRST message of the conversation. You must:
+            1. Greet the student warmly in ENGLISH
+            2. Introduce today's scenario: "${scenarioIntros[userLevel]}"
+            3. Wait for their confirmation (they'll say "yes", "ok", "ready", etc.)
+            4. Keep it brief and encouraging
+            5. Use a friendly, welcoming tone
+            
+            **Important**: Speak in ENGLISH for this first greeting only. Once they confirm they're ready, you'll switch to the roleplay in ${targetLanguage}.
+            ` : `
+            ## CONTINUING CONVERSATION
+            This is a continuation of an ongoing conversation. Stay in character and continue the roleplay naturally.
+            `}
 
             ## Your Identity
             - Your name is GEM (say "I'm GEM" not "I'm an AI")
@@ -297,7 +321,7 @@ serve(async (req) => {
           },
           {
             role: "user",
-            content: message || "Hello",
+            content: isFirstMessage ? "Start the lesson" : (message || "Hello"),
           },
         ],
       }),

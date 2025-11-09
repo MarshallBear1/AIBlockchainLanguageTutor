@@ -9,7 +9,7 @@ interface ConversationMessage {
 }
 
 interface AvatarChatContextType {
-  chat: (message: string) => Promise<void>;
+  chat: (message: string, isFirstMessage?: boolean) => Promise<void>;
   message: AvatarMessage | null;
   onMessagePlayed: () => void;
   loading: boolean;
@@ -31,14 +31,16 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
   const [cameraZoomed, setCameraZoomed] = useState(true);
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
 
-  const chat = async (userMessage: string) => {
+  const chat = async (userMessage: string, isFirstMessage: boolean = false) => {
     setLoading(true);
     
-    // Add user message to conversation history
-    setConversationHistory((prev) => [
-      ...prev,
-      { role: "user", text: userMessage, timestamp: new Date() },
-    ]);
+    // Only add user message to history if it's not the auto-triggered first message
+    if (!isFirstMessage) {
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "user", text: userMessage, timestamp: new Date() },
+      ]);
+    }
 
     try {
       // Get auth session for authenticated function calls
@@ -46,7 +48,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
       
       // Call Supabase Edge Function for AI chat
       const { data, error } = await supabase.functions.invoke("ai-chat", {
-        body: { message: userMessage },
+        body: { message: userMessage, isFirstMessage },
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
         },

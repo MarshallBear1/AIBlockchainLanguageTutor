@@ -27,6 +27,7 @@ const ConversationContent = () => {
   const [textMessage, setTextMessage] = useState("");
   const [showReward, setShowReward] = useState(false);
   const [coinsEarned, setCoinsEarned] = useState(0);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   
   // Avatar chat context
@@ -47,6 +48,15 @@ const ConversationContent = () => {
       : roleplayId 
         ? `Roleplay: ${roleplayId}`
         : "Conversation";
+
+  // Auto-start conversation with GEM speaking first
+  useEffect(() => {
+    if (isFirstLoad) {
+      setIsFirstLoad(false);
+      // Trigger AI to speak first
+      chat("START_CONVERSATION", true);
+    }
+  }, [isFirstLoad]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
