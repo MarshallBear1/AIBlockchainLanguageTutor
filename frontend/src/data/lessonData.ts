@@ -47,9 +47,7 @@ export const units: Unit[] = [
         locked: false,
         learningGoals: [
           "Student can say 'My name is [their name]' in the target language",
-          "Student understands when asked for their name",
-          "Student can ask someone else for their name",
-          "Student can have a complete name exchange conversation"
+          "Student can ask someone else for their name"
         ],
         vocabulary: [
           { word: "Me llamo", translation: "My name is", category: "phrase" },
