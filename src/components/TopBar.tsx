@@ -2,6 +2,14 @@ import { useState, useEffect } from "react";
 import { ChevronDown, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getWallet } from "@/utils/wallet";
+import spanishFlag from "@/assets/flags/spanish-flag.png";
+import frenchFlag from "@/assets/flags/french-flag.png";
+import germanFlag from "@/assets/flags/german-flag.png";
+import italianFlag from "@/assets/flags/italian-flag.png";
+import portugueseFlag from "@/assets/flags/portuguese-flag.png";
+import japaneseFlag from "@/assets/flags/japanese-flag.png";
+import koreanFlag from "@/assets/flags/korean-flag.png";
+import chineseFlag from "@/assets/flags/chinese-flag.png";
 
 const TopBar = () => {
   const [vibeCoins, setVibeCoins] = useState(0);
@@ -9,14 +17,22 @@ const TopBar = () => {
   const selectedLevel = localStorage.getItem("selectedLevel") || "1";
 
   const languageFlags: Record<string, string> = {
-    es: "🇪🇸",
-    fr: "🇫🇷",
-    de: "🇩🇪",
-    it: "🇮🇹",
-    pt: "🇵🇹",
-    ja: "🇯🇵",
-    ko: "🇰🇷",
-    zh: "🇨🇳",
+    es: spanishFlag,
+    fr: frenchFlag,
+    de: germanFlag,
+    it: italianFlag,
+    pt: portugueseFlag,
+    ja: japaneseFlag,
+    ko: koreanFlag,
+    zh: chineseFlag,
+  };
+
+  const levelNames: Record<string, string> = {
+    "1": "Beginner",
+    "2": "Survival",
+    "3": "Conversational",
+    "4": "Proficient",
+    "5": "Fluent"
   };
 
   // Load wallet balance on mount and whenever component re-renders
@@ -48,8 +64,8 @@ const TopBar = () => {
     <div className="sticky top-0 z-10 bg-background border-b border-border p-4">
       <div className="flex items-center justify-between max-w-2xl mx-auto">
         <Button variant="outline" className="rounded-full px-4 gap-2">
-          <span className="text-xl">{languageFlags[selectedLanguage]}</span>
-          <span className="font-semibold">Level {selectedLevel}</span>
+          <img src={languageFlags[selectedLanguage]} alt="flag" className="w-5 h-5 object-contain rounded" />
+          <span className="font-semibold">{levelNames[selectedLevel]}</span>
           <ChevronDown className="w-4 h-4" />
         </Button>
 

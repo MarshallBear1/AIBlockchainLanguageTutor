@@ -3,16 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import spanishFlag from "@/assets/flags/spanish-flag.png";
+import frenchFlag from "@/assets/flags/french-flag.png";
+import germanFlag from "@/assets/flags/german-flag.png";
+import italianFlag from "@/assets/flags/italian-flag.png";
+import portugueseFlag from "@/assets/flags/portuguese-flag.png";
+import japaneseFlag from "@/assets/flags/japanese-flag.png";
+import koreanFlag from "@/assets/flags/korean-flag.png";
+import chineseFlag from "@/assets/flags/chinese-flag.png";
 
 const languages = [
-  { code: "es", name: "Spanish", flag: "🇪🇸" },
-  { code: "fr", name: "French", flag: "🇫🇷" },
-  { code: "de", name: "German", flag: "🇩🇪" },
-  { code: "it", name: "Italian", flag: "🇮🇹" },
-  { code: "pt", name: "Portuguese", flag: "🇵🇹" },
-  { code: "ja", name: "Japanese", flag: "🇯🇵" },
-  { code: "ko", name: "Korean", flag: "🇰🇷" },
-  { code: "zh", name: "Chinese", flag: "🇨🇳" },
+  { code: "es", name: "Spanish", flag: spanishFlag },
+  { code: "fr", name: "French", flag: frenchFlag },
+  { code: "de", name: "German", flag: germanFlag },
+  { code: "it", name: "Italian", flag: italianFlag },
+  { code: "pt", name: "Portuguese", flag: portugueseFlag },
+  { code: "ja", name: "Japanese", flag: japaneseFlag },
+  { code: "ko", name: "Korean", flag: koreanFlag },
+  { code: "zh", name: "Chinese", flag: chineseFlag },
 ];
 
 const SelectLanguage = () => {
@@ -61,8 +69,10 @@ const SelectLanguage = () => {
                   : "bg-card hover:bg-accent"
               }`}
             >
-              <div className="text-4xl mb-2">{lang.flag}</div>
-              <div className="font-semibold">{lang.name}</div>
+              <div className="mb-3 flex justify-center">
+                <img src={lang.flag} alt={`${lang.name} flag`} className="w-16 h-16 object-contain rounded-lg" />
+              </div>
+              <div className="font-semibold text-center">{lang.name}</div>
             </Card>
           ))}
         </div>

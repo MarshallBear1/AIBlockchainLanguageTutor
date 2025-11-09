@@ -3,16 +3,30 @@ import TopBar from "@/components/TopBar";
 import { LessonPath } from "@/components/LessonPath";
 import { getUnitsWithProgress } from "@/data/lessonData";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { getWallet } from "@/utils/wallet";
+
+const levelNames: Record<number, string> = {
+  1: "Beginner",
+  2: "Survival",
+  3: "Conversational",
+  4: "Proficient",
+  5: "Fluent"
+};
 
 const Home = () => {
   const [userLevel, setUserLevel] = useState<number>(1);
   const [units, setUnits] = useState(getUnitsWithProgress(1));
   const [expandedUnits, setExpandedUnits] = useState<number[]>([1]); // First unit expanded by default
+  const [currentStreak, setCurrentStreak] = useState(0);
 
   useEffect(() => {
+    // Get wallet data for streak
+    const wallet = getWallet();
+    setCurrentStreak(wallet.currentStreak);
+
     // Get user's level from localStorage first
     const savedLevel = parseInt(localStorage.getItem("selectedLevel") || "1");
     setUserLevel(savedLevel);
@@ -47,9 +61,16 @@ const Home = () => {
 
       <main className="flex-1 p-4 pb-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
+          {/* Header with Streak */}
           <div className="text-center mb-8 pt-4">
-            <h1 className="text-3xl font-bold mb-2">Your Learning Path</h1>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full shadow-lg">
+                <Flame className="w-5 h-5" />
+                <span className="font-bold text-lg">{currentStreak}</span>
+                <span className="text-sm">day streak</span>
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold mb-2">{levelNames[userLevel]} Learning Path</h1>
             <p className="text-muted-foreground">Complete lessons to unlock new adventures</p>
           </div>
 
