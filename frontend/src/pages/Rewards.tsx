@@ -421,7 +421,7 @@ const Rewards = () => {
                   <div className="text-sm text-muted-foreground space-y-2">
                     <p>To withdraw your VIBE tokens:</p>
                     <ol className="list-decimal list-inside space-y-1 ml-2">
-                      <li>Connect your Coinbase Wallet</li>
+                      <li>Connect your MetaMask wallet</li>
                       <li>Earn VIBE by completing lessons</li>
                       <li>Click the "Withdraw VIBE" button</li>
                       <li>Your earned VIBE is multiplied by your streak multiplier</li>
