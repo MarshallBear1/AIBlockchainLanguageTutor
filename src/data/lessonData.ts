@@ -731,6 +731,9 @@ export async function completeLesson(lessonId: number, languageCode?: string): P
         if (response.ok) {
           const result = await response.json();
           console.log(`✅ Lesson ${lessonId} completed! ${result.message}`);
+          
+          // Dispatch custom event to update UI immediately
+          window.dispatchEvent(new CustomEvent('vibeBalanceUpdated'));
         } else {
           console.error('❌ Error banking VIBE:', await response.text());
         }

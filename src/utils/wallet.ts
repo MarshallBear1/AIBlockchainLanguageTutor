@@ -117,6 +117,10 @@ export async function addCoins(amount: number): Promise<WalletData> {
     }
 
     console.log(`✅ Successfully added ${amount} coins. New balance: ${wallet.vibeCoins}`);
+    
+    // Dispatch custom event to notify UI components
+    window.dispatchEvent(new CustomEvent('vibeBalanceUpdated', { detail: { balance: wallet.vibeCoins } }));
+    
     return wallet;
   } catch (error) {
     console.error('Error in addCoins:', error);

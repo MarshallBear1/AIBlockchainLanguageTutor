@@ -83,6 +83,9 @@ export async function updateStreak(): Promise<{ streak: number; coinsEarned: num
     // Award 50 base coins + 10 coins per streak day
     const coinsEarned = 50 + (newStreak * 10);
 
+    // Dispatch custom event to notify UI components
+    window.dispatchEvent(new CustomEvent('vibeBalanceUpdated'));
+
     return { streak: newStreak, coinsEarned };
   } catch (error) {
     console.error('Unexpected error in updateStreak:', error);

@@ -243,7 +243,13 @@ const TopBar = () => {
       }
     };
 
+    // Listen for VIBE balance updates from custom events
+    const handleVibeUpdate = () => {
+      loadData();
+    };
+
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("vibeBalanceUpdated", handleVibeUpdate);
 
     // Also check periodically to update from Supabase
     const interval = setInterval(async () => {
@@ -305,6 +311,7 @@ const TopBar = () => {
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("vibeBalanceUpdated", handleVibeUpdate);
       clearInterval(interval);
     };
   }, []);
