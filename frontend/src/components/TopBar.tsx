@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, LogOut, Flame } from "lucide-react";
+import { ChevronDown, LogOut, Flame, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
