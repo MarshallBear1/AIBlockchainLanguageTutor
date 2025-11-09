@@ -166,14 +166,32 @@ const ConversationContent = () => {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
         // Complete the lesson and get coins earned
+        console.log(`🎓 Completing lesson ${lessonNum}...`);
         const { success, coinsEarned } = await completeLesson(lessonNum);
         
         if (success) {
+          console.log(`✅ Lesson complete! Coins earned: ${coinsEarned}`);
           setCoinsEarned(coinsEarned);
           
           // Show reward screen
           setShowReward(true);
+          
+          // If no coins were earned, show a warning toast
+          if (coinsEarned === 0) {
+            toast({
+              title: "Lesson Complete!",
+              description: "There was an issue awarding coins. Please check your balance.",
+              variant: "default",
+            });
+          }
           return;
+        } else {
+          console.error('❌ Failed to complete lesson');
+          toast({
+            title: "Error",
+            description: "Failed to save lesson progress. Please try again.",
+            variant: "destructive",
+          });
         }
       }
     }

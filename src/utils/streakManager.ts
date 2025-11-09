@@ -48,10 +48,11 @@ export async function updateStreak(): Promise<{ streak: number; coinsEarned: num
       lastDate.setHours(0, 0, 0, 0);
       const lastDateStr = lastDate.toISOString().split('T')[0];
       
-      if (lastDateStr === todayStr) {
-        // Already practiced today, no change
-        return { streak: newStreak, coinsEarned: 50 }; // Just coins for lesson
-      } else {
+    if (lastDateStr === todayStr) {
+      // Already practiced today, no streak change but still award coins
+      const coinsEarned = 50 + (newStreak * 10);
+      return { streak: newStreak, coinsEarned };
+    } else {
         // Calculate days difference
         const daysDiff = Math.floor((today.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
         

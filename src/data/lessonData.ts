@@ -719,9 +719,11 @@ export async function completeLesson(lessonId: number, languageCode?: string): P
     try {
       const { addCoins } = await import('@/utils/wallet');
       await addCoins(coinsEarned);
+      console.log(`✅ Lesson ${lessonId} completed! Awarded ${coinsEarned} coins.`);
     } catch (error) {
-      console.error('Error adding coins in completeLesson:', error);
-      // Continue even if coin update fails
+      console.error('❌ Error adding coins in completeLesson:', error);
+      // Still return success for lesson completion, but log the coin error
+      return { success: true, coinsEarned: 0 }; // Return 0 coins if save failed
     }
 
     // Increment levels_completed_in_cycle for crypto payout tracking

@@ -89,9 +89,12 @@ export async function saveWallet(wallet: WalletData): Promise<boolean> {
       .eq('id', user.id);
 
     if (error) {
-      console.error('Error saving wallet to profiles:', error);
+      console.error('❌ Error saving wallet to profiles:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       return false;
     }
+
+    console.log('✅ Wallet saved successfully:', { vibeCoins: wallet.vibeCoins, xp: wallet.totalEarned });
 
     return true;
   } catch (error) {
@@ -110,8 +113,10 @@ export async function addCoins(amount: number): Promise<WalletData> {
     const success = await saveWallet(wallet);
     if (!success) {
       console.error('Failed to save wallet after adding coins');
+      throw new Error('Failed to save coins to database');
     }
 
+    console.log(`✅ Successfully added ${amount} coins. New balance: ${wallet.vibeCoins}`);
     return wallet;
   } catch (error) {
     console.error('Error in addCoins:', error);
