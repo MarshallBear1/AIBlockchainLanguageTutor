@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
-import { completeLesson } from "@/data/lessonData";
+import { completeLesson, units } from "@/data/lessonData";
 import { RewardScreen } from "@/components/RewardScreen";
 import { awardLessonCompletion } from "@/utils/wallet";
 
@@ -35,25 +35,50 @@ const ConversationContent = () => {
 
   // Get lesson context from URL
   const isCustom = searchParams.get("custom") === "true";
-  const lessonId = searchParams.get("lesson");
+  const lessonIdParam = searchParams.get("lesson");
   const roleplayId = searchParams.get("roleplay");
 
-  const lessonGoal = isCustom 
-    ? localStorage.getItem("lessonGoal") || "Custom conversation"
-    : lessonId 
-      ? `Lesson: ${lessonId}`
-      : roleplayId 
-        ? `Roleplay: ${roleplayId}`
-        : "Conversation";
+  // Find the actual lesson from lesson data
+  const getLessonInfo = () => {
+    if (isCustom) {
+      return {
+        goal: localStorage.getItem("lessonGoal") || "Custom conversation",
+        scenario: localStorage.getItem("lessonGoal") || "Custom conversation",
+      };
+    }
+
+    if (lessonIdParam) {
+      const lessonId = parseInt(lessonIdParam);
+      // Find lesson in units
+      for (const unit of units) {
+        const lesson = unit.lessons.find(l => l.id === lessonId);
+        if (lesson) {
+          return {
+            goal: lesson.title,
+            scenario: lesson.scenario,
+          };
+        }
+      }
+    }
+
+    return {
+      goal: "Conversation",
+      scenario: "Have a natural conversation practice",
+    };
+  };
+
+  const lessonInfo = getLessonInfo();
+  const lessonGoal = lessonInfo.goal;
+  const lessonScenario = lessonInfo.scenario;
 
   // Auto-start conversation with GEM speaking first
   useEffect(() => {
     if (isFirstLoad) {
       setIsFirstLoad(false);
-      // Trigger AI to speak first
-      chat("START_CONVERSATION", true);
+      // Trigger AI to speak first with lesson scenario
+      chat("START_CONVERSATION", true, lessonScenario);
     }
-  }, [isFirstLoad]);
+  }, [isFirstLoad, lessonScenario]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -72,6 +97,24 @@ const ConversationContent = () => {
       });
     }
   }, [recordingError, toast]);
+
+  // Auto-detect lesson completion when GEM says "Great job today!"
+  useEffect(() => {
+    if (conversationHistory.length > 0) {
+      const lastMessage = conversationHistory[conversationHistory.length - 1];
+
+      // Check if GEM's last message contains the completion phrase
+      if (
+        lastMessage.role === "assistant" &&
+        lastMessage.text.includes("Great job today!")
+      ) {
+        // Trigger lesson completion after a short delay to let them read it
+        setTimeout(() => {
+          handleEndConversation();
+        }, 3000);
+      }
+    }
+  }, [conversationHistory]);
 
   const handleEndConversation = () => {
     // Mark lesson as complete if this is a lesson conversation
@@ -146,8 +189,8 @@ const ConversationContent = () => {
 
           const transcribedText = data?.text;
           if (transcribedText && transcribedText.trim()) {
-            // Send to AI chat
-            await chat(transcribedText);
+            // Send to AI chat with lesson scenario
+            await chat(transcribedText, false, lessonScenario);
           } else {
             toast({
               title: "No Speech Detected",
@@ -170,7 +213,7 @@ const ConversationContent = () => {
     if (!textMessage.trim()) return;
 
     try {
-      await chat(textMessage);
+      await chat(textMessage, false, lessonScenario);
       setTextMessage("");
     } catch (err) {
       console.error("Text chat error:", err);
