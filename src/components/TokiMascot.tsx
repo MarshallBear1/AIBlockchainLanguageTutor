@@ -32,7 +32,7 @@ const TokiMascot = ({ state = "idle", size = "md", className }: TokiMascotProps)
           const next = prev === 0 ? 1 : 0;
           return next;
         });
-      }, currentImage === 0 ? 2000 : 500);
+      }, currentImage === 0 ? 2000 : 1000);
 
       return () => clearInterval(interval);
     }
