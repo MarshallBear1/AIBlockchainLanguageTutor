@@ -256,14 +256,13 @@ const Auth = () => {
         <TokiMascot size="md" state="flicker" />
       </div>
 
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Welcome to Toki</CardTitle>
-          <CardDescription className="text-center">
-            Your AI Language Partner
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="w-full max-w-md text-center space-y-8">
+        <div>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Welcome to Toki</h1>
+          <p className="text-lg text-muted-foreground">Your AI Language Partner</p>
+        </div>
+
+        <div className="space-y-4">
           <Button
             onClick={() => setShowSignUp(true)}
             className="w-full h-12 text-lg"
@@ -279,8 +278,8 @@ const Auth = () => {
           >
             Already have an account
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
