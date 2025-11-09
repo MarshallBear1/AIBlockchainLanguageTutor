@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Coins, Star, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface RewardScreenProps {
   coinsEarned: number;
@@ -10,128 +8,68 @@ interface RewardScreenProps {
 }
 
 export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => {
-  const [showCoins, setShowCoins] = useState(false);
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    // Animate coin counter
-    const timeout = setTimeout(() => setShowCoins(true), 500);
-    return () => clearTimeout(timeout);
-  }, []);
-
-  useEffect(() => {
-    if (showCoins && count < coinsEarned) {
-      const interval = setInterval(() => {
-        setCount((prev) => Math.min(prev + 2, coinsEarned));
-      }, 30);
-      return () => clearInterval(interval);
-    }
-  }, [showCoins, count, coinsEarned]);
-
   return (
-    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center space-y-8">
-        {/* Celebration Stars */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1, rotate: 360 }}
-          transition={{ duration: 0.6, type: "spring" }}
-          className="flex justify-center"
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3, type: "spring" }}
+        className="relative bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md w-full shadow-2xl"
+      >
+        {/* Close Button */}
+        <Button
+          onClick={onContinue}
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 rounded-full"
         >
-          <div className="relative">
-            <Star className="w-24 h-24 text-blue-500 fill-blue-500" />
-            <div className="absolute -top-4 -right-4">
-              <Star className="w-12 h-12 text-blue-400 fill-blue-400" />
-            </div>
-            <div className="absolute -bottom-4 -left-4">
-              <Star className="w-12 h-12 text-blue-400 fill-blue-400" />
-            </div>
-          </div>
-        </motion.div>
+          <X className="w-5 h-5" />
+        </Button>
 
-        {/* Good Job Today Text */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <h1 className="text-5xl font-bold text-blue-600 mb-3">
-            Good job today!
-          </h1>
-          <p className="text-xl text-gray-600">Keep your streak to multiply rewards! 🔥</p>
-        </motion.div>
+        {/* Content */}
+        <div className="flex flex-col items-center text-center space-y-6 py-4">
+          {/* Reward Image */}
+          <motion.img
+            src="https://customer-assets.emergentagent.com/job_code-lens-3/artifacts/n2857u99_image.png"
+            alt="Reward"
+            className="w-64 h-64 object-contain"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
+          />
 
-        {/* Coins Earned */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: showCoins ? 1 : 0 }}
-          transition={{ delay: 0.6, type: "spring" }}
-          className="bg-blue-50 rounded-3xl p-8 border-4 border-blue-200"
-        >
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <Coins className="w-16 h-16 text-yellow-500" />
-            <div className="text-left">
-              <p className="text-gray-600 text-sm font-medium">Banked</p>
-              <p className="text-6xl font-bold text-blue-600">{count}</p>
-            </div>
-          </div>
-          <p className="text-blue-700 text-lg font-semibold">Vibe Coins Added to Bank</p>
-          <p className="text-blue-600 text-sm mt-2">Withdraw anytime with your streak bonus!</p>
-        </motion.div>
-
-        {/* Achievements */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="space-y-3"
-        >
-          <div className="bg-blue-100 rounded-xl p-4 flex items-center gap-3 border-2 border-blue-200">
-            <Award className="w-6 h-6 text-blue-600" />
-            <span className="text-blue-700 font-medium">Lesson Mastered</span>
-          </div>
-        </motion.div>
-
-        {/* Continue Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-        >
-          <Button
-            onClick={onContinue}
-            size="lg"
-            className="w-full h-14 text-lg bg-blue-600 text-white hover:bg-blue-700 rounded-full font-bold shadow-lg"
+          {/* Message */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="space-y-2"
           >
-            Continue Learning
-          </Button>
-        </motion.div>
-      </div>
+            <h2 className="text-3xl font-bold text-foreground">
+              Good job! You earned
+            </h2>
+            <p className="text-5xl font-black text-primary">
+              {coinsEarned} coins
+            </p>
+          </motion.div>
 
-      {/* Floating Coins Animation */}
-      {showCoins && (
-        <>
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ y: "100vh", x: Math.random() * window.innerWidth, opacity: 0 }}
-              animate={{
-                y: [null, -100],
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                delay: Math.random() * 0.5,
-                duration: 2 + Math.random(),
-                repeat: Infinity,
-                repeatDelay: Math.random() * 2,
-              }}
-              className="absolute"
+          {/* Close Button at Bottom */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="w-full pt-4"
+          >
+            <Button
+              onClick={onContinue}
+              size="lg"
+              className="w-full h-12 text-lg rounded-full font-semibold"
             >
-              <Coins className="w-8 h-8 text-blue-500" />
-            </motion.div>
-          ))}
-        </>
-      )}
+              Continue
+            </Button>
+          </motion.div>
+        </div>
+      </motion.div>
     </div>
   );
 };
