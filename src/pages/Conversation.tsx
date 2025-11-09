@@ -91,7 +91,7 @@ const ConversationContent = () => {
   const learningGoals = lessonInfo.learningGoals;
   const vocabulary = lessonInfo.vocabulary;
 
-  // Auto-start conversation with GEM speaking first
+  // Auto-start conversation with Toki speaking first
   useEffect(() => {
     if (isFirstLoad) {
       setIsFirstLoad(false);
@@ -118,12 +118,12 @@ const ConversationContent = () => {
     }
   }, [recordingError, toast]);
 
-  // Detect when GEM says "Great job today!" to mark as final message
+  // Detect when Toki says "Great job today!" to mark as final message
   useEffect(() => {
     if (conversationHistory.length > 0) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
       
-      // Check if GEM's last message contains the completion phrase
+      // Check if Toki's last message contains the completion phrase
       if (
         lastMessage.role === "assistant" &&
         lastMessage.text.includes("Great job today!")
@@ -152,7 +152,7 @@ const ConversationContent = () => {
   }, [conversationHistory]); // Removed message dependency to avoid infinite loops
 
   const handleEndConversation = async () => {
-    // Check if lesson is actually complete (GEM said "Great job today!")
+    // Check if lesson is actually complete (Toki said "Great job today!")
     const isLessonComplete = conversationHistory.length > 0 &&
       conversationHistory[conversationHistory.length - 1].role === "assistant" &&
       conversationHistory[conversationHistory.length - 1].text.includes("Great job today!");
@@ -426,7 +426,7 @@ const ConversationContent = () => {
 
         {/* Status Text */}
         <div className="text-center text-xs text-muted-foreground">
-          {loading && "Gem is thinking..."}
+          {loading && "Toki is thinking..."}
           {!loading && recordingState === "idle" && "Type or hold button to speak"}
           {recordingState === "recording" && "🎤 Listening..."}
         </div>
@@ -462,7 +462,7 @@ const ConversationContent = () => {
           className="w-full h-9 text-sm"
           disabled={isFinalMessage && message !== null}
         >
-          {isFinalMessage && message !== null ? "GEM is finishing..." : "End Conversation"}
+          {isFinalMessage && message !== null ? "Toki is finishing..." : "End Conversation"}
         </Button>
       </div>
 

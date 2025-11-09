@@ -2,13 +2,13 @@ import { CameraControls, ContactShadows, Environment, Text, Html } from "@react-
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useAvatarChat } from "@/hooks/useAvatarChat";
 import { Avatar3D } from "./Avatar3D";
+import TokiMascot from "@/components/TokiMascot";
 
 const LoadingFallback = () => {
   return (
     <Html center>
-      <div className="flex flex-col items-center gap-2">
-        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm text-foreground font-medium">Loading your teacher...</p>
+      <div className="flex items-center justify-center">
+        <TokiMascot state="flicker" size="lg" />
       </div>
     </Html>
   );

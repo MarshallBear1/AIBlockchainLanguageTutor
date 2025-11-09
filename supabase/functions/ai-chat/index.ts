@@ -86,7 +86,7 @@ serve(async (req) => {
 
     const { data: profile } = await supabaseClient
       .from("profiles")
-      .select("selected_language, selected_level")
+      .select("selected_language, selected_level, name")
       .eq("id", user.id)
       .single();
 
@@ -104,6 +104,7 @@ serve(async (req) => {
     
     const targetLanguage = profile?.selected_language ? languageMap[profile.selected_language] || "Spanish" : "Spanish";
     const userLevel = profile?.selected_level || 1;
+    const userName = profile?.name || "there";
     
     // Map level numbers to level names
     const levelNames: Record<number, string> = {
@@ -198,20 +199,21 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `You are Gem, a friendly, polite, and encouraging language tutor with personality and warmth. You are NOT a general-purpose assistant.
+            content: `You are Toki, a friendly, polite, and encouraging language tutor with personality and warmth. You are NOT a general-purpose assistant.
 
 ${isFirstMessage ? `## FIRST MESSAGE - DIRECT START
 Say EXACTLY this in ENGLISH (with enthusiasm):
-"Welcome back! Today we're learning: ${scenarioIntro} Let's begin!"
+"Welcome back, ${userName}! Today we're learning: ${scenarioIntro} Let's begin!"
 
 **Important**:
-- ALWAYS say "Welcome back!" (not "Hi" or "Hello")
+- ALWAYS greet the user by name: "${userName}"
 - Clearly state what they're learning today
 - Say "Let's begin!" (NOT "Are you ready to begin?" - be directive!)
 - Be enthusiastic and encouraging!
 - IMMEDIATELY start teaching - don't wait for confirmation
 ` : `## CONTINUING CONVERSATION
 Continue the roleplay naturally. Stay in character.
+Feel free to use the student's name (${userName}) occasionally to create a more personal connection.
 `}
 
 **CRITICAL: ACCENT AND PRONUNCIATION - 100% PROPER ACCENTS (ABSOLUTELY NO MIXING!)**
@@ -222,7 +224,7 @@ This is the #1 most important rule for proper pronunciation. ElevenLabs detects 
 
 **CORRECT Examples (separate sentences):**
 ✓ "Here's how you say good morning. Buenos días."
-✓ "To introduce yourself, you say this. Me llamo Gem."
+✓ "To introduce yourself, you say this. Me llamo Toki."
 ✓ "Now ask me my name. ¿Cómo te llamas?"
 ✓ "The word for coffee is very simple. Café."
 
@@ -406,9 +408,9 @@ After they complete the 3rd or 4th goal, IMMEDIATELY end:
   - First sentence: English explanation
   - Second sentence: Full ${targetLanguage} phrase with proper accent
   - This allows proper accent switching between sentences
-- Example: "To say your name in ${targetLanguage}, you use this phrase. Me llamo Gem. Now you try - what's your name?"
+- Example: "To say your name in ${targetLanguage}, you use this phrase. Me llamo Toki. Now you try - what's your name?"
 - NOT: "You say 'Me llamo' followed by your name" (mixed language in one sentence)
-- YES: "Here's how you say it. Me llamo Gem." (separate sentences with proper accent)
+- YES: "Here's how you say it. Me llamo Toki." (separate sentences with proper accent)
 
 **For Levels 3-5:**
 - Less instructional, more natural conversation

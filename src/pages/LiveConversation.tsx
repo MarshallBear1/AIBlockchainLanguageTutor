@@ -105,11 +105,11 @@ const LiveConversationPage = () => {
         <div className="flex flex-col items-center gap-2">
           <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
           <h1 className="text-2xl font-bold text-foreground">
-            {isConnecting ? "Connecting to Gem..." : isConnected ? "Call with Gem" : "Connection Error"}
+            {isConnecting ? "Connecting to Toki..." : isConnected ? "Call with Toki" : "Connection Error"}
           </h1>
           {isConnected && (
             <p className="text-sm text-muted-foreground">
-              {isSpeaking ? "Gem is speaking..." : "Listening..."}
+              {isSpeaking ? "Toki is speaking..." : "Listening..."}
             </p>
           )}
         </div>
@@ -120,7 +120,7 @@ const LiveConversationPage = () => {
         <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-md z-20">
           <div className="text-center space-y-4">
             <Loader2 className="w-16 h-16 animate-spin mx-auto text-primary" />
-            <p className="text-xl font-medium">Connecting to Gem...</p>
+            <p className="text-xl font-medium">Connecting to Toki...</p>
             <p className="text-sm text-muted-foreground">This will just take a moment</p>
           </div>
         </div>
@@ -139,7 +139,7 @@ const LiveConversationPage = () => {
               }`}>
                 <div className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-green-500' : 'bg-primary'} ${isSpeaking ? 'animate-pulse' : ''}`} />
                 <span className="font-medium text-sm">
-                  {isSpeaking ? "Gem is speaking" : "You can speak now"}
+                  {isSpeaking ? "Toki is speaking" : "You can speak now"}
                 </span>
               </div>
             </div>

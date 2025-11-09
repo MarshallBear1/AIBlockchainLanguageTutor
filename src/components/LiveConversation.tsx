@@ -24,7 +24,7 @@ const LiveConversation = ({ unitNumber, language, level }: LiveConversationProps
       <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 animate-pulse">
         <Phone className="w-5 h-5" />
       </div>
-      <span className="text-lg font-semibold">Call GEM for Live Practice</span>
+      <span className="text-lg font-semibold">Call Toki for Live Practice</span>
     </Button>
   );
 };
