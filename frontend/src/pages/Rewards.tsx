@@ -384,46 +384,6 @@ const Rewards = () => {
             </Card>
           </Collapsible>
         )}
-
-        {/* How It Works */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How It Works</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-3">
-              <div className="text-2xl">📚</div>
-              <div>
-                <p className="font-semibold">Earn VIBE</p>
-                <p className="text-sm text-muted-foreground">Complete lessons to earn 50 VIBE each, added to your bank</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="text-2xl">🔥</div>
-              <div>
-                <p className="font-semibold">Build Your Streak</p>
-                <p className="text-sm text-muted-foreground">
-                  Practice daily to unlock higher multipliers:<br/>
-                  7 days: 1.5x • 14 days: 2.0x • 30 days: 2.5x • 60 days: 3.0x
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="text-2xl">💰</div>
-              <div>
-                <p className="font-semibold">Withdraw Anytime</p>
-                <p className="text-sm text-muted-foreground">Connect your wallet and withdraw your rewards instantly to Polygon network</p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="text-2xl">⚡</div>
-              <div>
-                <p className="font-semibold">Smart Strategy</p>
-                <p className="text-sm text-muted-foreground">The longer you maintain your streak, the more VIBE you earn!</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Withdraw Confirmation Dialog */}
