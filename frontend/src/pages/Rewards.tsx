@@ -439,7 +439,7 @@ const Rewards = () => {
                 <AccordionContent>
                   <p className="text-sm text-muted-foreground">
                     No! You can earn VIBE tokens by completing lessons without a wallet connected. Your earned VIBE 
-                    is safely stored in your account. However, you'll need to connect a MetaMask wallet when you're 
+                    is safely stored in your account. However, you'll need to connect a Coinbase Wallet when you're 
                     ready to withdraw your tokens to use them outside the platform.
                   </p>
                 </AccordionContent>
