@@ -88,7 +88,7 @@ const Auth = () => {
         // Check if user has completed onboarding
         const selectedLanguage = localStorage.getItem("selectedLanguage");
         if (selectedLanguage) {
-          navigate("/home");
+          navigate("/");
         } else {
           navigate("/select-language");
         }
