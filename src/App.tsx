@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import Lessons from "./pages/Lessons";
 import CustomLesson from "./pages/CustomLesson";
 import Conversation from "./pages/Conversation";
+import LiveConversationPage from "./pages/LiveConversation";
 import Roleplay from "./pages/Roleplay";
 import Vocab from "./pages/Vocab";
 import Progress from "./pages/Progress";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/lessons" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
           <Route path="/custom-lesson" element={<ProtectedRoute><CustomLesson /></ProtectedRoute>} />
           <Route path="/conversation" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
+          <Route path="/live-conversation" element={<ProtectedRoute><LiveConversationPage /></ProtectedRoute>} />
           <Route path="/roleplay" element={<ProtectedRoute><Roleplay /></ProtectedRoute>} />
           <Route path="/vocab" element={<ProtectedRoute><Vocab /></ProtectedRoute>} />
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
