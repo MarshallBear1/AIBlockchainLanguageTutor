@@ -474,8 +474,33 @@ Then move to the next teaching point.
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("OpenAI API error:", response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
     const data = await response.json();
-    let messageData = JSON.parse(data.choices[0].message.content);
+    
+    // Validate response structure
+    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+      console.error("Invalid OpenAI response structure:", JSON.stringify(data));
+      throw new Error("Invalid response from OpenAI");
+    }
+
+    const content = data.choices[0].message.content.trim();
+    if (!content) {
+      console.error("Empty content from OpenAI");
+      throw new Error("Empty response from OpenAI");
+    }
+
+    let messageData;
+    try {
+      messageData = JSON.parse(content);
+    } catch (parseError) {
+      console.error("Failed to parse OpenAI response:", content);
+      throw new Error("Invalid JSON response from OpenAI");
+    }
 
     // Convert single message to array format for consistency
     const messages = Array.isArray(messageData) ? messageData : [messageData];
