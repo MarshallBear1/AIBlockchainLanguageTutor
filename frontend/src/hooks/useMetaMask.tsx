@@ -59,7 +59,8 @@ export const useMetaMask = () => {
 
   // Listen for account changes
   useEffect(() => {
-    if (!isMetaMaskInstalled) return;
+    const provider = getMetaMaskProvider();
+    if (!provider) return;
 
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
@@ -74,13 +75,13 @@ export const useMetaMask = () => {
       setChainId(chainId);
     };
 
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
+    provider.on('accountsChanged', handleAccountsChanged);
+    provider.on('chainChanged', handleChainChanged);
 
     return () => {
-      if (window.ethereum.removeListener) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      if (provider.removeListener) {
+        provider.removeListener('accountsChanged', handleAccountsChanged);
+        provider.removeListener('chainChanged', handleChainChanged);
       }
     };
   }, [isMetaMaskInstalled]);
