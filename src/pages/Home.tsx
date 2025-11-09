@@ -15,7 +15,6 @@ const levelNames: Record<number, string> = {
 const Home = () => {
   const [userLevel, setUserLevel] = useState<number>(1);
   const [units, setUnits] = useState<Unit[]>([]);
-  const [currentUnitIndex, setCurrentUnitIndex] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,12 +28,6 @@ const Home = () => {
       // Load units with progress from database
       const loadedUnits = await getUnitsWithProgress(savedLevel);
       setUnits(loadedUnits);
-      
-      // Find first unit with incomplete lessons
-      const firstIncompleteUnit = loadedUnits.findIndex(unit => 
-        unit.lessons.some(lesson => !lesson.completed)
-      );
-      setCurrentUnitIndex(firstIncompleteUnit >= 0 ? firstIncompleteUnit : 0);
       setLoading(false);
       
       // Then sync from Supabase
@@ -52,11 +45,6 @@ const Home = () => {
           
           const updatedUnits = await getUnitsWithProgress(data.selected_level);
           setUnits(updatedUnits);
-          
-          const firstIncomplete = updatedUnits.findIndex(unit => 
-            unit.lessons.some(lesson => !lesson.completed)
-          );
-          setCurrentUnitIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
         }
       }
     };
@@ -64,12 +52,7 @@ const Home = () => {
     loadProgress();
   }, []);
 
-  const currentUnit = units[currentUnitIndex];
-  
-  // Calculate relative unit number (1-based for current level)
-  const relativeUnitNumber = currentUnitIndex + 1;
-
-  if (loading || !currentUnit) {
+  if (loading || units.length === 0) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <TopBar />
@@ -80,50 +63,50 @@ const Home = () => {
     );
   }
 
-  const completedCount = currentUnit.lessons.filter((l) => l.completed).length;
-  const progress = (completedCount / currentUnit.lessons.length) * 100;
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <TopBar />
 
-      {/* Simple Unit Header */}
-      <div className="text-center px-6 py-6 border-b border-border">
-        <h1 className="text-2xl font-bold mb-1">Unit {relativeUnitNumber}</h1>
-        <p className="text-base text-muted-foreground">{currentUnit.description}</p>
-      </div>
+      {/* Lesson Path - Scrollable */}
+      <main className="flex-1 overflow-y-auto bg-background pb-8">
+        <div className="max-w-4xl mx-auto space-y-12 py-6">
+          {units.map((unit, index) => {
+            const completedCount = unit.lessons.filter((l) => l.completed).length;
+            const progress = (completedCount / unit.lessons.length) * 100;
+            const relativeUnitNumber = index + 1;
 
-      {/* Lesson Path */}
-      <main className="flex-1 pb-24 overflow-y-auto bg-background">
-        <div className="max-w-4xl mx-auto">
-          <LessonPath lessons={currentUnit.lessons} />
+            return (
+              <div key={unit.id} className="space-y-4">
+                {/* Unit Header */}
+                <div className="text-center px-6 py-6 bg-card border border-border rounded-2xl shadow-sm">
+                  <h2 className="text-2xl font-bold mb-1">Unit {relativeUnitNumber}</h2>
+                  <p className="text-base text-muted-foreground mb-4">{unit.description}</p>
+                  
+                  {/* Progress Bar */}
+                  <div className="flex items-center gap-3 max-w-md mx-auto">
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          progress === 100
+                            ? "bg-gradient-to-r from-green-400 to-green-600"
+                            : "bg-gradient-to-r from-primary to-purple-600"
+                        }`}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                      {completedCount}/{unit.lessons.length}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Lessons */}
+                <LessonPath lessons={unit.lessons} />
+              </div>
+            );
+          })}
         </div>
       </main>
-
-      {/* Unit Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 shadow-lg">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <button
-            onClick={() => setCurrentUnitIndex(Math.max(0, currentUnitIndex - 1))}
-            disabled={currentUnitIndex === 0}
-            className="px-6 py-2 rounded-lg bg-muted hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-          >
-            Previous Unit
-          </button>
-          
-          <div className="text-sm text-muted-foreground">
-            Unit {currentUnitIndex + 1} of {units.length}
-          </div>
-          
-          <button
-            onClick={() => setCurrentUnitIndex(Math.min(units.length - 1, currentUnitIndex + 1))}
-            disabled={currentUnitIndex === units.length - 1}
-            className="px-6 py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-          >
-            Next Unit
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
