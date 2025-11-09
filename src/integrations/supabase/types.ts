@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lesson_sessions: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          lesson_goal: string | null
+          lesson_type: string
+          user_id: string
+          xp_earned: number | null
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          lesson_goal?: string | null
+          lesson_type: string
+          user_id: string
+          xp_earned?: number | null
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          lesson_goal?: string | null
+          lesson_type?: string
+          user_id?: string
+          xp_earned?: number | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          last_practice_date: string | null
+          selected_language: string | null
+          selected_level: number | null
+          streak_days: number | null
+          total_minutes_practiced: number | null
+          updated_at: string | null
+          xp: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          last_practice_date?: string | null
+          selected_language?: string | null
+          selected_level?: number | null
+          streak_days?: number | null
+          total_minutes_practiced?: number | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          last_practice_date?: string | null
+          selected_language?: string | null
+          selected_level?: number | null
+          streak_days?: number | null
+          total_minutes_practiced?: number | null
+          updated_at?: string | null
+          xp?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
