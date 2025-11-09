@@ -38,23 +38,34 @@ export const WalletConnect = ({ onWalletConnected }: WalletConnectProps) => {
           <>
             <div className="flex flex-col gap-2">
               <p className="text-sm text-muted-foreground">
-                You need to connect a wallet to receive your earned VIBE tokens. Install Coinbase Wallet if you haven't already.
+                You need to connect a wallet to receive your earned VIBE tokens. Install MetaMask if you haven't already.
               </p>
             </div>
             
             <div className="flex gap-2">
               <Button
                 onClick={connectWallet}
-                disabled={isConnecting || !isCoinbaseWalletInstalled}
-                className="flex-1"
+                disabled={isConnecting || !isMetaMaskInstalled}
+                className="flex-1 flex items-center justify-center gap-2"
               >
-                {isConnecting ? 'Connecting...' : 'Connect Coinbase Wallet'}
+                {isConnecting ? (
+                  'Connecting...'
+                ) : (
+                  <>
+                    <img 
+                      src="https://customer-assets.emergentagent.com/job_code-lens-3/artifacts/2zhg7ea5_image.png" 
+                      alt="MetaMask" 
+                      className="w-5 h-5"
+                    />
+                    Connect MetaMask
+                  </>
+                )}
               </Button>
               
-              {!isCoinbaseWalletInstalled && (
+              {!isMetaMaskInstalled && (
                 <Button
                   variant="outline"
-                  onClick={() => window.open('https://www.coinbase.com/wallet/downloads', '_blank')}
+                  onClick={() => window.open('https://metamask.io/download/', '_blank')}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   Install
