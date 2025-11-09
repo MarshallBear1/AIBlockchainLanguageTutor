@@ -283,35 +283,8 @@ const Rewards = () => {
           />
         </div>
 
-        {/* Detailed Stats Section */}
-        <div className="space-y-3">
-          {/* Streak Progress Details */}
-          <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-6">
-            <div className="flex items-center gap-2 text-muted-foreground mb-3">
-              <Flame className="w-5 h-5 text-orange-500" />
-              <span className="font-medium">Streak Progress</span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">{streakDays} day streak 🔥</span>
-                {nextTier.daysNeeded > 0 && (
-                  <span className="text-muted-foreground font-medium">
-                    {nextTier.daysNeeded} more days to {formatMultiplier(nextTier.nextMultiplier)}
-                  </span>
-                )}
-              </div>
-              {nextTier.daysNeeded > 0 && (
-                <Progress 
-                  value={(streakDays / nextTier.nextTier) * 100} 
-                  className="h-2"
-                />
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground mt-3">
-              +50 VIBE per lesson completed
-            </p>
-          </div>
-        </div>
+        {/* Streak Multiplier Component */}
+        <StreakMultiplier streakDays={streakDays} />
 
         {/* Withdraw Button */}
         <Button
