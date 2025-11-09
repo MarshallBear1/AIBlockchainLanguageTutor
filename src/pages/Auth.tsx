@@ -41,13 +41,23 @@ const Auth = () => {
           throw error;
         }
       } else {
-        toast({
-          title: "Account created!",
-          description: "You can now sign in to start learning.",
+        // Automatically sign in the user after successful signup
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
-        // Switch to sign in tab
-        const signInTab = document.querySelector('[value="signin"]') as HTMLElement;
-        signInTab?.click();
+
+        if (signInError) {
+          throw signInError;
+        }
+
+        toast({
+          title: "Welcome to Toki!",
+          description: "Your account has been created. Let's get started!",
+        });
+        
+        // Navigate to language selection for new users
+        navigate("/select-language");
       }
     } catch (error: any) {
       toast({
