@@ -1,0 +1,156 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
+
+export const useMetaMask = () => {
+  const [account, setAccount] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [chainId, setChainId] = useState<string | null>(null);
+
+  // Check if MetaMask is installed
+  const isMetaMaskInstalled = typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
+
+  // Load saved wallet address from profile
+  useEffect(() => {
+    const loadWalletAddress = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('wallet_address')
+          .eq('id', user.id)
+          .single();
+
+        if (profile?.wallet_address) {
+          setAccount(profile.wallet_address);
+        }
+      } catch (error) {
+        console.error('Error loading wallet address:', error);
+      }
+    };
+
+    loadWalletAddress();
+  }, []);
+
+  // Listen for account changes
+  useEffect(() => {
+    if (!isMetaMaskInstalled) return;
+
+    const handleAccountsChanged = (accounts: string[]) => {
+      if (accounts.length === 0) {
+        setAccount(null);
+      } else {
+        setAccount(accounts[0]);
+        saveWalletAddress(accounts[0]);
+      }
+    };
+
+    const handleChainChanged = (chainId: string) => {
+      setChainId(chainId);
+    };
+
+    window.ethereum.on('accountsChanged', handleAccountsChanged);
+    window.ethereum.on('chainChanged', handleChainChanged);
+
+    return () => {
+      if (window.ethereum.removeListener) {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      }
+    };
+  }, [isMetaMaskInstalled]);
+
+  const saveWalletAddress = async (address: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ wallet_address: address })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error saving wallet address:', error);
+      }
+    } catch (error) {
+      console.error('Error in saveWalletAddress:', error);
+    }
+  };
+
+  const connectWallet = async () => {
+    if (!isMetaMaskInstalled) {
+      toast.error('MetaMask is not installed. Please install MetaMask to continue.');
+      window.open('https://metamask.io/download/', '_blank');
+      return;
+    }
+
+    setIsConnecting(true);
+
+    try {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+
+      if (accounts.length > 0) {
+        const address = accounts[0];
+        setAccount(address);
+        await saveWalletAddress(address);
+        
+        // Get chain ID
+        const chainId = await window.ethereum.request({
+          method: 'eth_chainId',
+        });
+        setChainId(chainId);
+
+        toast.success('Wallet connected successfully!');
+      }
+    } catch (error: any) {
+      console.error('Error connecting to MetaMask:', error);
+      
+      if (error.code === 4001) {
+        toast.error('Connection request rejected');
+      } else {
+        toast.error('Failed to connect wallet');
+      }
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  const disconnectWallet = async () => {
+    setAccount(null);
+    setChainId(null);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      await supabase
+        .from('profiles')
+        .update({ wallet_address: null })
+        .eq('id', user.id);
+
+      toast.success('Wallet disconnected');
+    } catch (error) {
+      console.error('Error disconnecting wallet:', error);
+    }
+  };
+
+  return {
+    account,
+    isConnecting,
+    chainId,
+    isMetaMaskInstalled,
+    connectWallet,
+    disconnectWallet,
+  };
+};

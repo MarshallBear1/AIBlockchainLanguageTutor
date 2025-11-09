@@ -19,6 +19,7 @@ import Vocab from "./pages/Vocab";
 import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Rewards from "./pages/Rewards";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
           <Route path="/roleplay" element={<ProtectedRoute><Roleplay /></ProtectedRoute>} />
           <Route path="/vocab" element={<ProtectedRoute><Vocab /></ProtectedRoute>} />
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
+          <Route path="/rewards" element={<ProtectedRoute><Rewards /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

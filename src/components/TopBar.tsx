@@ -414,7 +414,7 @@ const TopBar = () => {
                     </div>
                     {walletAddress ? (
                       <p className="text-xs text-muted-foreground font-mono truncate">
-                        {walletAddress}
+                        {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
                       </p>
                     ) : (
                       <p className="text-xs text-muted-foreground">
