@@ -25,6 +25,11 @@ const Sponsor = () => {
             />
           </div>
 
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+            Meet Our Sponsor
+          </h1>
+
           {/* Continue Button */}
           <Button
             onClick={() => setSlide(2)}
