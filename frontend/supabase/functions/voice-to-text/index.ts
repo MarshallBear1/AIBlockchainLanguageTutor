@@ -79,36 +79,14 @@ serve(async (req) => {
     formData.append("file", audioBlob, "audio.webm");
     formData.append("model", "whisper-1");
     
-    // Add language parameter to help Whisper focus on the target language + English
-    if (whisperLanguage) {
-      formData.append("language", whisperLanguage);
-    }
-
-    // Enhanced prompt for bilingual language learning
-    // Helps Whisper recognize both the target language and English in the same sentence
-    const languageNames: Record<string, string> = {
-      "es": "Spanish",
-      "fr": "French", 
-      "de": "German",
-      "it": "Italian",
-      "pt": "Portuguese",
-      "ja": "Japanese",
-      "ko": "Korean",
-      "zh": "Chinese",
-    };
+    // NO language parameter - let Whisper auto-detect for better code-switching
+    // This handles mixed-language conversations better (e.g., "I am hardworking" + Spanish)
     
-    const targetLanguageName = whisperLanguage && languageNames[whisperLanguage] ? languageNames[whisperLanguage] : "the target language";
-    
-    // Enhanced prompt with strict noise filtering instructions
-    // Using a focused prompt that helps Whisper understand context
-    const promptText = `${targetLanguageName} language learning. Clear speech only. Student practicing pronunciation. Ignore background noise, music, silence.`;
-    formData.append("prompt", promptText);
+    // Clean, simple prompt - let Whisper do its job
+    formData.append("prompt", "Language learning conversation between student and teacher. Transcribe all spoken words accurately.");
     
     // Temperature 0 = most deterministic, least hallucination
     formData.append("temperature", "0");
-    
-    // Response format - simple text is most reliable
-    formData.append("response_format", "text");
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
