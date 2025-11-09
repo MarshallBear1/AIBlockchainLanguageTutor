@@ -92,11 +92,13 @@ serve(async (req) => {
     formData.append("file", audioBlob, "audio.webm");
     formData.append("model", "whisper-1");
     
-    // NO language parameter - let Whisper auto-detect for better code-switching
-    // This handles mixed-language conversations better (e.g., "I am hardworking" + Spanish)
+    // Set language hint for bilingual detection (target language + English)
+    // Whisper will prioritize this language but still detect English when spoken
+    formData.append("language", targetLanguage);
     
-    // Clean, simple prompt - let Whisper do its job
-    formData.append("prompt", "Language learning conversation between student and teacher. Transcribe all spoken words accurately.");
+    // Enhanced prompt for bilingual language learning context
+    const bilingualPrompt = `Language learning conversation. Student is learning ${targetLanguage}. Transcribe all words accurately, including both ${targetLanguage} and English.`;
+    formData.append("prompt", bilingualPrompt);
     
     // Temperature 0 = most deterministic, least hallucination
     formData.append("temperature", "0");
