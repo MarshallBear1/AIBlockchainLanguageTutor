@@ -405,14 +405,22 @@ const TopBar = () => {
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="end">
               <div className="p-4 space-y-3">
-                <div className="text-center">
+                <div className="text-center space-y-2">
                   <h3 className="font-semibold text-lg flex items-center justify-center gap-2">
                     <Flame className="w-5 h-5 text-orange-500" />
-                    {currentStreak} Day Streak
+                    Your Streak Calendar
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Keep it going! Practice every day.
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-base font-medium text-foreground">
+                      Your streak is {currentStreak} {currentStreak === 1 ? 'day' : 'days'} long! 🎉
+                    </p>
+                    <p className="text-sm font-semibold text-orange-600 dark:text-orange-400">
+                      Daily streak is: {currentStreak}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Keep practicing every day for the chance to earn greater rewards!
+                    </p>
+                  </div>
                 </div>
                 <Calendar
                   mode="multiple"
@@ -426,6 +434,9 @@ const TopBar = () => {
                   }}
                   disabled={(date) => date > new Date()}
                 />
+                <div className="text-center text-xs text-muted-foreground pt-2 border-t">
+                  <p>🟠 Orange days = Your active streak days</p>
+                </div>
               </div>
             </PopoverContent>
           </Popover>
