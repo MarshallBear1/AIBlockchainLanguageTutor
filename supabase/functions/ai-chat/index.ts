@@ -155,9 +155,11 @@ serve(async (req) => {
       ]
     };
     
-    // Get appropriate intro based on lesson or default to first one for the level
+    // Use lesson goal if provided, otherwise use default scenarios for the level
     const introOptions = scenarioIntros[userLevel] || scenarioIntros[1];
-    const scenarioIntro = lessonGoal || introOptions[0];
+    const scenarioIntro = lessonGoal && lessonGoal !== "Conversation" && lessonGoal !== "START_CONVERSATION"
+      ? lessonGoal
+      : introOptions[0];
     
     const openAIKey = Deno.env.get("OPENAI_API_KEY");
     const elevenLabsKey = Deno.env.get("ELEVEN_LABS_API_KEY");
