@@ -450,7 +450,7 @@ const Rewards = () => {
                 <AccordionContent>
                   <p className="text-sm text-muted-foreground">
                     VIBE tokens are distributed on the Polygon network, which offers fast transactions and low fees. 
-                    Make sure your MetaMask wallet is connected to the Polygon network to receive your tokens. 
+                    Make sure your Coinbase Wallet is connected to the Polygon network to receive your tokens. 
                     You can view your transactions on PolygonScan after withdrawal.
                   </p>
                 </AccordionContent>
