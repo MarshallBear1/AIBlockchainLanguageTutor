@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
 import { AvatarMessage } from "@/types/avatar";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -97,9 +97,9 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
     }
   };
 
-  const onMessagePlayed = () => {
+  const onMessagePlayed = useCallback(() => {
     setMessages((messages) => messages.slice(1));
-  };
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) {
