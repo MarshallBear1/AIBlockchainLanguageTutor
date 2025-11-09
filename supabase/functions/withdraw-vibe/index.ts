@@ -9,6 +9,7 @@ const corsHeaders = {
 // ERC-20 ABI (only the transfer function)
 const ERC20_ABI = [
   'function transfer(address to, uint256 amount) returns (bool)',
+  'function balanceOf(address account) view returns (uint256)',
   'function decimals() view returns (uint8)'
 ];
 
@@ -109,37 +110,68 @@ Deno.serve(async (req) => {
         const treasuryPrivateKey = Deno.env.get('TREASURY_PRIVATE_KEY');
         const vibeTokenAddress = Deno.env.get('VIBE_TOKEN_ADDRESS');
 
-        if (rpcUrl && treasuryPrivateKey && vibeTokenAddress) {
-          console.log('[withdraw-vibe] Initiating instant blockchain transfer...');
-          
-          const provider = new ethers.JsonRpcProvider(rpcUrl);
-          const wallet = new ethers.Wallet(treasuryPrivateKey, provider);
-          const tokenContract = new ethers.Contract(vibeTokenAddress, ERC20_ABI, wallet);
-          
-          const decimals = await tokenContract.decimals();
-          const amount = ethers.parseUnits(payoutAmount.toString(), decimals);
-          
-          console.log(`[withdraw-vibe] Sending ${payoutAmount} VIBE to ${profile.wallet_address}`);
-          
-          const tx = await tokenContract.transfer(profile.wallet_address, amount);
-          txHash = tx.hash;
-          finalStatus = 'paid';
-          
-          console.log(`[withdraw-vibe] Transaction sent instantly: ${txHash}`);
-          
-          // Transaction confirmation happens in background
-          tx.wait().then((receipt: any) => {
-            console.log(`[withdraw-vibe] Transaction confirmed in block ${receipt.blockNumber}`);
-          }).catch((error: any) => {
-            console.error('[withdraw-vibe] Transaction confirmation failed:', error);
-          });
-        } else {
-          console.warn('[withdraw-vibe] Missing blockchain env vars, falling back to pending');
-          finalStatus = 'pending';
+        if (!rpcUrl || !treasuryPrivateKey || !vibeTokenAddress) {
+          console.error('[withdraw-vibe] Missing blockchain configuration');
+          throw new Error('Blockchain configuration not set up');
         }
+
+        console.log('[withdraw-vibe] Initiating instant blockchain transfer...');
+        
+        const provider = new ethers.JsonRpcProvider(rpcUrl);
+        const wallet = new ethers.Wallet(treasuryPrivateKey, provider);
+        const tokenContract = new ethers.Contract(vibeTokenAddress, ERC20_ABI, wallet);
+        
+        // Get token decimals
+        const decimals = await tokenContract.decimals();
+        const amount = ethers.parseUnits(payoutAmount.toString(), decimals);
+        
+        // Check treasury balance
+        const treasuryBalance = await tokenContract.balanceOf(wallet.address);
+        console.log(`[withdraw-vibe] Treasury balance: ${ethers.formatUnits(treasuryBalance, decimals)} VIBE`);
+        
+        if (treasuryBalance < amount) {
+          console.error('[withdraw-vibe] Insufficient treasury balance');
+          throw new Error(`Insufficient VIBE in treasury. Need ${payoutAmount} but only have ${ethers.formatUnits(treasuryBalance, decimals)}`);
+        }
+        
+        console.log(`[withdraw-vibe] Sending ${payoutAmount} VIBE to ${profile.wallet_address}`);
+        
+        // Send tokens with proper gas estimation
+        const tx = await tokenContract.transfer(profile.wallet_address, amount, {
+          gasLimit: 100000 // Set reasonable gas limit
+        });
+        
+        txHash = tx.hash;
+        finalStatus = 'paid';
+        
+        console.log(`[withdraw-vibe] ✅ Transaction sent instantly: ${txHash}`);
+        console.log(`[withdraw-vibe] View on PolygonScan: https://polygonscan.com/tx/${txHash}`);
+        
+        // Transaction confirmation happens in background
+        tx.wait().then((receipt: any) => {
+          console.log(`[withdraw-vibe] ✅ Transaction confirmed in block ${receipt.blockNumber}`);
+        }).catch((error: any) => {
+          console.error('[withdraw-vibe] ⚠️ Transaction confirmation failed:', error);
+          // Note: Transaction was still sent, just confirmation failed
+        });
+        
       } catch (error) {
-        console.error('[withdraw-vibe] Blockchain transfer failed:', error);
-        finalStatus = 'failed';
+        console.error('[withdraw-vibe] ❌ Blockchain transfer failed:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        
+        // If blockchain fails, mark as pending so manual processing can occur
+        finalStatus = 'pending';
+        console.log('[withdraw-vibe] Marked as pending for manual processing');
+        
+        // Return error response so user knows what happened
+        return new Response(
+          JSON.stringify({ 
+            error: 'Blockchain transfer failed', 
+            details: errorMessage,
+            message: 'Your withdrawal has been saved and will be processed manually within 24 hours.'
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        );
       }
     }
 
