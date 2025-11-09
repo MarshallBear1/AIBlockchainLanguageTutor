@@ -104,6 +104,7 @@ export type Database = {
           id: string
           last_practice_date: string | null
           levels_completed_in_cycle: number | null
+          name: string | null
           selected_language: string | null
           selected_level: number | null
           streak_days: number | null
@@ -122,6 +123,7 @@ export type Database = {
           id: string
           last_practice_date?: string | null
           levels_completed_in_cycle?: number | null
+          name?: string | null
           selected_language?: string | null
           selected_level?: number | null
           streak_days?: number | null
@@ -140,6 +142,7 @@ export type Database = {
           id?: string
           last_practice_date?: string | null
           levels_completed_in_cycle?: number | null
+          name?: string | null
           selected_language?: string | null
           selected_level?: number | null
           streak_days?: number | null
