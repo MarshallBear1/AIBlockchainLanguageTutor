@@ -316,7 +316,7 @@ const ConversationContent = () => {
     <div className="h-screen fixed inset-0 bg-background flex flex-col overflow-hidden">
       {/* Top Bar */}
       <div className="flex-shrink-0 bg-background border-b border-border p-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Button variant="ghost" onClick={() => navigate("/home")}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
@@ -338,132 +338,136 @@ const ConversationContent = () => {
           <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
-        {/* Chat History Section - Scrollable */}
+        {/* Chat History Section - Scrollable with max-width container */}
         <div 
           ref={chatScrollRef}
-          className="flex-1 overflow-y-auto px-4 py-3 space-y-2"
+          className="flex-1 overflow-y-auto px-4 py-6"
         >
-          {conversationHistory.length === 0 ? (
-            <div className="flex items-center justify-center h-full min-h-[150px]">
-              <p className="text-center text-muted-foreground text-sm">
-                Your conversation will appear here
-              </p>
-            </div>
-          ) : (
-            <>
-              {conversationHistory.map((msg, idx) => (
-                <ConversationBubble
-                  key={idx}
-                  role={msg.role}
-                  text={msg.text}
-                  timestamp={msg.timestamp}
-                />
-              ))}
-              {/* Show transcribing indicator */}
-              {isTranscribing && (
-                <ConversationBubble
-                  role="user"
-                  text="..."
-                  timestamp={new Date()}
-                />
-              )}
-            </>
-          )}
+          <div className="max-w-4xl mx-auto space-y-4">
+            {conversationHistory.length === 0 ? (
+              <div className="flex items-center justify-center h-full min-h-[150px]">
+                <p className="text-center text-muted-foreground text-sm">
+                  Your conversation will appear here
+                </p>
+              </div>
+            ) : (
+              <>
+                {conversationHistory.map((msg, idx) => (
+                  <ConversationBubble
+                    key={idx}
+                    role={msg.role}
+                    text={msg.text}
+                    timestamp={msg.timestamp}
+                  />
+                ))}
+                {/* Show transcribing indicator */}
+                {isTranscribing && (
+                  <ConversationBubble
+                    role="user"
+                    text="..."
+                    timestamp={new Date()}
+                  />
+                )}
+              </>
+            )}
+          </div>
         </div>
       </main>
 
-      {/* Bottom Controls - Fixed at 336px height */}
-      <div className="flex-shrink-0 p-3 space-y-2 border-t border-border bg-background overflow-y-auto" style={{ height: '336px' }}>
-        {/* Text Input - Always Visible */}
-        <div className="flex gap-2">
-          <Input
-            value={textMessage}
-            onChange={(e) => setTextMessage(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
-            placeholder="Type your message..."
-            className="flex-1"
-            disabled={loading || recordingState !== "idle"}
-          />
+      {/* Bottom Controls - Fixed height with max-width container */}
+      <div className="flex-shrink-0 p-4 border-t border-border bg-background overflow-y-auto" style={{ minHeight: '320px' }}>
+        <div className="max-w-4xl mx-auto space-y-3">
+          {/* Text Input - Always Visible */}
+          <div className="flex gap-2">
+            <Input
+              value={textMessage}
+              onChange={(e) => setTextMessage(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
+              placeholder="Type your message..."
+              className="flex-1"
+              disabled={loading || recordingState !== "idle"}
+            />
+            <Button
+              onClick={handleTextSubmit}
+              disabled={!textMessage.trim() || loading || recordingState !== "idle"}
+              size="icon"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Voice Input Button - Push to Talk */}
           <Button
-            onClick={handleTextSubmit}
-            disabled={!textMessage.trim() || loading || recordingState !== "idle"}
-            size="icon"
+            onPointerDown={handleVoiceStart}
+            onPointerUp={handleVoiceEnd}
+            onPointerLeave={handleVoiceEnd}
+            disabled={loading || recordingState === "processing"}
+            size="lg"
+            className={`w-full h-14 transition-all touch-none select-none ${
+              recordingState === "recording"
+                ? "bg-destructive hover:bg-destructive/90 animate-pulse"
+                : ""
+            }`}
           >
-            <Send className="w-4 h-4" />
+            {recordingState === "processing" ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+                Processing...
+              </>
+            ) : recordingState === "recording" ? (
+              <>
+                <Mic className="w-5 h-5 mr-2" />
+                Recording... (Release to send)
+              </>
+            ) : (
+              <>
+                <Mic className="w-5 h-5 mr-2" />
+                Hold to Speak
+              </>
+            )}
           </Button>
-        </div>
 
-        {/* Voice Input Button - Push to Talk */}
-        <Button
-          onPointerDown={handleVoiceStart}
-          onPointerUp={handleVoiceEnd}
-          onPointerLeave={handleVoiceEnd}
-          disabled={loading || recordingState === "processing"}
-          size="lg"
-          className={`w-full h-12 transition-all touch-none select-none ${
-            recordingState === "recording"
-              ? "bg-destructive hover:bg-destructive/90 animate-pulse"
-              : ""
-          }`}
-        >
-          {recordingState === "processing" ? (
-            <>
-              <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-              Processing...
-            </>
-          ) : recordingState === "recording" ? (
-            <>
-              <Mic className="w-5 h-5 mr-2" />
-              Recording... (Release to send)
-            </>
-          ) : (
-            <>
-              <Mic className="w-5 h-5 mr-2" />
-              Hold to Speak
-            </>
-          )}
-        </Button>
+          {/* Status Text */}
+          <div className="text-center text-sm text-muted-foreground py-1">
+            {loading && "Toki is thinking..."}
+            {!loading && recordingState === "idle" && "Type or hold button to speak"}
+            {recordingState === "recording" && "🎤 Listening..."}
+          </div>
 
-        {/* Status Text */}
-        <div className="text-center text-xs text-muted-foreground">
-          {loading && "Toki is thinking..."}
-          {!loading && recordingState === "idle" && "Type or hold button to speak"}
-          {recordingState === "recording" && "🎤 Listening..."}
-        </div>
+          {/* Help & Word Bank */}
+          <div className="flex gap-2">
+            <Button
+              onClick={() => chat("I don't understand what you are saying, please explain it differently", false, lessonScenario, learningGoals)}
+              variant="outline"
+              className="flex-1 gap-2 h-10"
+              size="sm"
+              disabled={loading}
+            >
+              <HelpCircle className="w-4 h-4" />
+              I'm stuck
+            </Button>
 
-        {/* Help & Word Bank */}
-        <div className="flex gap-2">
+            <Button
+              onClick={() => setShowWordBank(true)}
+              variant="outline"
+              className="flex-1 gap-2 h-10"
+              size="sm"
+            >
+              <BookOpen className="w-4 h-4" />
+              Word Bank
+            </Button>
+          </div>
+
+          {/* End Conversation */}
           <Button
-            onClick={() => chat("I don't understand what you are saying, please explain it differently", false, lessonScenario, learningGoals)}
+            onClick={handleEndConversation}
             variant="outline"
-            className="flex-1 gap-1 h-9 text-xs"
-            size="sm"
-            disabled={loading}
+            className="w-full h-10"
+            disabled={isFinalMessage && message !== null}
           >
-            <HelpCircle className="w-3.5 h-3.5" />
-            I'm stuck
-          </Button>
-
-          <Button
-            onClick={() => setShowWordBank(true)}
-            variant="outline"
-            className="flex-1 gap-1 h-9 text-xs"
-            size="sm"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            Word Bank
+            {isFinalMessage && message !== null ? "Toki is finishing..." : "End Conversation"}
           </Button>
         </div>
-
-        {/* End Conversation */}
-        <Button
-          onClick={handleEndConversation}
-          variant="outline"
-          className="w-full h-9 text-sm"
-          disabled={isFinalMessage && message !== null}
-        >
-          {isFinalMessage && message !== null ? "Toki is finishing..." : "End Conversation"}
-        </Button>
       </div>
 
       <HelpSheet open={showHelp} onOpenChange={setShowHelp} />
