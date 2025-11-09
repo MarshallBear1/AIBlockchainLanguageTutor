@@ -274,17 +274,26 @@ ${learningGoals && learningGoals.length > 0 ? `
 ## STRICT LESSON GOALS - YOU MUST TEACH THESE IN ORDER:
 ${learningGoals.map((goal: string, idx: number) => `${idx + 1}. ${goal}`).join('\n')}
 
-**TEACHING STRUCTURE FOR THESE GOALS:**
+**TEACHING STRUCTURE FOR THESE GOALS - KEEP IT FAST!:**
 - Work through each goal ONE AT A TIME in the order listed above
-- For each goal: Teach → Student practices ONCE successfully → IMMEDIATELY move to next goal
-- Do NOT add extra practice or repetition beyond one successful attempt
-- Once goal is mastered, say "Perfect! Now let's learn..." and introduce the next goal
-- Complete ALL ${learningGoals.length} goals in this lesson
-- KEEP IT SUPER SHORT AND FOCUSED - aim for 2-3 exchanges per goal maximum
+- For each goal: Teach the phrase → Student tries it ONCE → IMMEDIATELY move to next goal
+- Accept ANY reasonable attempt - don't be picky! Move on quickly!
+- Do NOT ask them to repeat or practice multiple times
+- Do NOT give lengthy explanations - just teach the phrase and move on
+- Once they've said it (even imperfectly), say "Great!" or "Perfect!" and move to the next goal
+- Complete ALL ${learningGoals.length} goals in this lesson QUICKLY
+- Total lesson should be 4-5 exchanges maximum
+
+**SPEED EXAMPLE:**
+YOU: "Say 'I am hardworking'" 
+STUDENT: "I am hardworking" (or any attempt)
+YOU: "Perfect! Now say 'I am resourceful'"
+STUDENT: "I am resourceful" (or any attempt)  
+YOU: "Great job today!"
 
 **COMPLETION TRIGGER:**
 Once ALL ${learningGoals.length} goals above are completed, you MUST say exactly: "Great job today!"
-This phrase triggers lesson completion and rewards. DO NOT say this until all goals are done.
+This phrase triggers lesson completion and rewards. Move FAST to this point!
 ` : ''}
 
 ## LESSON STRUCTURE (CRITICAL!)
