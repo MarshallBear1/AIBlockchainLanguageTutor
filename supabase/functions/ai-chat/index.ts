@@ -90,7 +90,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, isFirstMessage } = await req.json();
+    const { message, isFirstMessage, lessonGoal } = await req.json();
     
     // Get authenticated user and their profile
     const authHeader = req.headers.get("Authorization");
@@ -141,9 +141,6 @@ serve(async (req) => {
     };
     
     const levelName = levelNames[userLevel] || "Beginner";
-    
-    // Get lesson goal from request if available
-    const lessonGoal = (await req.json()).lessonGoal || "";
     
     // Scenario introductions for first message - level specific
     const scenarioIntros: Record<number, string[]> = {
