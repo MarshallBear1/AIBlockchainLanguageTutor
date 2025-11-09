@@ -294,8 +294,12 @@ const Rewards = () => {
           />
         </div>
 
-        {/* Streak Multiplier Component */}
-        <StreakMultiplier streakDays={streakDays} />
+        {/* Streak Info Text */}
+        <div className="text-center py-3">
+          <p className="text-sm text-muted-foreground">
+            Get a streak of 7 days to have 1.5x rewards
+          </p>
+        </div>
 
         {/* Withdraw Button */}
         <Button
