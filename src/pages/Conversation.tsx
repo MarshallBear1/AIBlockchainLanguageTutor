@@ -434,10 +434,11 @@ const ConversationContent = () => {
         {/* Help & Word Bank */}
         <div className="flex gap-2">
           <Button
-            onClick={() => setShowHelp(true)}
+            onClick={() => chat("I don't understand what you are saying, please explain it differently", false, lessonScenario, learningGoals)}
             variant="outline"
             className="flex-1 gap-1 h-9 text-xs"
             size="sm"
+            disabled={loading}
           >
             <HelpCircle className="w-3.5 h-3.5" />
             I'm stuck
