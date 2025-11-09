@@ -261,47 +261,10 @@ const Rewards = () => {
         </Button>
 
         {/* Wallet Connection - Simplified */}
-        <div className="animate-fade-in space-y-3">
-          {!walletAddress ? (
-            <div className="space-y-3">
-              <Button
-                onClick={() => {
-                  const { connectWallet } = useMetaMask();
-                  connectWallet();
-                }}
-                size="lg"
-                variant="outline"
-                className="w-full h-12"
-              >
-                Connect to MetaMask
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <div>
-                    <p className="text-sm font-semibold">Wallet Connected</p>
-                    <p className="text-xs text-muted-foreground font-mono">
-                      {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const { disconnectWallet } = useMetaMask();
-                    disconnectWallet();
-                  }}
-                >
-                  Disconnect
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+        <WalletConnectionSimplified 
+          walletAddress={walletAddress} 
+          onWalletConnected={loadData}
+        />
 
         {/* Withdrawal History - Collapsible */}
         {rewards.length > 0 && (
