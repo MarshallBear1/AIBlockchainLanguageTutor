@@ -8,6 +8,7 @@ import Welcome from "./pages/Welcome";
 import SelectLanguage from "./pages/SelectLanguage";
 import SelectLevel from "./pages/SelectLevel";
 import EarnWhileLearn from "./pages/EarnWhileLearn";
+import StreakMultiplier from "./pages/StreakMultiplier";
 import Sponsor from "./pages/Sponsor";
 import SelectAvatar from "./pages/SelectAvatar";
 import Setup from "./pages/Setup";
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/select-language" element={<SelectLanguage />} />
           <Route path="/select-level" element={<SelectLevel />} />
           <Route path="/earn-while-learn" element={<EarnWhileLearn />} />
+          <Route path="/streak-multiplier" element={<StreakMultiplier />} />
           <Route path="/sponsor" element={<Sponsor />} />
           <Route path="/select-avatar" element={<SelectAvatar />} />
           <Route path="/setup" element={<Setup />} />

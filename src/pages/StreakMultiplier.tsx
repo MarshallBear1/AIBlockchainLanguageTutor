@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import earnWhileLearnImage from "@/assets/earn-while-learn.png";
+import streakMultiplierImage from "@/assets/streak-multiplier.png";
 
-const EarnWhileLearn = () => {
+const StreakMultiplier = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    navigate("/streak-multiplier");
+    navigate("/sponsor");
   };
 
   return (
@@ -15,43 +15,43 @@ const EarnWhileLearn = () => {
         {/* Image */}
         <div className="flex justify-center">
           <img
-            src={earnWhileLearnImage}
-            alt="Earn while you learn"
-            className="w-64 h-64 object-contain animate-fade-in"
+            src={streakMultiplierImage}
+            alt="Streak multiplier"
+            className="w-80 h-80 object-contain animate-fade-in"
           />
         </div>
 
         {/* Title */}
         <div className="space-y-4">
           <h1 className="text-4xl font-bold text-foreground">
-            Earn while you learn
+            Build your streak
           </h1>
           <p className="text-lg text-muted-foreground">
-            Complete lessons and earn VIBE coins that you can withdraw to your wallet
+            The longer your daily streak, the higher the payout rewards
           </p>
         </div>
 
-        {/* Features */}
+        {/* Streak Info */}
         <div className="space-y-3 text-left bg-card/50 backdrop-blur-sm rounded-xl p-6">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🔥</span>
+            <div>
+              <p className="font-semibold text-foreground">Daily streak</p>
+              <p className="text-sm text-muted-foreground">Practice every day to keep your streak alive</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">📈</span>
+            <div>
+              <p className="font-semibold text-foreground">Multiplier rewards</p>
+              <p className="text-sm text-muted-foreground">1x → 3x → 6x rewards as you progress</p>
+            </div>
+          </div>
           <div className="flex items-start gap-3">
             <span className="text-2xl">🎯</span>
             <div>
-              <p className="font-semibold text-foreground">Complete 5 lessons</p>
-              <p className="text-sm text-muted-foreground">Finish a learning cycle to earn rewards</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">💰</span>
-            <div>
-              <p className="font-semibold text-foreground">Earn VIBE coins</p>
-              <p className="text-sm text-muted-foreground">Get crypto rewards for your progress</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="text-2xl">🔗</span>
-            <div>
-              <p className="font-semibold text-foreground">Withdraw to wallet</p>
-              <p className="text-sm text-muted-foreground">Connect your wallet and cash out anytime</p>
+              <p className="font-semibold text-foreground">30-day goal</p>
+              <p className="text-sm text-muted-foreground">Reach maximum rewards with a 30-day streak</p>
             </div>
           </div>
         </div>
@@ -62,11 +62,11 @@ const EarnWhileLearn = () => {
           className="w-full h-12 text-lg"
           size="lg"
         >
-          Meet Toki, your AI tutor
+          Continue
         </Button>
       </div>
     </div>
   );
 };
 
-export default EarnWhileLearn;
+export default StreakMultiplier;
