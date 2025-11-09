@@ -70,13 +70,15 @@ export const LessonPath = ({ lessons }: LessonPathProps) => {
                       </span>
                     </div>
                     
-                    {/* Vibe Coin Reward Tag */}
-                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-full shadow-sm border border-yellow-300 dark:border-yellow-700">
-                      <Coins className="w-3 h-3 text-yellow-600 dark:text-yellow-500" />
-                      <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
-                        earn 50 vibe
-                      </span>
-                    </div>
+                    {/* Vibe Coin Reward Tag - Only show on unlocked, incomplete lessons */}
+                    {!lesson.locked && !lesson.completed && (
+                      <div className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-full shadow-sm border border-yellow-300 dark:border-yellow-700">
+                        <Coins className="w-3 h-3 text-yellow-600 dark:text-yellow-500" />
+                        <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
+                          Earn 50 VIBE
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
