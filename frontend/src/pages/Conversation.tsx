@@ -153,17 +153,12 @@ const ConversationContent = () => {
   }, [conversationHistory]); // Removed message dependency to avoid infinite loops
 
   const handleEndConversation = async () => {
-    // Check if lesson is actually complete (Toki said "Great job today!")
-    const isLessonComplete = conversationHistory.length > 0 &&
-      conversationHistory[conversationHistory.length - 1].role === "assistant" &&
-      conversationHistory[conversationHistory.length - 1].text.includes("Great job today!");
-
     // Stop any current speech
     stopSpeaking();
 
-    // Mark lesson as complete if this is a lesson conversation AND it's actually complete
+    // Always complete the lesson and award coins when ending conversation
     const currentLessonId = localStorage.getItem("currentLessonId");
-    if (currentLessonId && isLessonComplete) {
+    if (currentLessonId) {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
         // Complete the lesson and get coins earned
@@ -197,7 +192,7 @@ const ConversationContent = () => {
       }
     }
 
-    // If lesson is not complete but they're trying to exit, show warning
+    // If no lesson context, just navigate home
     if (currentLessonId && !isLessonComplete) {
       setShowExitWarning(true);
       return;
