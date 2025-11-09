@@ -1,4 +1,4 @@
-import { MessageCircle, BookOpen, TrendingUp } from "lucide-react";
+import { MessageCircle, BookOpen, TrendingUp, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -10,6 +10,7 @@ const BottomTabBar = () => {
     { icon: MessageCircle, label: "Speak", path: "/home" },
     { icon: BookOpen, label: "Vocab", path: "/vocab" },
     { icon: TrendingUp, label: "Progress", path: "/progress" },
+    { icon: Wallet, label: "Rewards", path: "/rewards" },
   ];
 
   return (
