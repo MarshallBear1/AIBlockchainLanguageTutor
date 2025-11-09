@@ -128,10 +128,18 @@ const TopBar = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const wallet = await getWallet();
-        setVibeCoins(wallet.vibeCoins);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('banked_vibe')
+            .eq('id', user.id)
+            .single();
+          
+          setVibeCoins(profile?.banked_vibe || 0);
+        }
       } catch (error) {
-        console.error('Error loading wallet in TopBar:', error);
+        console.error('Error loading banked VIBE in TopBar:', error);
       }
 
       try {
@@ -180,10 +188,18 @@ const TopBar = () => {
     // Listen for Supabase changes (when coins are added/updated)
     const handleStorageChange = async () => {
       try {
-        const updatedWallet = await getWallet();
-        setVibeCoins(updatedWallet.vibeCoins);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('banked_vibe')
+            .eq('id', user.id)
+            .single();
+          
+          setVibeCoins(profile?.banked_vibe || 0);
+        }
       } catch (error) {
-        console.error('Error updating wallet on storage change:', error);
+        console.error('Error updating banked VIBE on storage change:', error);
       }
 
       try {
@@ -232,10 +248,18 @@ const TopBar = () => {
     // Also check periodically to update from Supabase
     const interval = setInterval(async () => {
       try {
-        const updatedWallet = await getWallet();
-        setVibeCoins(updatedWallet.vibeCoins);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('banked_vibe')
+            .eq('id', user.id)
+            .single();
+          
+          setVibeCoins(profile?.banked_vibe || 0);
+        }
       } catch (error) {
-        console.error('Error updating wallet in interval:', error);
+        console.error('Error updating banked VIBE in interval:', error);
       }
 
       try {

@@ -703,76 +703,40 @@ export async function completeLesson(lessonId: number, languageCode?: string): P
       return defaultResult;
     }
 
-    // Update streak and get coins earned
-    let coinsEarned = 0;
+    // Update streak
+    let coinsEarned = 50; // Fixed amount shown to user
     try {
       const { updateStreak } = await import('@/utils/streakManager');
-      const streakResult = await updateStreak();
-      coinsEarned = streakResult.coinsEarned;
+      await updateStreak();
     } catch (error) {
       console.error('Error updating streak in completeLesson:', error);
-      // Continue with default coins
-      coinsEarned = 50;
     }
 
-    // Update VibeCoin balance in Supabase
+    // Add VIBE to banked_vibe via edge function
     try {
-      const { addCoins } = await import('@/utils/wallet');
-      await addCoins(coinsEarned);
-      console.log(`✅ Lesson ${lessonId} completed! Awarded ${coinsEarned} coins.`);
-    } catch (error) {
-      console.error('❌ Error adding coins in completeLesson:', error);
-      // Still return success for lesson completion, but log the coin error
-      return { success: true, coinsEarned: 0 }; // Return 0 coins if save failed
-    }
-
-    // Increment levels_completed_in_cycle for crypto payout tracking
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('levels_completed_in_cycle')
-        .eq('id', user.id)
-        .single();
-
-      const currentCount = profile?.levels_completed_in_cycle || 0;
-
-      const { error: cycleError } = await supabase
-        .from('profiles')
-        .update({ levels_completed_in_cycle: currentCount + 1 })
-        .eq('id', user.id);
-
-      if (cycleError) {
-        console.error('Error updating levels_completed_in_cycle:', cycleError);
-      } else {
-        // Check if user is eligible for payout (after completing 1 lesson)
-        try {
-          const { data: authData } = await supabase.auth.getSession();
-          if (authData?.session?.access_token) {
-            const response = await fetch(
-              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-cycle-completion`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${authData.session.access_token}`,
-                },
-                body: JSON.stringify({ userId: user.id }),
-              }
-            );
-
-            if (response.ok) {
-              const result = await response.json();
-              console.log('Cycle check result:', result);
-            }
+      const { data: authData } = await supabase.auth.getSession();
+      if (authData?.session?.access_token) {
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-cycle-completion`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authData.session.access_token}`,
+            },
+            body: JSON.stringify({ userId: user.id }),
           }
-        } catch (checkError) {
-          console.error('Error checking cycle completion:', checkError);
-          // Don't fail the lesson completion if cycle check fails
+        );
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`✅ Lesson ${lessonId} completed! ${result.message}`);
+        } else {
+          console.error('❌ Error banking VIBE:', await response.text());
         }
       }
     } catch (error) {
-      console.error('Error incrementing cycle counter:', error);
-      // Continue even if cycle update fails
+      console.error('❌ Error calling check-cycle-completion:', error);
     }
 
     return { success: true, coinsEarned };
