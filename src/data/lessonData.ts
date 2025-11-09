@@ -675,7 +675,7 @@ export async function getUnitsWithProgress(userLevel?: number): Promise<Unit[]> 
     lessons: unit.lessons.map((lesson) => ({
       ...lesson,
       completed: progress.completedLessons.includes(lesson.id),
-      locked: lesson.id > progress.currentLesson,
+      locked: false, // All lessons are now unlocked
     })),
   }));
 }
