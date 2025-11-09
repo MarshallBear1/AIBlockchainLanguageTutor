@@ -48,7 +48,7 @@ const Splash = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
-      <TokiMascot state="flicker" size="lg" />
+      <TokiMascot state="idle" size="lg" />
     </div>
   );
 };
