@@ -82,8 +82,8 @@ const SelectLevel = () => {
           console.error("Unexpected error getting user:", error);
         });
 
-      // Navigate straight to first conversation
-      navigate("/conversation?lesson=first");
+      // Navigate to earn while learn page
+      navigate("/earn-while-learn");
     } catch (error) {
       console.error("Setup error:", error);
       toast({
@@ -92,7 +92,7 @@ const SelectLevel = () => {
         variant: "destructive",
       });
       // Navigate anyway
-      navigate("/conversation?lesson=first");
+      navigate("/earn-while-learn");
     }
   };
 
