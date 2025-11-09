@@ -340,38 +340,38 @@ const TopBar = () => {
     <div className="sticky top-0 z-10 bg-background border-b border-border p-4">
       <div className="flex items-center justify-between max-w-2xl mx-auto">
         <div className="flex items-center gap-2">
-          {/* Home Button */}
+          {/* Home Button - Bubble Style */}
           <Button 
-            variant="ghost" 
+            variant="outline" 
             size="icon"
-            className="rounded-full"
+            className="rounded-full h-10 w-10 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:bg-primary/20 hover:border-primary/30 transition-all"
             onClick={() => navigate('/home')}
           >
-            <Home className="w-5 h-5" />
+            <Home className="w-5 h-5 text-primary" />
           </Button>
 
           {/* Language Selector */}
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded-full px-3 gap-2">
-                <img src={languageFlags[selectedLanguage]} alt="flag" className="w-5 h-5 object-contain rounded ring-2 ring-black/30" />
+              <Button variant="outline" className="rounded-full px-3 gap-2 h-10">
+                <img src={languageFlags[selectedLanguage]} alt="flag" className="w-5 h-5 object-cover rounded-sm" />
                 <ChevronDown className="w-4 h-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64" align="start">
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-sm mb-2">Switch Language</h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <h3 className="font-semibold text-sm mb-3">Switch Language</h3>
+                  <div className="flex flex-col gap-2">
                     {Object.entries(languageFlags).map(([code, flag]) => (
                       <Button
                         key={code}
                         variant={selectedLanguage === code ? "default" : "outline"}
-                        className="justify-start gap-2"
+                        className="justify-start gap-3 h-10"
                         onClick={() => handleLanguageChange(code)}
                       >
-                        <img src={flag} alt={code} className="w-4 h-4 object-contain rounded" />
-                        <span className="text-xs">{languageNames[code]}</span>
+                        <img src={flag} alt={code} className="w-6 h-6 object-cover rounded-sm" />
+                        <span className="text-sm">{languageNames[code]}</span>
                       </Button>
                     ))}
                   </div>
@@ -392,7 +392,7 @@ const TopBar = () => {
           {/* Level/Difficulty Selector */}
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="rounded-full px-3 gap-2">
+              <Button variant="outline" className="rounded-full px-3 gap-2 h-10">
                 <span className="font-semibold text-sm">{levelNames[selectedLevel]}</span>
                 <ChevronDown className="w-4 h-4" />
               </Button>
@@ -401,12 +401,12 @@ const TopBar = () => {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-sm mb-2">Switch Level</h3>
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="flex flex-col gap-2">
                     {Object.entries(levelNames).map(([level, name]) => (
                       <Button
                         key={level}
                         variant={selectedLevel === level ? "default" : "outline"}
-                        className="justify-start text-xs"
+                        className="justify-start text-sm h-10"
                         onClick={() => handleLevelChange(level)}
                       >
                         {name}
