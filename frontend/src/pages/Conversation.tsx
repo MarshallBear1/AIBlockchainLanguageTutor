@@ -357,13 +357,13 @@ const ConversationContent = () => {
                     timestamp={msg.timestamp}
                   />
                 ))}
-                {/* Show transcribing indicator */}
+                {/* Show transcribing indicator with animated typing */}
                 {isTranscribing && (
-                  <ConversationBubble
-                    role="user"
-                    text="..."
-                    timestamp={new Date()}
-                  />
+                  <div className="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div className="max-w-[75%] rounded-2xl px-5 py-3 shadow-sm bg-primary text-primary-foreground rounded-br-sm">
+                      <TypingIndicator />
+                    </div>
+                  </div>
                 )}
               </>
             )}
