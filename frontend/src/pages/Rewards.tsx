@@ -392,14 +392,12 @@ const Rewards = () => {
                       the higher your multiplier:
                     </p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>1-6 days: 1.0x (no bonus)</li>
-                      <li>7-13 days: 1.5x</li>
-                      <li>14-29 days: 2.0x</li>
-                      <li>30-59 days: 2.5x</li>
-                      <li>60+ days: 3.0x</li>
+                      <li>1-2 days: 1.0x (no bonus)</li>
+                      <li>3-5 days: 1.2x</li>
+                      <li>6+ days: 1.5x (maximum)</li>
                     </ul>
                     <p>
-                      For example, if you have 100 VIBE earned and a 7-day streak (1.5x multiplier), 
+                      For example, if you have 100 VIBE earned and a 6-day streak (1.5x multiplier), 
                       your potential payout is 150 VIBE!
                     </p>
                   </div>
