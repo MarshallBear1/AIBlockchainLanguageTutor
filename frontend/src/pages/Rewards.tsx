@@ -403,16 +403,14 @@ const Rewards = () => {
                 <AccordionContent>
                   <div className="text-sm text-muted-foreground space-y-2">
                     <p>
-                      The Streak Multiplier increases your payout when you practice daily. The longer your streak, 
-                      the higher your multiplier:
+                      The Streak Multiplier increases your payout when you practice daily consecutively:
                     </p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>1-2 days: 1.0x (no bonus)</li>
-                      <li>3-5 days: 1.2x</li>
-                      <li>6+ days: 1.5x (maximum)</li>
+                      <li>1-6 days: 1.0x (no bonus)</li>
+                      <li>7+ days: 1.5x bonus!</li>
                     </ul>
                     <p>
-                      For example, if you have 100 VIBE earned and a 6-day streak (1.5x multiplier), 
+                      For example, if you have 100 VIBE earned and a 7-day streak (1.5x multiplier), 
                       your potential payout is 150 VIBE!
                     </p>
                   </div>
