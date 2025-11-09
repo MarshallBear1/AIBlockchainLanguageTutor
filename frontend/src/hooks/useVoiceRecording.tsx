@@ -28,20 +28,38 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
       }
 
       setError(null);
+      
+      // Enhanced audio constraints for better quality and noise suppression
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
+          echoCancellation: true,          // Remove echo
+          noiseSuppression: true,          // Built-in noise suppression
+          autoGainControl: true,           // Normalize volume levels
+          sampleRate: 48000,               // Higher sample rate for better quality
+          channelCount: 1,                 // Mono audio (smaller size, sufficient for speech)
+          // @ts-ignore - Advanced constraints (browser support varies)
+          voiceIsolation: true,            // iOS Safari feature for voice isolation
+          googEchoCancellation: true,      // Chrome-specific echo cancellation
+          googAutoGainControl: true,       // Chrome-specific auto gain
+          googNoiseSuppression: true,      // Chrome-specific noise suppression
+          googHighpassFilter: true,        // Chrome-specific high-pass filter
+          googTypingNoiseDetection: true,  // Chrome-specific keyboard noise detection
         }
       });
 
-      // Determine the best supported MIME type
-      const mimeType = MediaRecorder.isTypeSupported("audio/webm")
-        ? "audio/webm"
-        : "audio/mp4";
+      // Determine the best supported MIME type with better codec
+      let mimeType = "audio/webm";
+      if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+        mimeType = "audio/webm;codecs=opus"; // Opus codec is best for speech
+      } else if (MediaRecorder.isTypeSupported("audio/mp4")) {
+        mimeType = "audio/mp4";
+      }
 
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      const mediaRecorder = new MediaRecorder(stream, { 
+        mimeType,
+        audioBitsPerSecond: 128000, // 128kbps - good quality for speech
+      });
+      
       audioChunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
@@ -54,6 +72,8 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
       mediaRecorderRef.current = mediaRecorder;
       recordingStartTimeRef.current = Date.now();
       setState("recording");
+      
+      console.log(`Recording started with ${mimeType} at 128kbps with advanced noise suppression`);
       return true;
     } catch (err) {
       console.error("Error starting recording:", err);
