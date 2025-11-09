@@ -30,7 +30,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import vibeconMascot from "@/assets/vibecon-mascot.png";
-import { useCoinbaseWallet } from "@/hooks/useCoinbaseWallet";
+import { useMetaMask } from "@/hooks/useMetaMask";
 import { StreakMultiplier } from "@/components/StreakMultiplier";
 
 interface Reward {
