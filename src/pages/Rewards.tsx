@@ -185,12 +185,10 @@ const Rewards = () => {
           <p className="text-muted-foreground">Keep your streak to multiply your rewards!</p>
         </div>
 
-        {/* Wallet Connection - Top Priority */}
-        {!walletAddress && (
-          <div className="animate-fade-in">
-            <WalletConnect onWalletConnected={loadData} />
-          </div>
-        )}
+        {/* Wallet Connection - Always visible */}
+        <div className="animate-fade-in">
+          <WalletConnect onWalletConnected={loadData} />
+        </div>
 
         {/* Main Stats */}
         <div className="space-y-3">
