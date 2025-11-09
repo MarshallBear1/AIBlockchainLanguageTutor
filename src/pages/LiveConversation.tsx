@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { RealtimeChat } from "@/utils/RealtimeAudio";
 import { AvatarCanvas } from "@/components/avatar/AvatarCanvas";
+import { lipsyncManager } from "@/lib/lipsyncManager";
 
 const LiveConversationPage = () => {
   const navigate = useNavigate();
@@ -42,10 +43,15 @@ const LiveConversationPage = () => {
 
       chatRef.current = new RealtimeChat(handleMessage, language, level);
       await chatRef.current.init();
-      
+
+      // Connect realtime audio to lipsync manager for mouth movements
+      const audioElement = chatRef.current.getAudioElement();
+      lipsyncManager.connectAudio(audioElement);
+      console.log("Connected realtime audio to lipsync manager");
+
       setIsConnected(true);
       setIsConnecting(false);
-      
+
       toast({
         title: "Connected!",
         description: "Start speaking to practice",

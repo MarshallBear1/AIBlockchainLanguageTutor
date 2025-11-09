@@ -114,12 +114,16 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
     lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
     lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
 
-    // Handle lip sync with wawa-lipsync
-    if (audio && audioRef.current && !audioRef.current.paused) {
-      // Process audio for viseme detection
-      lipsyncManager.processAudio();
-      const currentViseme = lipsyncManager.viseme;
+    // Handle lip sync with wawa-lipsync (works for both regular and realtime audio)
+    // Process audio for viseme detection - this works globally for any audio connected to lipsyncManager
+    lipsyncManager.processAudio();
+    const currentViseme = lipsyncManager.viseme;
 
+    // Check if we have active audio (local or realtime)
+    const hasActiveAudio = (audio && audioRef.current && !audioRef.current.paused) ||
+                          (lipsyncManager as any).audioElement; // Realtime audio
+
+    if (hasActiveAudio && currentViseme) {
       // Apply current viseme
       lerpMorphTarget(currentViseme, 1, 0.2);
 

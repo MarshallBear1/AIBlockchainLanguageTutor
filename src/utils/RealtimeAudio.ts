@@ -75,6 +75,11 @@ export class RealtimeChat {
     this.audioEl.autoplay = true;
   }
 
+  // Get audio element for lipsync connection
+  getAudioElement(): HTMLAudioElement {
+    return this.audioEl;
+  }
+
   async init() {
     try {
       console.log("Requesting ephemeral token...");
