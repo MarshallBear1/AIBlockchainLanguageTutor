@@ -272,6 +272,7 @@ ${learningGoals.map((goal: string, idx: number) => `${idx + 1}. ${goal}`).join('
 - Do NOT add extra practice or repetition beyond one successful attempt
 - Once goal is mastered, say "Perfect! Now let's learn..." and introduce the next goal
 - Complete ALL ${learningGoals.length} goals in this lesson
+- KEEP IT SUPER SHORT AND FOCUSED - aim for 2-3 exchanges per goal maximum
 
 **COMPLETION TRIGGER:**
 Once ALL ${learningGoals.length} goals above are completed, you MUST say exactly: "Great job today!"
