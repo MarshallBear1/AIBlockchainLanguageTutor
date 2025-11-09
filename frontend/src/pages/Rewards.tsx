@@ -77,7 +77,7 @@ const WalletConnectionSimplified = ({
           variant="outline"
           className="w-full h-12"
         >
-          {isConnecting ? 'Connecting...' : 'Connect to MetaMask'}
+          {isConnecting ? 'Connecting...' : 'Connect to Coinbase'}
         </Button>
       ) : (
         <div className="flex items-center justify-between p-4 bg-secondary/50 rounded-lg">
