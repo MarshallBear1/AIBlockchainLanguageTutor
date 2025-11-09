@@ -36,6 +36,7 @@ const ConversationContent = () => {
   const [coinsEarned, setCoinsEarned] = useState(0);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showExitWarning, setShowExitWarning] = useState(false);
+  const [isFinalMessage, setIsFinalMessage] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   
   // Avatar chat context
@@ -55,6 +56,7 @@ const ConversationContent = () => {
       return {
         goal: localStorage.getItem("lessonGoal") || "Custom conversation",
         scenario: localStorage.getItem("lessonGoal") || "Custom conversation",
+        learningGoals: undefined,
       };
     }
 
@@ -67,6 +69,7 @@ const ConversationContent = () => {
           return {
             goal: lesson.title,
             scenario: lesson.scenario,
+            learningGoals: lesson.learningGoals,
           };
         }
       }
@@ -75,19 +78,21 @@ const ConversationContent = () => {
     return {
       goal: "Conversation",
       scenario: "Have a natural conversation practice",
+      learningGoals: undefined,
     };
   };
 
   const lessonInfo = getLessonInfo();
   const lessonGoal = lessonInfo.goal;
   const lessonScenario = lessonInfo.scenario;
+  const learningGoals = lessonInfo.learningGoals;
 
   // Auto-start conversation with GEM speaking first
   useEffect(() => {
     if (isFirstLoad) {
       setIsFirstLoad(false);
-      // Trigger AI to speak first with lesson scenario
-      chat("START_CONVERSATION", true, lessonScenario);
+      // Trigger AI to speak first with lesson scenario and learning goals
+      chat("START_CONVERSATION", true, lessonScenario, learningGoals);
     }
   }, [isFirstLoad]); // Only run once on mount
 
@@ -109,21 +114,24 @@ const ConversationContent = () => {
     }
   }, [recordingError, toast]);
 
-  // Auto-detect lesson completion when GEM says "Great job today!" AND finishes speaking
+  // Detect when GEM says "Great job today!" to mark as final message
   useEffect(() => {
-    if (conversationHistory.length > 0 && message === null) {
+    if (conversationHistory.length > 0) {
       const lastMessage = conversationHistory[conversationHistory.length - 1];
-
+      
       // Check if GEM's last message contains the completion phrase
-      // Only trigger when avatar has finished speaking all messages (message === null)
       if (
         lastMessage.role === "assistant" &&
         lastMessage.text.includes("Great job today!")
       ) {
-        // Trigger lesson completion after a short delay to let them read it
-        setTimeout(() => {
-          handleEndConversation();
-        }, 3000);
+        setIsFinalMessage(true);
+        
+        // Auto-trigger completion only after avatar finishes speaking
+        if (message === null) {
+          setTimeout(() => {
+            handleEndConversation();
+          }, 2000);
+        }
       }
     }
   }, [conversationHistory, message]);
@@ -228,8 +236,8 @@ const ConversationContent = () => {
 
           const transcribedText = data?.text;
           if (transcribedText && transcribedText.trim()) {
-            // Send to AI chat with lesson scenario
-            await chat(transcribedText, false, lessonScenario);
+            // Send to AI chat with lesson scenario and learning goals
+            await chat(transcribedText, false, lessonScenario, learningGoals);
           } else {
             toast({
               title: "No Speech Detected",
@@ -252,7 +260,7 @@ const ConversationContent = () => {
     if (!textMessage.trim()) return;
 
     try {
-      await chat(textMessage, false, lessonScenario);
+      await chat(textMessage, false, lessonScenario, learningGoals);
       setTextMessage("");
     } catch (err) {
       console.error("Text chat error:", err);
@@ -401,8 +409,9 @@ const ConversationContent = () => {
           onClick={handleEndConversation}
           variant="outline"
           className="w-full h-9 text-sm"
+          disabled={isFinalMessage && message !== null}
         >
-          End Conversation
+          {isFinalMessage && message !== null ? "GEM is finishing..." : "End Conversation"}
         </Button>
       </div>
 

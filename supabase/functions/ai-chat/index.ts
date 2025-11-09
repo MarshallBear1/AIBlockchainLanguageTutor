@@ -64,7 +64,7 @@ serve(async (req) => {
   }
 
   try {
-    const { message, isFirstMessage, lessonGoal, conversationHistory } = await req.json();
+    const { message, isFirstMessage, lessonGoal, learningGoals, conversationHistory } = await req.json();
     
     // Get authenticated user and their profile
     const authHeader = req.headers.get("Authorization");
@@ -219,6 +219,22 @@ Continue the roleplay naturally. Stay in character.
 ## Lesson Context
 - Scenario: ${scenarioIntro}
 - Your roleplay role: Stay in character for this scenario
+
+${learningGoals && learningGoals.length > 0 ? `
+## STRICT LESSON GOALS - YOU MUST TEACH THESE IN ORDER:
+${learningGoals.map((goal: string, idx: number) => `${idx + 1}. ${goal}`).join('\n')}
+
+**TEACHING STRUCTURE FOR THESE GOALS:**
+- Work through each goal ONE AT A TIME in the order listed above
+- For each goal: Teach → Student practices ONCE successfully → IMMEDIATELY move to next goal
+- Do NOT add extra practice or repetition beyond one successful attempt
+- Once goal is mastered, say "Perfect! Now let's learn..." and introduce the next goal
+- Complete ALL ${learningGoals.length} goals in this lesson
+
+**COMPLETION TRIGGER:**
+Once ALL ${learningGoals.length} goals above are completed, you MUST say exactly: "Great job today!"
+This phrase triggers lesson completion and rewards. DO NOT say this until all goals are done.
+` : ''}
 
 ## LESSON STRUCTURE (CRITICAL!)
 

@@ -8,6 +8,7 @@ export interface Lesson {
   emoji: string;
   completed: boolean;
   locked: boolean;
+  learningGoals?: string[]; // Specific goals for the lesson
 }
 
 export interface Unit {
@@ -37,6 +38,12 @@ export const units: Unit[] = [
         emoji: "👋",
         completed: false,
         locked: false,
+        learningGoals: [
+          "Student can say 'Me llamo [their name]' correctly",
+          "Student understands '¿Cómo te llamas?' when asked",
+          "Student can ask someone else '¿Cómo te llamas?'",
+          "Student can have a complete name exchange conversation"
+        ],
       },
       {
         id: 2,
@@ -48,6 +55,12 @@ export const units: Unit[] = [
         emoji: "🌅",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can pronounce 'Buenos días' correctly",
+          "Student knows when to use 'Buenos días' (morning time)",
+          "Student can greet someone with 'Buenos días' naturally",
+          "Student understands 'Buenos días' when greeted"
+        ],
       },
       {
         id: 3,
@@ -59,6 +72,12 @@ export const units: Unit[] = [
         emoji: "🌆",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Buenas tardes' correctly",
+          "Student can say 'Buenas noches' correctly",
+          "Student knows when to use 'Buenas tardes' vs 'Buenas noches'",
+          "Student can greet appropriately at different times of day"
+        ],
       },
       {
         id: 4,
@@ -70,6 +89,12 @@ export const units: Unit[] = [
         emoji: "😊",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can pronounce '¿Cómo estás?' correctly",
+          "Student understands the question when asked",
+          "Student can use it naturally in conversation",
+          "Student knows when to ask '¿Cómo estás?'"
+        ],
       },
       {
         id: 5,
@@ -81,6 +106,12 @@ export const units: Unit[] = [
         emoji: "💭",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Bien, gracias' correctly",
+          "Student can say 'Regular' and 'Mal'",
+          "Student knows which response matches their feeling",
+          "Student can respond naturally to '¿Cómo estás?'"
+        ],
       },
     ],
   },
@@ -100,6 +131,12 @@ export const units: Unit[] = [
         emoji: "🌍",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Soy de [their country/city]' correctly",
+          "Student understands '¿De dónde eres?' when asked",
+          "Student can ask someone '¿De dónde eres?'",
+          "Student can have a conversation about origins"
+        ],
       },
       {
         id: 7,
@@ -111,6 +148,12 @@ export const units: Unit[] = [
         emoji: "🙏",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Sí' and 'No' correctly",
+          "Student can say 'Por favor' and use it appropriately",
+          "Student can say 'Gracias' and 'De nada'",
+          "Student uses polite words naturally in conversation"
+        ],
       },
       {
         id: 8,
@@ -122,6 +165,12 @@ export const units: Unit[] = [
         emoji: "🤝",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Mucho gusto' correctly",
+          "Student understands 'Encantado/a' and gender usage",
+          "Student can respond to 'Mucho gusto' appropriately",
+          "Student uses these phrases naturally when meeting someone"
+        ],
       },
       {
         id: 9,
@@ -133,6 +182,12 @@ export const units: Unit[] = [
         emoji: "👋",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can say 'Adiós' correctly",
+          "Student can say 'Hasta luego' and 'Hasta mañana'",
+          "Student knows when to use each goodbye phrase",
+          "Student can end conversations appropriately"
+        ],
       },
       {
         id: 10,
@@ -144,6 +199,12 @@ export const units: Unit[] = [
         emoji: "⭐",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can greet someone appropriately",
+          "Student can introduce themselves with name and origin",
+          "Student can ask basic questions about the other person",
+          "Student can say goodbye naturally"
+        ],
       },
     ],
   },

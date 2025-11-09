@@ -9,7 +9,7 @@ interface ConversationMessage {
 }
 
 interface AvatarChatContextType {
-  chat: (message: string, isFirstMessage?: boolean, lessonGoal?: string) => Promise<void>;
+  chat: (message: string, isFirstMessage?: boolean, lessonGoal?: string, learningGoals?: string[]) => Promise<void>;
   message: AvatarMessage | null;
   onMessagePlayed: () => void;
   stopSpeaking: () => void;
@@ -32,7 +32,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
   const [cameraZoomed, setCameraZoomed] = useState(true);
   const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
 
-  const chat = async (userMessage: string, isFirstMessage: boolean = false, lessonGoal?: string) => {
+  const chat = async (userMessage: string, isFirstMessage: boolean = false, lessonGoal?: string, learningGoals?: string[]) => {
     setLoading(true);
 
     // Only add user message to history if it's not the auto-triggered first message
@@ -53,6 +53,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
           message: userMessage,
           isFirstMessage,
           lessonGoal: lessonGoal,
+          learningGoals: learningGoals,
           conversationHistory: conversationHistory,
         },
         headers: {
