@@ -23,7 +23,6 @@ import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
 import { completeLesson, units } from "@/data/lessonData";
 import { RewardScreen } from "@/components/RewardScreen";
-import { awardLessonCompletion } from "@/utils/wallet";
 
 const ConversationContent = () => {
   const navigate = useNavigate();
@@ -150,16 +149,16 @@ const ConversationContent = () => {
     if (currentLessonId && isLessonComplete) {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
-        // Complete the lesson
-        await completeLesson(lessonNum);
-
-        // Award coins
-        const wallet = awardLessonCompletion();
-        setCoinsEarned(50); // 50 coins per lesson
-
-        // Show reward screen
-        setShowReward(true);
-        return;
+        // Complete the lesson and get coins earned
+        const { success, coinsEarned } = await completeLesson(lessonNum);
+        
+        if (success) {
+          setCoinsEarned(coinsEarned);
+          
+          // Show reward screen
+          setShowReward(true);
+          return;
+        }
       }
     }
 

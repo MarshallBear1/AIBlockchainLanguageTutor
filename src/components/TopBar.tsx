@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/useAuth";
 import { getWallet } from "@/utils/wallet";
+import { getStreak } from "@/utils/streakManager";
 import { useNavigate } from "react-router-dom";
 import spanishFlag from "@/assets/flags/spanish-flag.png";
 import frenchFlag from "@/assets/flags/french-flag.png";
@@ -68,25 +69,36 @@ const TopBar = () => {
 
   // Load wallet balance and streak on mount and whenever component re-renders
   useEffect(() => {
-    const wallet = getWallet();
-    setVibeCoins(wallet.vibeCoins);
-    setCurrentStreak(wallet.currentStreak);
+    const loadData = async () => {
+      const wallet = getWallet();
+      setVibeCoins(wallet.vibeCoins);
+      
+      // Load streak from database
+      const streak = await getStreak();
+      setCurrentStreak(streak);
+    };
+
+    loadData();
 
     // Listen for storage changes (when coins are added in other tabs/windows)
-    const handleStorageChange = () => {
+    const handleStorageChange = async () => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
-      setCurrentStreak(updatedWallet.currentStreak);
+      
+      const streak = await getStreak();
+      setCurrentStreak(streak);
     };
 
     window.addEventListener("storage", handleStorageChange);
 
     // Also check periodically in same tab
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
-      setCurrentStreak(updatedWallet.currentStreak);
-    }, 1000);
+      
+      const streak = await getStreak();
+      setCurrentStreak(streak);
+    }, 2000);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
@@ -137,9 +149,10 @@ const TopBar = () => {
 
         <div className="flex items-center gap-2">
           {/* Streak */}
-          <div className="text-sm font-medium text-muted-foreground">
-            day {currentStreak}
-          </div>
+          <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 border-orange-300 dark:border-orange-700">
+            <Flame className="w-5 h-5 text-orange-500 dark:text-orange-400" />
+            <span className="font-semibold text-orange-700 dark:text-orange-300">{currentStreak}</span>
+          </Button>
 
           {/* Vibe Coins */}
           <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">

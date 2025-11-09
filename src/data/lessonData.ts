@@ -626,11 +626,12 @@ export async function getUserProgress(): Promise<{
 }
 
 // Helper function to save lesson completion to database
-export async function completeLesson(lessonId: number): Promise<boolean> {
+export async function completeLesson(lessonId: number): Promise<{ success: boolean; coinsEarned: number }> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
+    if (!user) return { success: false, coinsEarned: 0 };
 
+    // Save lesson progress
     const { error } = await supabase
       .from('lesson_progress')
       .upsert({ 
@@ -643,13 +644,21 @@ export async function completeLesson(lessonId: number): Promise<boolean> {
 
     if (error) {
       console.error('Error saving progress:', error);
-      return false;
+      return { success: false, coinsEarned: 0 };
     }
 
-    return true;
+    // Update streak and get coins earned
+    const { updateStreak } = await import('@/utils/streakManager');
+    const { coinsEarned } = await updateStreak();
+    
+    // Update VibeCoin balance in localStorage
+    const { addCoins } = await import('@/utils/wallet');
+    addCoins(coinsEarned);
+
+    return { success: true, coinsEarned };
   } catch (error) {
     console.error('Error in completeLesson:', error);
-    return false;
+    return { success: false, coinsEarned: 0 };
   }
 }
 
