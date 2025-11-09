@@ -72,15 +72,22 @@ const TopBar = () => {
 
     // Update Supabase profile
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("Error fetching user for language change:", userError);
+      } else if (user) {
+        const { error: updateError } = await supabase
           .from("profiles")
           .update({ selected_language: langCode })
           .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Error updating language in database:", updateError);
+        }
       }
     } catch (error) {
-      console.error("Error updating language in Supabase:", error);
+      console.error("Unexpected error updating language:", error);
     }
 
     setOpen(false);
@@ -94,15 +101,22 @@ const TopBar = () => {
 
     // Update Supabase profile
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("Error fetching user for level change:", userError);
+      } else if (user) {
+        const { error: updateError } = await supabase
           .from("profiles")
           .update({ selected_level: parseInt(level) })
           .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Error updating level in database:", updateError);
+        }
       }
     } catch (error) {
-      console.error("Error updating level in Supabase:", error);
+      console.error("Unexpected error updating level:", error);
     }
 
     setOpen(false);
@@ -117,35 +131,56 @@ const TopBar = () => {
   // Load wallet balance and streak on mount and whenever component re-renders
   useEffect(() => {
     const loadData = async () => {
-      const wallet = await getWallet();
-      setVibeCoins(wallet.vibeCoins);
+      try {
+        const wallet = await getWallet();
+        setVibeCoins(wallet.vibeCoins);
+      } catch (error) {
+        console.error('Error loading wallet in TopBar:', error);
+      }
 
-      // Load streak from database
-      const streak = await getStreak();
-      setCurrentStreak(streak);
+      try {
+        const streak = await getStreak();
+        setCurrentStreak(streak);
+      } catch (error) {
+        console.error('Error loading streak in TopBar:', error);
+      }
 
-      // Load all profile data including crypto fields
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile) {
-          if (profile.last_practice_date) {
-            setLastPracticeDate(new Date(profile.last_practice_date));
-          }
-          if (profile.streak_start_date) {
-            setStreakStartDate(new Date(profile.streak_start_date));
-          }
-          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
-          if (profile.current_cycle_start) {
-            setCycleStartDate(new Date(profile.current_cycle_start));
-          }
-          setWalletAddress(profile.wallet_address);
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError) {
+          console.error('Error fetching user in TopBar:', userError);
+          return;
         }
+
+        if (user) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Error fetching profile data in TopBar:', profileError);
+            return;
+          }
+
+          if (profile) {
+            if (profile.last_practice_date) {
+              setLastPracticeDate(new Date(profile.last_practice_date));
+            }
+            if (profile.streak_start_date) {
+              setStreakStartDate(new Date(profile.streak_start_date));
+            }
+            setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+            if (profile.current_cycle_start) {
+              setCycleStartDate(new Date(profile.current_cycle_start));
+            }
+            setWalletAddress(profile.wallet_address);
+          }
+        }
+      } catch (error) {
+        console.error('Unexpected error loading profile data in TopBar:', error);
       }
     };
 
@@ -153,33 +188,56 @@ const TopBar = () => {
 
     // Listen for Supabase changes (when coins are added/updated)
     const handleStorageChange = async () => {
-      const updatedWallet = await getWallet();
-      setVibeCoins(updatedWallet.vibeCoins);
+      try {
+        const updatedWallet = await getWallet();
+        setVibeCoins(updatedWallet.vibeCoins);
+      } catch (error) {
+        console.error('Error updating wallet on storage change:', error);
+      }
 
-      const streak = await getStreak();
-      setCurrentStreak(streak);
+      try {
+        const streak = await getStreak();
+        setCurrentStreak(streak);
+      } catch (error) {
+        console.error('Error updating streak on storage change:', error);
+      }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile) {
-          if (profile.last_practice_date) {
-            setLastPracticeDate(new Date(profile.last_practice_date));
-          }
-          if (profile.streak_start_date) {
-            setStreakStartDate(new Date(profile.streak_start_date));
-          }
-          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
-          if (profile.current_cycle_start) {
-            setCycleStartDate(new Date(profile.current_cycle_start));
-          }
-          setWalletAddress(profile.wallet_address);
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError) {
+          console.error('Error fetching user on storage change:', userError);
+          return;
         }
+
+        if (user) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Error fetching profile on storage change:', profileError);
+            return;
+          }
+
+          if (profile) {
+            if (profile.last_practice_date) {
+              setLastPracticeDate(new Date(profile.last_practice_date));
+            }
+            if (profile.streak_start_date) {
+              setStreakStartDate(new Date(profile.streak_start_date));
+            }
+            setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+            if (profile.current_cycle_start) {
+              setCycleStartDate(new Date(profile.current_cycle_start));
+            }
+            setWalletAddress(profile.wallet_address);
+          }
+        }
+      } catch (error) {
+        console.error('Unexpected error on storage change:', error);
       }
     };
 
@@ -187,33 +245,56 @@ const TopBar = () => {
 
     // Also check periodically to update from Supabase
     const interval = setInterval(async () => {
-      const updatedWallet = await getWallet();
-      setVibeCoins(updatedWallet.vibeCoins);
+      try {
+        const updatedWallet = await getWallet();
+        setVibeCoins(updatedWallet.vibeCoins);
+      } catch (error) {
+        console.error('Error updating wallet in interval:', error);
+      }
 
-      const streak = await getStreak();
-      setCurrentStreak(streak);
+      try {
+        const streak = await getStreak();
+        setCurrentStreak(streak);
+      } catch (error) {
+        console.error('Error updating streak in interval:', error);
+      }
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile) {
-          if (profile.last_practice_date) {
-            setLastPracticeDate(new Date(profile.last_practice_date));
-          }
-          if (profile.streak_start_date) {
-            setStreakStartDate(new Date(profile.streak_start_date));
-          }
-          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
-          if (profile.current_cycle_start) {
-            setCycleStartDate(new Date(profile.current_cycle_start));
-          }
-          setWalletAddress(profile.wallet_address);
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (userError) {
+          console.error('Error fetching user in interval:', userError);
+          return;
         }
+
+        if (user) {
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
+            .eq('id', user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Error fetching profile in interval:', profileError);
+            return;
+          }
+
+          if (profile) {
+            if (profile.last_practice_date) {
+              setLastPracticeDate(new Date(profile.last_practice_date));
+            }
+            if (profile.streak_start_date) {
+              setStreakStartDate(new Date(profile.streak_start_date));
+            }
+            setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+            if (profile.current_cycle_start) {
+              setCycleStartDate(new Date(profile.current_cycle_start));
+            }
+            setWalletAddress(profile.wallet_address);
+          }
+        }
+      } catch (error) {
+        console.error('Unexpected error in interval:', error);
       }
     }, 2000);
 
@@ -350,7 +431,7 @@ const TopBar = () => {
                 <div>
                   <h3 className="font-semibold text-lg mb-1">VIBE Token Balance</h3>
                   <p className="text-sm text-muted-foreground">
-                    Locked tokens earned from lessons
+                    Earn 50 VIBE per lesson - tokens unlock after completing 1 lesson!
                   </p>
                 </div>
 
@@ -365,26 +446,26 @@ const TopBar = () => {
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">30-Day Cycle Progress</span>
-                      <span className="font-semibold">{currentStreak} / 30 days</span>
+                      <span className="text-muted-foreground">Lesson Progress</span>
+                      <span className="font-semibold">{levelsInCycle >= 1 ? "✓ Ready to unlock!" : "0 / 1 lesson"}</span>
                     </div>
                     <div className="w-full bg-secondary rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-primary h-2 rounded-full transition-all"
-                        style={{ width: `${Math.min((currentStreak / 30) * 100, 100)}%` }}
+                        style={{ width: `${Math.min((levelsInCycle / 1) * 100, 100)}%` }}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2 pt-2 border-t">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Lessons This Cycle</span>
+                      <span className="text-muted-foreground">Lessons Completed</span>
                       <span className="font-semibold">{levelsInCycle}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Days Until Unlock</span>
+                      <span className="text-muted-foreground">Status</span>
                       <span className="font-semibold">
-                        {currentStreak >= 30 ? "✓ Ready!" : `${30 - currentStreak} days`}
+                        {levelsInCycle >= 1 ? "✓ Ready for payout!" : "Complete 1 lesson"}
                       </span>
                     </div>
                     {cycleStartDate && (
@@ -418,7 +499,7 @@ const TopBar = () => {
                       </p>
                     ) : (
                       <p className="text-xs text-muted-foreground">
-                        Connect MetaMask to receive tokens after 30-day streak
+                        Connect MetaMask to receive tokens after completing lessons
                       </p>
                     )}
                   </div>
@@ -426,7 +507,7 @@ const TopBar = () => {
 
                 <div className="pt-2 border-t">
                   <p className="text-xs text-muted-foreground">
-                    💎 Complete a 30-day streak to unlock your VIBE tokens. Earn 50 VIBE per lesson!
+                    💎 Complete 1 lesson to unlock your VIBE tokens. Earn 50 VIBE per lesson!
                   </p>
                 </div>
               </div>

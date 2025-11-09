@@ -6,13 +6,13 @@ This guide explains how to set up the complete crypto tokenomics system for Toki
 
 The system implements a "learn-to-earn" model where users:
 1. Earn **locked VIBE tokens** (50 per lesson) shown in the UI
-2. Maintain a **30-day streak** to unlock tokens
-3. Receive **real VIBE tokens** (ERC-20) in their MetaMask wallet after completing the cycle
+2. Complete **1 lesson** to unlock tokens
+3. Receive **real VIBE tokens** (ERC-20) in their MetaMask wallet after completing lessons
 
 ## Architecture
 
 ```
-User Learns → Locked VIBE (DB) → 30-Day Streak → Real Tokens (Blockchain)
+User Learns → Locked VIBE (DB) → Complete 1 Lesson → Real Tokens (Blockchain)
 ```
 
 ### Off-Chain (Supabase Database)
@@ -105,17 +105,16 @@ VIBE_TOKEN_ADDRESS=0xABCD...1234
 
 1. **Connect Wallet**: Click the VibeCoin in top bar → Connect MetaMask
 2. **Complete Lessons**: Each lesson increments `levels_completed_in_cycle`
-3. **Maintain Streak**: Practice daily to reach 30 days
+3. **Complete 1 Lesson**: After completing your first lesson, tokens unlock
 4. **Auto Payout**: System creates reward and sends tokens automatically
 
 ### Testing with Fake Data (Development)
 
 Update a user's profile directly:
 \`\`\`sql
-UPDATE profiles 
-SET 
-  streak_days = 30,
-  levels_completed_in_cycle = 10,
+UPDATE profiles
+SET
+  levels_completed_in_cycle = 1,
   wallet_address = '0xYourTestWallet'
 WHERE id = 'user-uuid';
 \`\`\`
@@ -205,12 +204,12 @@ Check edge function logs for failures:
 
 1. **User signs up** → Profile created with initial values
 2. **Completes lessons** → `levels_completed_in_cycle` increments, earns 50 VIBE each
-3. **Maintains daily streak** → `streak_days` increases
+3. **Maintains daily streak** → `streak_days` increases (optional, for gamification)
 4. **Connects MetaMask** → `wallet_address` saved to profile
-5. **Reaches 30 days** → `check-cycle-completion` creates reward entry
+5. **Completes 1 lesson** → `check-cycle-completion` creates reward entry
 6. **Hourly cron runs** → `process-payouts` sends real tokens
 7. **User receives tokens** → VIBE appears in MetaMask
-8. **Cycle resets** → New 30-day cycle begins
+8. **Cycle resets** → New cycle begins, ready for more lessons
 
 ## Security Considerations
 

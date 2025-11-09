@@ -18,7 +18,7 @@ export const WalletConnect = () => {
           Wallet Connection
         </CardTitle>
         <CardDescription>
-          Connect your MetaMask wallet to receive VIBE tokens after completing 30-day streaks
+          Connect your MetaMask wallet to receive VIBE tokens after completing lessons
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -71,7 +71,7 @@ export const WalletConnect = () => {
             </Button>
 
             <p className="text-xs text-muted-foreground">
-              Your VIBE tokens will be sent to this address when you complete a 30-day streak.
+              Your VIBE tokens will be sent to this address when you complete lessons.
             </p>
           </div>
         )}
@@ -80,9 +80,9 @@ export const WalletConnect = () => {
           <h4 className="text-sm font-semibold">How it works:</h4>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li>Complete lessons to earn locked VIBE (50 VIBE per lesson)</li>
-            <li>Maintain a 30-day streak without missing a day</li>
-            <li>Connect your wallet before day 30</li>
-            <li>Tokens are automatically sent to your wallet after completing the cycle</li>
+            <li>Connect your MetaMask wallet</li>
+            <li>After completing 1 lesson, your tokens unlock</li>
+            <li>Tokens are automatically sent to your wallet</li>
           </ul>
         </div>
       </CardContent>

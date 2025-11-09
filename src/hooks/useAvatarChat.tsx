@@ -45,7 +45,39 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
 
     try {
       // Get auth session for authenticated function calls
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        console.error("Error getting session in AI chat:", sessionError);
+        const fallbackMessage: AvatarMessage = {
+          text: "Authentication error. Please log in again.",
+          audio: "",
+          facialExpression: "sad" as const,
+          animation: "Idle" as const,
+        };
+        setMessages([fallbackMessage]);
+        setConversationHistory((prev) => [
+          ...prev,
+          { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
+        ]);
+        return;
+      }
+
+      if (!session) {
+        console.warn("No session found for AI chat");
+        const fallbackMessage: AvatarMessage = {
+          text: "Please log in to continue chatting.",
+          audio: "",
+          facialExpression: "sad" as const,
+          animation: "Idle" as const,
+        };
+        setMessages([fallbackMessage]);
+        setConversationHistory((prev) => [
+          ...prev,
+          { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
+        ]);
+        return;
+      }
 
       // Call Supabase Edge Function for AI chat with conversation history
       const { data, error } = await supabase.functions.invoke("ai-chat", {
@@ -57,12 +89,12 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
           conversationHistory: conversationHistory,
         },
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 
       if (error) {
-        console.error("Error calling AI chat:", error);
+        console.error("Error calling AI chat function:", error);
         // Fallback to a default response
         const fallbackMessage: AvatarMessage = {
           text: "I'm having trouble connecting right now. Please try again!",
@@ -71,7 +103,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
           animation: "Idle" as const,
         };
         setMessages([fallbackMessage]);
-        
+
         // Add AI response to conversation history
         setConversationHistory((prev) => [
           ...prev,
@@ -79,21 +111,45 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
         ]);
       } else if (data?.messages && Array.isArray(data.messages)) {
         console.log("Received messages:", data.messages.length);
-        
+
         // Add messages to queue for avatar to speak
         setMessages((prev) => [...prev, ...data.messages]);
-        
+
         // Batch add all AI responses to conversation history at once
         const newHistoryEntries = data.messages.map((msg: AvatarMessage) => ({
           role: "assistant" as const,
           text: msg.text,
           timestamp: new Date(),
         }));
-        
+
         setConversationHistory((prev) => [...prev, ...newHistoryEntries]);
+      } else {
+        console.warn("AI chat returned unexpected data format");
+        const fallbackMessage: AvatarMessage = {
+          text: "I received an unexpected response. Please try again.",
+          audio: "",
+          facialExpression: "sad" as const,
+          animation: "Idle" as const,
+        };
+        setMessages([fallbackMessage]);
+        setConversationHistory((prev) => [
+          ...prev,
+          { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
+        ]);
       }
     } catch (err) {
-      console.error("Chat error:", err);
+      console.error("Unexpected error in AI chat:", err);
+      const fallbackMessage: AvatarMessage = {
+        text: "Something went wrong. Please try again later.",
+        audio: "",
+        facialExpression: "sad" as const,
+        animation: "Idle" as const,
+      };
+      setMessages([fallbackMessage]);
+      setConversationHistory((prev) => [
+        ...prev,
+        { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
+      ]);
     } finally {
       setLoading(false);
     }

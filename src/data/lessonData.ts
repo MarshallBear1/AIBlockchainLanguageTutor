@@ -626,10 +626,18 @@ export async function getUserProgress(languageCode?: string): Promise<{
   completedLessons: number[];
   currentLesson: number;
 }> {
+  const defaultProgress = { completedLessons: [], currentLesson: 1 };
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error('Error fetching user in getUserProgress:', userError);
+      return defaultProgress;
+    }
+
     if (!user) {
-      return { completedLessons: [], currentLesson: 1 };
+      return defaultProgress;
     }
 
     // Get language from parameter or localStorage
@@ -642,8 +650,8 @@ export async function getUserProgress(languageCode?: string): Promise<{
       .eq('language_code', language);
 
     if (error) {
-      console.error('Error fetching progress:', error);
-      return { completedLessons: [], currentLesson: 1 };
+      console.error('Error fetching lesson progress from database:', error);
+      return defaultProgress;
     }
 
     const completedLessons = data?.map(p => p.lesson_id) || [];
@@ -653,16 +661,27 @@ export async function getUserProgress(languageCode?: string): Promise<{
 
     return { completedLessons, currentLesson };
   } catch (error) {
-    console.error('Error in getUserProgress:', error);
-    return { completedLessons: [], currentLesson: 1 };
+    console.error('Unexpected error in getUserProgress:', error);
+    return defaultProgress;
   }
 }
 
 // Helper function to save lesson completion to database (per language)
 export async function completeLesson(lessonId: number, languageCode?: string): Promise<{ success: boolean; coinsEarned: number }> {
+  const defaultResult = { success: false, coinsEarned: 0 };
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, coinsEarned: 0 };
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error('Error fetching user in completeLesson:', userError);
+      return defaultResult;
+    }
+
+    if (!user) {
+      console.warn('No user found in completeLesson');
+      return defaultResult;
+    }
 
     // Get language from parameter or localStorage
     const language = languageCode || localStorage.getItem("selectedLanguage") || "es";
@@ -680,61 +699,129 @@ export async function completeLesson(lessonId: number, languageCode?: string): P
       });
 
     if (error) {
-      console.error('Error saving progress:', error);
-      return { success: false, coinsEarned: 0 };
+      console.error('Error saving lesson progress to database:', error);
+      return defaultResult;
     }
 
     // Update streak and get coins earned
-    const { updateStreak } = await import('@/utils/streakManager');
-    const { coinsEarned } = await updateStreak();
+    let coinsEarned = 0;
+    try {
+      const { updateStreak } = await import('@/utils/streakManager');
+      const streakResult = await updateStreak();
+      coinsEarned = streakResult.coinsEarned;
+    } catch (error) {
+      console.error('Error updating streak in completeLesson:', error);
+      // Continue with default coins
+      coinsEarned = 50;
+    }
 
     // Update VibeCoin balance in Supabase
-    const { addCoins } = await import('@/utils/wallet');
-    await addCoins(coinsEarned);
+    try {
+      const { addCoins } = await import('@/utils/wallet');
+      await addCoins(coinsEarned);
+    } catch (error) {
+      console.error('Error adding coins in completeLesson:', error);
+      // Continue even if coin update fails
+    }
+
+    // Increment levels_completed_in_cycle for crypto payout tracking
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('levels_completed_in_cycle')
+        .eq('id', user.id)
+        .single();
+
+      const currentCount = profile?.levels_completed_in_cycle || 0;
+
+      const { error: cycleError } = await supabase
+        .from('profiles')
+        .update({ levels_completed_in_cycle: currentCount + 1 })
+        .eq('id', user.id);
+
+      if (cycleError) {
+        console.error('Error updating levels_completed_in_cycle:', cycleError);
+      } else {
+        // Check if user is eligible for payout (after completing 1 lesson)
+        try {
+          const { data: authData } = await supabase.auth.getSession();
+          if (authData?.session?.access_token) {
+            const response = await fetch(
+              `${supabase.supabaseUrl}/functions/v1/check-cycle-completion`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${authData.session.access_token}`,
+                },
+                body: JSON.stringify({ userId: user.id }),
+              }
+            );
+
+            if (response.ok) {
+              const result = await response.json();
+              console.log('Cycle check result:', result);
+            }
+          }
+        } catch (checkError) {
+          console.error('Error checking cycle completion:', checkError);
+          // Don't fail the lesson completion if cycle check fails
+        }
+      }
+    } catch (error) {
+      console.error('Error incrementing cycle counter:', error);
+      // Continue even if cycle update fails
+    }
 
     return { success: true, coinsEarned };
   } catch (error) {
-    console.error('Error in completeLesson:', error);
-    return { success: false, coinsEarned: 0 };
+    console.error('Unexpected error in completeLesson:', error);
+    return defaultResult;
   }
 }
 
 // Get units with progress applied, filtered by user level (per language)
 export async function getUnitsWithProgress(userLevel?: number, languageCode?: string): Promise<Unit[]> {
-  const progress = await getUserProgress(languageCode);
-  const level = userLevel || parseInt(localStorage.getItem("selectedLevel") || "1");
-  
-  // Filter units by level
-  const levelUnits = units.filter(u => u.level === level);
+  try {
+    const progress = await getUserProgress(languageCode);
+    const level = userLevel || parseInt(localStorage.getItem("selectedLevel") || "1");
 
-  return levelUnits.map((unit) => {
-    // Get lessons in this unit sorted by id
-    const unitLessons = unit.lessons.sort((a, b) => a.id - b.id);
-    
-    return {
-      ...unit,
-      lessons: unitLessons.map((lesson, index) => {
-        const isCompleted = progress.completedLessons.includes(lesson.id);
-        
-        // First lesson of each unit is always unlocked
-        if (index === 0) {
+    // Filter units by level
+    const levelUnits = units.filter(u => u.level === level);
+
+    return levelUnits.map((unit) => {
+      // Get lessons in this unit sorted by id
+      const unitLessons = unit.lessons.sort((a, b) => a.id - b.id);
+
+      return {
+        ...unit,
+        lessons: unitLessons.map((lesson, index) => {
+          const isCompleted = progress.completedLessons.includes(lesson.id);
+
+          // First lesson of each unit is always unlocked
+          if (index === 0) {
+            return {
+              ...lesson,
+              completed: isCompleted,
+              locked: false,
+            };
+          }
+
+          // Other lessons are unlocked only if the previous lesson in the unit is completed
+          const previousLesson = unitLessons[index - 1];
+          const isPreviousCompleted = progress.completedLessons.includes(previousLesson.id);
+
           return {
             ...lesson,
             completed: isCompleted,
-            locked: false,
+            locked: !isPreviousCompleted,
           };
-        }
-        
-        // Other lessons are unlocked only if the previous lesson in the unit is completed
-        const previousLesson = unitLessons[index - 1];
-        const isPreviousCompleted = progress.completedLessons.includes(previousLesson.id);
-        
-        return {
-          ...lesson,
-          completed: isCompleted,
-          locked: !isPreviousCompleted,
-        };
-      }),
-    };
-  });
+        }),
+      };
+    });
+  } catch (error) {
+    console.error('Unexpected error in getUnitsWithProgress:', error);
+    // Return empty array on error
+    return [];
+  }
 }

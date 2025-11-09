@@ -57,20 +57,34 @@ const SelectLevel = () => {
       localStorage.setItem("lessonGoal", `Start learning ${selectedLanguage.toUpperCase()} at ${levels.find(l => l.level === selected)?.title} level`);
 
       // Save to Supabase in background (don't wait)
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (user) {
-          supabase
-            .from("profiles")
-            .update({
-              selected_language: selectedLanguage,
-              selected_level: selected,
-            })
-            .eq("id", user.id)
-            .then(({ error }) => {
-              if (error) console.error("Profile update error:", error);
-            });
-        }
-      });
+      supabase.auth.getUser()
+        .then(({ data: { user }, error: userError }) => {
+          if (userError) {
+            console.error("Error fetching user:", userError);
+            return;
+          }
+
+          if (user) {
+            supabase
+              .from("profiles")
+              .update({
+                selected_language: selectedLanguage,
+                selected_level: selected,
+              })
+              .eq("id", user.id)
+              .then(({ error }) => {
+                if (error) {
+                  console.error("Profile update error:", error);
+                }
+              })
+              .catch((error) => {
+                console.error("Unexpected error updating profile:", error);
+              });
+          }
+        })
+        .catch((error) => {
+          console.error("Unexpected error getting user:", error);
+        });
 
       // Navigate straight to first conversation
       navigate("/conversation?lesson=first");

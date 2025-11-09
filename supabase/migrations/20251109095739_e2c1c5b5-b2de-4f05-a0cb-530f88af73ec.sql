@@ -5,7 +5,7 @@ ADD COLUMN IF NOT EXISTS current_cycle_start timestamp with time zone DEFAULT no
 ADD COLUMN IF NOT EXISTS levels_completed_in_cycle integer DEFAULT 0,
 ADD COLUMN IF NOT EXISTS streak_start_date timestamp with time zone;
 
--- Create vibe_rewards table to track 30-day cycle payouts
+-- Create vibe_rewards table to track lesson completion cycle payouts
 CREATE TABLE IF NOT EXISTS vibe_rewards (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL,

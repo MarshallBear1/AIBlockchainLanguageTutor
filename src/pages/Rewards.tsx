@@ -150,7 +150,7 @@ const Rewards = () => {
           <CardHeader>
             <CardTitle>Cycle History</CardTitle>
             <CardDescription>
-              View all your completed 30-day cycles and payout status
+              View all your completed lesson cycles and payout status
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -163,7 +163,7 @@ const Rewards = () => {
                 <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">No rewards yet</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Complete a 30-day streak to earn your first reward!
+                  Complete 1 lesson to earn your first reward!
                 </p>
               </div>
             ) : (
@@ -235,13 +235,13 @@ const Rewards = () => {
               <strong>Step 1:</strong> Complete lessons to earn locked VIBE (50 VIBE per lesson)
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>Step 2:</strong> Maintain a 30-day streak without missing a day
+              <strong>Step 2:</strong> Connect your MetaMask wallet
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>Step 3:</strong> Connect your MetaMask wallet before completing the cycle
+              <strong>Step 3:</strong> After completing 1 lesson, your tokens unlock automatically
             </p>
             <p className="text-sm text-muted-foreground">
-              <strong>Step 4:</strong> Tokens are automatically sent to your wallet within 24 hours
+              <strong>Step 4:</strong> Tokens are sent to your wallet within 24 hours
             </p>
           </CardContent>
         </Card>

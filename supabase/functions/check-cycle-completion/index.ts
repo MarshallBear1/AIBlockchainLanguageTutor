@@ -47,14 +47,14 @@ Deno.serve(async (req) => {
 
     console.log(`[check-cycle-completion] Profile data:`, profile);
 
-    // Check if user has completed a 30-day cycle
-    if (profile.streak_days < 30) {
-      console.log(`[check-cycle-completion] Streak not complete yet: ${profile.streak_days}/30 days`);
+    // Check if user has completed at least 1 lesson
+    if (profile.levels_completed_in_cycle < 1) {
+      console.log(`[check-cycle-completion] No lessons completed yet: ${profile.levels_completed_in_cycle} lessons`);
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          message: 'Cycle not complete',
-          streakDays: profile.streak_days
+        JSON.stringify({
+          success: false,
+          message: 'No lessons completed',
+          lessonsCompleted: profile.levels_completed_in_cycle
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -123,14 +123,13 @@ Deno.serve(async (req) => {
 
     console.log(`[check-cycle-completion] Reward created successfully:`, reward);
 
-    // Reset cycle counters
+    // Reset cycle counters (keep streak intact, only reset lesson counter)
     const { error: updateError } = await supabaseClient
       .from('profiles')
       .update({
         current_cycle_start: new Date().toISOString(),
         levels_completed_in_cycle: 0,
-        streak_days: 0, // Reset streak after completing cycle
-        streak_start_date: null,
+        // Do NOT reset streak - user can continue learning
       })
       .eq('id', userId);
 
@@ -145,9 +144,9 @@ Deno.serve(async (req) => {
       JSON.stringify({
         success: true,
         reward,
-        message: profile.wallet_address 
-          ? 'Cycle completed! Tokens will be sent shortly.'
-          : 'Cycle completed! Connect a wallet to receive your tokens.',
+        message: profile.wallet_address
+          ? 'Lesson completed! Your VIBE tokens will be sent to your wallet shortly.'
+          : 'Lesson completed! Connect a wallet to receive your VIBE tokens.',
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

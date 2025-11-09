@@ -12,17 +12,25 @@ export interface WalletData {
 
 // Get wallet data from Supabase
 export async function getWallet(): Promise<WalletData> {
+  const defaultWallet: WalletData = {
+    vibeCoins: 0,
+    totalEarned: 0,
+    lessonsCompleted: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    lastLessonDate: null,
+  };
+
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error('Error fetching user in getWallet:', userError);
+      return defaultWallet;
+    }
+
     if (!user) {
-      return {
-        vibeCoins: 0,
-        totalEarned: 0,
-        lessonsCompleted: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-        lastLessonDate: null,
-      };
+      return defaultWallet;
     }
 
     const { data, error } = await supabase
@@ -32,15 +40,13 @@ export async function getWallet(): Promise<WalletData> {
       .single();
 
     if (error) {
-      console.error('Error fetching wallet:', error);
-      return {
-        vibeCoins: 0,
-        totalEarned: 0,
-        lessonsCompleted: 0,
-        currentStreak: 0,
-        longestStreak: 0,
-        lastLessonDate: null,
-      };
+      console.error('Error fetching wallet from profiles:', error);
+      return defaultWallet;
+    }
+
+    if (!data) {
+      console.warn('No profile data found for user');
+      return defaultWallet;
     }
 
     return {
@@ -52,23 +58,25 @@ export async function getWallet(): Promise<WalletData> {
       lastLessonDate: data.last_practice_date,
     };
   } catch (error) {
-    console.error('Error in getWallet:', error);
-    return {
-      vibeCoins: 0,
-      totalEarned: 0,
-      lessonsCompleted: 0,
-      currentStreak: 0,
-      longestStreak: 0,
-      lastLessonDate: null,
-    };
+    console.error('Unexpected error in getWallet:', error);
+    return defaultWallet;
   }
 }
 
 // Save wallet data to Supabase
 export async function saveWallet(wallet: WalletData): Promise<boolean> {
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return false;
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error('Error fetching user in saveWallet:', userError);
+      return false;
+    }
+
+    if (!user) {
+      console.warn('No user found, cannot save wallet');
+      return false;
+    }
 
     const { error } = await supabase
       .from('profiles')
@@ -81,35 +89,59 @@ export async function saveWallet(wallet: WalletData): Promise<boolean> {
       .eq('id', user.id);
 
     if (error) {
-      console.error('Error saving wallet:', error);
+      console.error('Error saving wallet to profiles:', error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Error in saveWallet:', error);
+    console.error('Unexpected error in saveWallet:', error);
     return false;
   }
 }
 
 // Add coins to wallet
 export async function addCoins(amount: number): Promise<WalletData> {
-  const wallet = await getWallet();
-  wallet.vibeCoins += amount;
-  wallet.totalEarned += amount;
-  await saveWallet(wallet);
-  return wallet;
+  try {
+    const wallet = await getWallet();
+    wallet.vibeCoins += amount;
+    wallet.totalEarned += amount;
+
+    const success = await saveWallet(wallet);
+    if (!success) {
+      console.error('Failed to save wallet after adding coins');
+    }
+
+    return wallet;
+  } catch (error) {
+    console.error('Error in addCoins:', error);
+    throw new Error('Failed to add coins to wallet');
+  }
 }
 
 // Spend coins from wallet
 export async function spendCoins(amount: number): Promise<WalletData | null> {
-  const wallet = await getWallet();
-  if (wallet.vibeCoins < amount) {
-    return null; // Not enough coins
+  try {
+    const wallet = await getWallet();
+
+    if (wallet.vibeCoins < amount) {
+      console.warn(`Insufficient coins: has ${wallet.vibeCoins}, needs ${amount}`);
+      return null; // Not enough coins
+    }
+
+    wallet.vibeCoins -= amount;
+
+    const success = await saveWallet(wallet);
+    if (!success) {
+      console.error('Failed to save wallet after spending coins');
+      return null;
+    }
+
+    return wallet;
+  } catch (error) {
+    console.error('Error in spendCoins:', error);
+    return null;
   }
-  wallet.vibeCoins -= amount;
-  await saveWallet(wallet);
-  return wallet;
 }
 
 // Award coins for lesson completion (legacy function - use streakManager instead)

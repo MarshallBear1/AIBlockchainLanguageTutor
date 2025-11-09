@@ -8,22 +8,35 @@ const Splash = () => {
 
   useEffect(() => {
     const checkAuthAndRedirect = async () => {
-      // Check if user is logged in
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // User is logged in, check if they've completed onboarding
-        const selectedLanguage = localStorage.getItem("selectedLanguage");
-        
-        if (selectedLanguage) {
-          // Already completed onboarding, go to home
-          navigate("/home");
-        } else {
-          // Logged in but needs to complete onboarding
-          navigate("/select-language");
+      try {
+        // Check if user is logged in
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("Error checking session in Splash:", error);
+          // On error, assume not logged in
+          navigate("/auth");
+          return;
         }
-      } else {
-        // Not logged in, go to auth
+
+        if (session) {
+          // User is logged in, check if they've completed onboarding
+          const selectedLanguage = localStorage.getItem("selectedLanguage");
+
+          if (selectedLanguage) {
+            // Already completed onboarding, go to home
+            navigate("/home");
+          } else {
+            // Logged in but needs to complete onboarding
+            navigate("/select-language");
+          }
+        } else {
+          // Not logged in, go to auth
+          navigate("/auth");
+        }
+      } catch (error) {
+        console.error("Unexpected error in Splash auth check:", error);
+        // On unexpected error, go to auth
         navigate("/auth");
       }
     };
