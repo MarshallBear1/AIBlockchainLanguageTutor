@@ -436,16 +436,14 @@ export const units: Unit[] = [
         unitId: 5,
         level: 4,
         title: "Job Interview",
-        scenario: "Answer interview questions confidently",
+        scenario: "Answer interview questions about your qualifications",
         description: "Professional vocabulary",
         emoji: "💼",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can describe their work experience professionally",
-          "Student can discuss their skills and qualifications",
-          "Student can ask intelligent questions about the role",
-          "Student can handle behavioral interview questions"
+          "Student can say 'I am hardworking' in the target language",
+          "Student can say 'I am resourceful' in the target language"
         ],
       },
       {
