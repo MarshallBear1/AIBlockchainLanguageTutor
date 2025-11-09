@@ -164,17 +164,21 @@ const ConversationContent = () => {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center relative">
-        {/* 3D Avatar Canvas */}
-        <AvatarCanvas className="absolute inset-0 w-full h-full" />
+      <main className="flex-1 flex flex-col relative overflow-hidden">
+        {/* 3D Avatar Section - Upper portion */}
+        <div className="relative w-full h-[35vh] md:h-[40vh] flex-shrink-0">
+          <AvatarCanvas className="absolute inset-0 w-full h-full" />
+        </div>
 
-        {/* Chat History Overlay */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-10">
-          <ScrollArea className="h-[300px] bg-background/80 backdrop-blur-md rounded-2xl shadow-lg border border-border">
-            <div ref={chatScrollRef} className="p-4 space-y-2">
+        {/* Chat History Section - Below Avatar */}
+        <div className="flex-1 flex flex-col bg-background px-4 pb-2 overflow-hidden">
+          <ScrollArea className="flex-1 rounded-lg border border-border bg-card/50">
+            <div ref={chatScrollRef} className="p-3 space-y-2 min-h-full">
               {conversationHistory.length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">
-                  <p>Start speaking or typing to begin your conversation</p>
+                <div className="flex items-center justify-center h-full min-h-[150px]">
+                  <p className="text-center text-muted-foreground text-sm">
+                    Start speaking or typing to begin your conversation
+                  </p>
                 </div>
               ) : (
                 conversationHistory.map((msg, idx) => (
@@ -188,26 +192,26 @@ const ConversationContent = () => {
               )}
             </div>
           </ScrollArea>
-        </div>
 
-        {/* Timer Badge */}
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-10">
-          <div className="text-lg font-semibold text-foreground bg-background/90 backdrop-blur-sm px-4 py-2 rounded-full border border-border shadow-md">
-            {formatTime(timeLeft)} left
+          {/* Timer Badge */}
+          <div className="flex justify-center mt-2 mb-1">
+            <div className="text-sm font-semibold text-foreground bg-muted px-3 py-1.5 rounded-full border border-border">
+              {formatTime(timeLeft)} left
+            </div>
           </div>
         </div>
       </main>
 
       {/* Bottom Controls */}
-      <div className="p-6 space-y-3">
+      <div className="p-3 space-y-2 border-t border-border bg-background">
         {/* Voice/Text Input Controls */}
-        <div className="flex gap-3 items-center justify-center">
+        <div className="flex gap-2 items-center justify-center">
           {/* Voice Input Button */}
           <Button
             onClick={handleVoiceInput}
             disabled={loading || recordingState === "processing"}
             size="lg"
-            className={`h-16 w-16 rounded-full transition-all ${
+            className={`h-14 w-14 rounded-full transition-all ${
               recordingState === "recording"
                 ? "bg-destructive hover:bg-destructive/90 animate-pulse"
                 : "bg-primary hover:bg-primary/90"
@@ -216,7 +220,7 @@ const ConversationContent = () => {
             {recordingState === "processing" ? (
               <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Mic className="w-6 h-6" />
+              <Mic className="w-5 h-5" />
             )}
           </Button>
 
@@ -226,14 +230,14 @@ const ConversationContent = () => {
             disabled={loading || recordingState !== "idle"}
             variant="outline"
             size="lg"
-            className="h-16 w-16 rounded-full"
+            className="h-14 w-14 rounded-full"
           >
-            <Keyboard className="w-6 h-6" />
+            <Keyboard className="w-5 h-5" />
           </Button>
         </div>
 
         {/* Status Text */}
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-xs text-muted-foreground">
           {recordingState === "idle" && !loading && "Tap mic to speak or keyboard to type"}
           {recordingState === "recording" && "Recording... Tap to stop"}
           {recordingState === "processing" && "Processing your speech..."}
@@ -244,29 +248,30 @@ const ConversationContent = () => {
         <Button
           onClick={handleEndConversation}
           variant="outline"
-          className="w-full h-12 text-lg rounded-full"
-          size="lg"
+          className="w-full h-10 text-sm rounded-full"
         >
           End Conversation
         </Button>
 
         {/* Help & Word Bank */}
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Button
             onClick={() => setShowHelp(true)}
             variant="outline"
-            className="flex-1 gap-2"
+            className="flex-1 gap-1 h-9 text-xs"
+            size="sm"
           >
-            <HelpCircle className="w-4 h-4" />
+            <HelpCircle className="w-3.5 h-3.5" />
             I'm stuck
           </Button>
 
           <Button
             onClick={() => setShowWordBank(true)}
             variant="outline"
-            className="flex-1 gap-2"
+            className="flex-1 gap-1 h-9 text-xs"
+            size="sm"
           >
-            <BookOpen className="w-4 h-4" />
+            <BookOpen className="w-3.5 h-3.5" />
             Word Bank
           </Button>
         </div>

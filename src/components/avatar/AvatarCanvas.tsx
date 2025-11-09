@@ -11,7 +11,7 @@ export const AvatarCanvas = ({ modelPath, className }: AvatarCanvasProps) => {
   return (
     <div className={className}>
       <Loader />
-      <Canvas shadows camera={{ position: [0, 0, 1], fov: 30 }}>
+      <Canvas shadows camera={{ position: [0, 0, 1], fov: 42 }}>
         <AvatarExperience modelPath={modelPath} />
       </Canvas>
     </div>
