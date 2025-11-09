@@ -39,7 +39,7 @@ const LoadingDots = (props: any) => {
 
   return (
     <group {...props}>
-      <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"} color="black">
+      <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"} color="black" {...({} as any)}>
         {loadingText}
       </Text>
     </group>
@@ -79,7 +79,7 @@ export const AvatarExperience = ({ modelPath }: AvatarExperienceProps) => {
         <LoadingDots position-y={1.75} position-x={-0.02} />
         <Avatar3D modelPath={modelPath} />
       </Suspense>
-      <ContactShadows opacity={0.7} />
+      <ContactShadows opacity={0.7} {...({} as any)} />
     </>
   );
 };
