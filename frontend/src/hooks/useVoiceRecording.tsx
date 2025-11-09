@@ -35,7 +35,7 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
           echoCancellation: true,          // Remove echo
           noiseSuppression: true,          // Built-in noise suppression
           autoGainControl: true,           // Normalize volume levels
-          sampleRate: 48000,               // Higher sample rate for better quality
+          sampleRate: 16000,               // 16kHz - Whisper's optimal sample rate!
           channelCount: 1,                 // Mono audio (smaller size, sufficient for speech)
           // @ts-ignore - Advanced constraints (browser support varies)
           voiceIsolation: true,            // iOS Safari feature for voice isolation
