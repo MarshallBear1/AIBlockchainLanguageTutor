@@ -15,28 +15,18 @@ const Home = () => {
         <div className="max-w-2xl mx-auto">
           <div className="flex flex-col items-center mb-8">
             <TokiMascot state="idle" size="lg" className="mb-6" />
-            <h1 className="text-2xl font-bold text-center">Pick a mode to get started!</h1>
+            <h1 className="text-2xl font-bold text-center">Start your learning journey!</h1>
           </div>
 
           <div className="space-y-4">
             <ModeCard
               emoji="🎓"
-              title="Tutor Mode"
-              description="Learn grammar and vocabulary with Toki at your pace"
-              badge="Beginner"
+              title="Structured Learning"
+              description="Progress through levels with GEM as your guide"
+              badge="Start Here"
               badgeColor="bg-light-blue text-primary"
               onClick={() => navigate("/lessons")}
-              buttonText="Start Lesson ›"
-            />
-
-            <ModeCard
-              emoji="🎭"
-              title="Roleplay Mode"
-              description="Practice speaking in real-life conversations with Toki"
-              badge="Popular"
-              badgeColor="bg-light-pink text-secondary"
-              onClick={() => navigate("/roleplay")}
-              buttonText="Start Speaking ›"
+              buttonText="Start Learning ›"
             />
           </div>
         </div>

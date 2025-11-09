@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -90,6 +91,46 @@ serve(async (req) => {
 
   try {
     const { message } = await req.json();
+    
+    // Get authenticated user and their profile
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("No authorization header");
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    
+    if (userError || !user) {
+      throw new Error("Unauthorized");
+    }
+
+    const { data: profile } = await supabaseClient
+      .from("profiles")
+      .select("selected_language, selected_level")
+      .eq("id", user.id)
+      .single();
+
+    // Map language codes to full names
+    const languageMap: Record<string, string> = {
+      "es": "Spanish",
+      "fr": "French",
+      "de": "German",
+      "it": "Italian",
+      "pt": "Portuguese",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "zh": "Chinese",
+    };
+    
+    const targetLanguage = profile?.selected_language ? languageMap[profile.selected_language] || "Spanish" : "Spanish";
+    const userLevel = profile?.selected_level || 1;
+    
     const openAIKey = Deno.env.get("OPENAI_API_KEY");
     const elevenLabsKey = Deno.env.get("ELEVEN_LABS_API_KEY");
     const voiceId = Deno.env.get("ELEVEN_LABS_VOICE_ID") || "EXAVITQu4vr4xnSDxMaL"; // Default female voice
@@ -129,14 +170,32 @@ serve(async (req) => {
           {
             role: "system",
             content: `
-            You are a friendly and encouraging language learning tutor avatar.
+            You are GEM, a friendly and encouraging language learning tutor avatar.
+            
+            ## Student Information
+            - Target Language: ${targetLanguage}
+            - Current Level: ${userLevel}/5
+            
+            ## Your Teaching Approach
+            - Teach primarily in ${targetLanguage}
+            - Use English for brief explanations when the student is confused
+            - Adapt your vocabulary and grammar to Level ${userLevel}
+            - Keep responses SHORT (1-2 sentences) for voice conversation
+            - Be encouraging and celebrate small wins
+            
+            ## Level Guidelines
+            Level 1: Very basic greetings, introductions, simple present tense
+            Level 2: Common phrases, asking questions, basic past tense
+            Level 3: Everyday conversations, expressing opinions
+            Level 4: Complex topics, various tenses, idiomatic expressions
+            Level 5: Near-native fluency, nuanced discussions
+            
+            ## Response Format
             You will reply with a JSON object containing a single message.
             The message has a text, facialExpression, and animation property.
             The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
             The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry.
-            Keep your responses short (1-2 sentences), encouraging, and helpful for language learning.
-            Provide corrections gently and celebrate progress.
-            Response format: {"text": "your message", "facialExpression": "smile", "animation": "Talking_0"}
+            Response format: {"text": "your message in ${targetLanguage}", "facialExpression": "smile", "animation": "Talking_0"}
             `,
           },
           {

@@ -98,9 +98,15 @@ const ConversationContent = () => {
       const audioBase64 = await stopRecording();
       if (audioBase64) {
         try {
+          // Get auth session for authenticated function calls
+          const { data: { session } } = await supabase.auth.getSession();
+          
           // Transcribe audio to text
           const { data, error } = await supabase.functions.invoke("voice-to-text", {
             body: { audio: audioBase64 },
+            headers: {
+              Authorization: `Bearer ${session?.access_token}`,
+            },
           });
 
           if (error) throw error;

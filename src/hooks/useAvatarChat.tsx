@@ -41,9 +41,15 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
     ]);
 
     try {
+      // Get auth session for authenticated function calls
+      const { data: { session } } = await supabase.auth.getSession();
+      
       // Call Supabase Edge Function for AI chat
       const { data, error } = await supabase.functions.invoke("ai-chat", {
         body: { message: userMessage },
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
       });
 
       if (error) {
