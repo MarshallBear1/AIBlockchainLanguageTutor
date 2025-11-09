@@ -1,9 +1,16 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import { ethers } from 'https://esm.sh/ethers@6.7.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// ERC-20 ABI (only the transfer function)
+const ERC20_ABI = [
+  'function transfer(address to, uint256 amount) returns (bool)',
+  'function decimals() view returns (uint8)'
+];
 
 interface WithdrawRequest {
   userId: string;
@@ -79,9 +86,6 @@ Deno.serve(async (req) => {
       payout: payoutAmount,
     });
 
-    // Determine reward status
-    const status = profile.wallet_address ? 'pending' : 'no_wallet';
-
     // Get next cycle number
     const { data: existingRewards } = await supabase
       .from('vibe_rewards')
@@ -94,7 +98,52 @@ Deno.serve(async (req) => {
       ? existingRewards[0].cycle_number + 1 
       : 1;
 
-    // Create reward entry
+    // Initialize blockchain variables
+    let txHash: string | null = null;
+    let finalStatus = 'no_wallet';
+
+    // If wallet is connected, send tokens immediately
+    if (profile.wallet_address) {
+      try {
+        const rpcUrl = Deno.env.get('RPC_URL');
+        const treasuryPrivateKey = Deno.env.get('TREASURY_PRIVATE_KEY');
+        const vibeTokenAddress = Deno.env.get('VIBE_TOKEN_ADDRESS');
+
+        if (rpcUrl && treasuryPrivateKey && vibeTokenAddress) {
+          console.log('[withdraw-vibe] Initiating instant blockchain transfer...');
+          
+          const provider = new ethers.JsonRpcProvider(rpcUrl);
+          const wallet = new ethers.Wallet(treasuryPrivateKey, provider);
+          const tokenContract = new ethers.Contract(vibeTokenAddress, ERC20_ABI, wallet);
+          
+          const decimals = await tokenContract.decimals();
+          const amount = ethers.parseUnits(payoutAmount.toString(), decimals);
+          
+          console.log(`[withdraw-vibe] Sending ${payoutAmount} VIBE to ${profile.wallet_address}`);
+          
+          const tx = await tokenContract.transfer(profile.wallet_address, amount);
+          txHash = tx.hash;
+          finalStatus = 'paid';
+          
+          console.log(`[withdraw-vibe] Transaction sent instantly: ${txHash}`);
+          
+          // Transaction confirmation happens in background
+          tx.wait().then((receipt: any) => {
+            console.log(`[withdraw-vibe] Transaction confirmed in block ${receipt.blockNumber}`);
+          }).catch((error: any) => {
+            console.error('[withdraw-vibe] Transaction confirmation failed:', error);
+          });
+        } else {
+          console.warn('[withdraw-vibe] Missing blockchain env vars, falling back to pending');
+          finalStatus = 'pending';
+        }
+      } catch (error) {
+        console.error('[withdraw-vibe] Blockchain transfer failed:', error);
+        finalStatus = 'failed';
+      }
+    }
+
+    // Create reward entry with transaction info
     const { data: reward, error: rewardError } = await supabase
       .from('vibe_rewards')
       .insert({
@@ -104,7 +153,9 @@ Deno.serve(async (req) => {
         cycle_end_date: new Date().toISOString(),
         levels_completed: profile.levels_completed_in_cycle,
         amount_vibe: payoutAmount,
-        status,
+        status: finalStatus,
+        tx_hash: txHash,
+        paid_at: finalStatus === 'paid' ? new Date().toISOString() : null,
       })
       .select()
       .single();

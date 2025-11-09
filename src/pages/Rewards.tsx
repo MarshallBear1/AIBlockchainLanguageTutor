@@ -396,7 +396,7 @@ const Rewards = () => {
               </span>
             </p>
             <p className="text-sm">
-              <strong className="text-green-600">💰 Withdraw:</strong> Connect MetaMask and withdraw anytime to claim your multiplied VIBE
+              <strong className="text-green-600">💰 Withdraw:</strong> Connect MetaMask and withdraw anytime - tokens sent instantly!
             </p>
             <p className="text-sm">
               <strong className="text-blue-600">⚡ Smart Strategy:</strong> The longer you wait and maintain your streak, the more VIBE you earn!
@@ -427,7 +427,7 @@ const Rewards = () => {
               </div>
               <p className="text-sm">
                 Your banked balance will reset to 0, but your <span className="text-orange-500 font-semibold">{streakDays}-day streak</span> continues.
-                Tokens will be sent to your wallet within 24 hours.
+                Tokens will be sent to your wallet instantly!
               </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
