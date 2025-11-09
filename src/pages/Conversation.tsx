@@ -144,9 +144,9 @@ const ConversationContent = () => {
     navigate("/home");
   };
 
-  const handleVoiceInput = async () => {
+  const handleVoiceStart = async () => {
     if (recordingState === "idle") {
-      // Start recording
+      // Start recording when button is pressed
       const success = await startRecording();
       if (!success) {
         toast({
@@ -155,14 +155,18 @@ const ConversationContent = () => {
           variant: "destructive",
         });
       }
-    } else if (recordingState === "recording") {
-      // Stop recording and process
+    }
+  };
+
+  const handleVoiceEnd = async () => {
+    if (recordingState === "recording") {
+      // Stop recording and process when button is released
       const audioBase64 = await stopRecording();
       if (audioBase64) {
         try {
           // Get auth session for authenticated function calls
           const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-          
+
           if (sessionError || !session) {
             toast({
               title: "Authentication Error",
@@ -172,8 +176,8 @@ const ConversationContent = () => {
             navigate("/auth");
             return;
           }
-          
-          // Transcribe audio to text
+
+          // Transcribe audio to text with multilingual support
           const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
           const { data, error } = await supabase.functions.invoke("voice-to-text", {
             body: {
@@ -296,12 +300,14 @@ const ConversationContent = () => {
           </Button>
         </div>
 
-        {/* Voice Input Button */}
+        {/* Voice Input Button - Push to Talk */}
         <Button
-          onClick={handleVoiceInput}
+          onPointerDown={handleVoiceStart}
+          onPointerUp={handleVoiceEnd}
+          onPointerLeave={handleVoiceEnd}
           disabled={loading || recordingState === "processing"}
           size="lg"
-          className={`w-full h-12 transition-all ${
+          className={`w-full h-12 transition-all touch-none select-none ${
             recordingState === "recording"
               ? "bg-destructive hover:bg-destructive/90 animate-pulse"
               : ""
@@ -315,12 +321,12 @@ const ConversationContent = () => {
           ) : recordingState === "recording" ? (
             <>
               <Mic className="w-5 h-5 mr-2" />
-              Stop Recording
+              Recording... (Release to send)
             </>
           ) : (
             <>
               <Mic className="w-5 h-5 mr-2" />
-              Tap to Speak
+              Hold to Speak
             </>
           )}
         </Button>
@@ -328,7 +334,8 @@ const ConversationContent = () => {
         {/* Status Text */}
         <div className="text-center text-xs text-muted-foreground">
           {loading && "AI is thinking..."}
-          {!loading && recordingState === "idle" && "Type or tap to speak"}
+          {!loading && recordingState === "idle" && "Type or hold button to speak"}
+          {recordingState === "recording" && "🎤 Listening..."}
         </div>
 
         {/* Help & Word Bank */}
