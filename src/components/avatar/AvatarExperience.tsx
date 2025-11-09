@@ -15,7 +15,8 @@ const LoadingFallback = () => {
 };
 
 const LoadingDots = (props: any) => {
-  const { loading } = useAvatarChat();
+  const avatarChat = useAvatarChat();
+  const loading = avatarChat?.loading || false;
   const [loadingText, setLoadingText] = useState("");
 
   useEffect(() => {
@@ -51,7 +52,8 @@ interface AvatarExperienceProps {
 
 export const AvatarExperience = ({ modelPath }: AvatarExperienceProps) => {
   const cameraControls = useRef<CameraControls>(null);
-  const { cameraZoomed } = useAvatarChat();
+  const avatarChat = useAvatarChat();
+  const cameraZoomed = avatarChat?.cameraZoomed || false;
 
   useEffect(() => {
     if (cameraControls.current) {

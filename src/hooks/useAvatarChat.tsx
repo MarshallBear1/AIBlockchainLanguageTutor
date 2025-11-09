@@ -137,8 +137,9 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
 
 export const useAvatarChat = () => {
   const context = useContext(AvatarChatContext);
+  // Return null if no provider, allowing optional usage
   if (!context) {
-    throw new Error("useAvatarChat must be used within an AvatarChatProvider");
+    return null;
   }
   return context;
 };
