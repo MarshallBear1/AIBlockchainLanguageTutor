@@ -14,6 +14,8 @@ import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
 import { completeLesson } from "@/data/lessonData";
+import { RewardScreen } from "@/components/RewardScreen";
+import { awardLessonCompletion } from "@/utils/wallet";
 
 const ConversationContent = () => {
   const navigate = useNavigate();
@@ -23,7 +25,8 @@ const ConversationContent = () => {
   const [showWordBank, setShowWordBank] = useState(false);
   const [showTextInput, setShowTextInput] = useState(false);
   const [textMessage, setTextMessage] = useState("");
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [showReward, setShowReward] = useState(false);
+  const [coinsEarned, setCoinsEarned] = useState(0);
   const chatScrollRef = useRef<HTMLDivElement>(null);
   
   // Avatar chat context
@@ -63,36 +66,31 @@ const ConversationContent = () => {
     }
   }, [recordingError, toast]);
 
-  // Timer countdown
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => Math.max(0, prev - 1));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const handleEndConversation = () => {
     // Mark lesson as complete if this is a lesson conversation
     const currentLessonId = localStorage.getItem("currentLessonId");
     if (currentLessonId) {
       const lessonNum = parseInt(currentLessonId);
       if (!isNaN(lessonNum)) {
+        // Complete the lesson
         completeLesson(lessonNum);
-        toast({
-          title: "Lesson Complete! 🎉",
-          description: "Great job! You've unlocked the next lesson.",
-        });
+
+        // Award coins
+        const wallet = awardLessonCompletion();
+        setCoinsEarned(50); // 50 coins per lesson
+
+        // Show reward screen
+        setShowReward(true);
+        return;
       }
     }
 
-    // Navigate back to home
+    // If not a lesson, just navigate back
+    navigate("/home");
+  };
+
+  const handleRewardContinue = () => {
+    setShowReward(false);
     navigate("/home");
   };
 
@@ -222,13 +220,6 @@ const ConversationContent = () => {
               )}
             </div>
           </ScrollArea>
-
-          {/* Timer Badge */}
-          <div className="flex justify-center mt-2 mb-1">
-            <div className="text-sm font-semibold text-foreground bg-muted px-3 py-1.5 rounded-full border border-border">
-              {formatTime(timeLeft)} left
-            </div>
-          </div>
         </div>
       </main>
 
@@ -335,6 +326,11 @@ const ConversationContent = () => {
 
       <HelpSheet open={showHelp} onOpenChange={setShowHelp} />
       <WordBankSheet open={showWordBank} onOpenChange={setShowWordBank} />
+
+      {/* Reward Screen */}
+      {showReward && (
+        <RewardScreen coinsEarned={coinsEarned} onContinue={handleRewardContinue} />
+      )}
     </div>
   );
 };
