@@ -333,19 +333,19 @@ const ConversationContent = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* 3D Avatar Section - Smaller for more chat space */}
-        <div className="relative w-full h-[22vh] flex-shrink-0">
+        {/* 3D Avatar Section - Larger for better visual */}
+        <div className="relative w-full h-[35vh] flex-shrink-0">
           <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
-        {/* Chat History Section - More space with better scrolling */}
+        {/* Chat History Section - Optimized scrolling area */}
         <div 
           ref={chatScrollRef}
-          className="flex-1 overflow-y-auto px-4 py-8"
+          className="flex-1 overflow-y-auto px-4 py-6"
         >
           <div className="max-w-4xl mx-auto space-y-4">
             {conversationHistory.length === 0 ? (
-              <div className="flex items-center justify-center h-full min-h-[200px]">
+              <div className="flex items-center justify-center h-full min-h-[150px]">
                 <p className="text-center text-muted-foreground text-sm">
                   Your conversation will appear here
                 </p>
@@ -374,9 +374,9 @@ const ConversationContent = () => {
         </div>
       </main>
 
-      {/* Bottom Controls - Reduced height for more chat space */}
-      <div className="flex-shrink-0 p-4 pb-6 border-t border-border bg-background" style={{ minHeight: '240px' }}>
-        <div className="max-w-4xl mx-auto space-y-4">
+      {/* Bottom Controls - Compact and space-efficient */}
+      <div className="flex-shrink-0 p-4 pb-6 border-t border-border bg-background">
+        <div className="max-w-4xl mx-auto space-y-3">
           {/* Text Input - Always Visible */}
           <div className="flex gap-2">
             <Input
@@ -397,14 +397,13 @@ const ConversationContent = () => {
             </Button>
           </div>
 
-          {/* Voice Input & I'm Stuck Buttons - Side by Side */}
-          <div className="flex items-center justify-center gap-3">
+          {/* All Action Buttons - Horizontal Layout */}
+          <div className="flex items-center justify-between gap-3">
             {/* I'm Stuck Button */}
             <Button
               onClick={() => chat("I don't understand what you are saying, please explain it differently", false, lessonScenario, learningGoals)}
               variant="outline"
-              size="sm"
-              className="h-10 px-4 gap-2"
+              className="flex-1 h-12 gap-2"
               disabled={loading}
             >
               <HelpCircle className="w-4 h-4" />
@@ -418,39 +417,39 @@ const ConversationContent = () => {
               onPointerLeave={handleVoiceEnd}
               disabled={loading || recordingState === "processing"}
               size="icon"
-              className={`h-20 w-20 rounded-full transition-all touch-none select-none shadow-lg ${
+              className={`h-16 w-16 rounded-full transition-all touch-none select-none shadow-lg flex-shrink-0 ${
                 recordingState === "recording"
                   ? "bg-destructive hover:bg-destructive/90 animate-pulse scale-110"
                   : "bg-primary hover:bg-primary/90"
               }`}
             >
               {recordingState === "processing" ? (
-                <div className="w-8 h-8 border-4 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <div className="w-7 h-7 border-4 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : recordingState === "recording" ? (
-                <Mic className="w-8 h-8" />
+                <Mic className="w-7 h-7" />
               ) : (
-                <Mic className="w-8 h-8" />
+                <Mic className="w-7 h-7" />
               )}
+            </Button>
+
+            {/* End Conversation Button */}
+            <Button
+              onClick={handleEndConversation}
+              variant="outline"
+              className="flex-1 h-12"
+              disabled={isFinalMessage && message !== null}
+            >
+              {isFinalMessage && message !== null ? "Finishing..." : "End Conversation"}
             </Button>
           </div>
 
-          {/* Status Text */}
-          <div className="text-center text-sm text-muted-foreground">
+          {/* Status Text - Compact */}
+          <div className="text-center text-xs text-muted-foreground">
             {loading && "Toki is thinking..."}
-            {!loading && recordingState === "idle" && "Tap and hold microphone to speak"}
-            {recordingState === "recording" && "🎤 Listening... Release to send"}
-            {recordingState === "processing" && "Processing your message..."}
+            {!loading && recordingState === "idle" && "Hold microphone to speak"}
+            {recordingState === "recording" && "🎤 Listening..."}
+            {recordingState === "processing" && "Processing..."}
           </div>
-
-          {/* End Conversation */}
-          <Button
-            onClick={handleEndConversation}
-            variant="outline"
-            className="w-full h-10"
-            disabled={isFinalMessage && message !== null}
-          >
-            {isFinalMessage && message !== null ? "Toki is finishing..." : "End Conversation"}
-          </Button>
         </div>
       </div>
 
