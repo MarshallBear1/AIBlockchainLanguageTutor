@@ -670,12 +670,34 @@ export async function getUnitsWithProgress(userLevel?: number): Promise<Unit[]> 
   // Filter units by level
   const levelUnits = units.filter(u => u.level === level);
 
-  return levelUnits.map((unit) => ({
-    ...unit,
-    lessons: unit.lessons.map((lesson) => ({
-      ...lesson,
-      completed: progress.completedLessons.includes(lesson.id),
-      locked: false, // All lessons are now unlocked
-    })),
-  }));
+  return levelUnits.map((unit) => {
+    // Get lessons in this unit sorted by id
+    const unitLessons = unit.lessons.sort((a, b) => a.id - b.id);
+    
+    return {
+      ...unit,
+      lessons: unitLessons.map((lesson, index) => {
+        const isCompleted = progress.completedLessons.includes(lesson.id);
+        
+        // First lesson of each unit is always unlocked
+        if (index === 0) {
+          return {
+            ...lesson,
+            completed: isCompleted,
+            locked: false,
+          };
+        }
+        
+        // Other lessons are unlocked only if the previous lesson in the unit is completed
+        const previousLesson = unitLessons[index - 1];
+        const isPreviousCompleted = progress.completedLessons.includes(previousLesson.id);
+        
+        return {
+          ...lesson,
+          completed: isCompleted,
+          locked: !isPreviousCompleted,
+        };
+      }),
+    };
+  });
 }
