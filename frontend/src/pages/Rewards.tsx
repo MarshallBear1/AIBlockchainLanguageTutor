@@ -54,7 +54,7 @@ const WalletConnectionSimplified = ({
   walletAddress: string | null; 
   onWalletConnected: () => void;
 }) => {
-  const { connectWallet, disconnectWallet, isConnecting } = useCoinbaseWallet();
+  const { connectWallet, disconnectWallet, isConnecting } = useMetaMask();
 
   useEffect(() => {
     if (walletAddress && onWalletConnected) {
