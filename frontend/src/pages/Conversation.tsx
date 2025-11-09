@@ -333,19 +333,19 @@ const ConversationContent = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* 3D Avatar Section - Upper portion */}
-        <div className="relative w-full h-[28vh] flex-shrink-0">
+        {/* 3D Avatar Section - Smaller for more chat space */}
+        <div className="relative w-full h-[22vh] flex-shrink-0">
           <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
-        {/* Chat History Section - Scrollable with max-width container */}
+        {/* Chat History Section - More space with better scrolling */}
         <div 
           ref={chatScrollRef}
-          className="flex-1 overflow-y-auto px-4 py-6"
+          className="flex-1 overflow-y-auto px-4 py-8"
         >
           <div className="max-w-4xl mx-auto space-y-4">
             {conversationHistory.length === 0 ? (
-              <div className="flex items-center justify-center h-full min-h-[150px]">
+              <div className="flex items-center justify-center h-full min-h-[200px]">
                 <p className="text-center text-muted-foreground text-sm">
                   Your conversation will appear here
                 </p>
