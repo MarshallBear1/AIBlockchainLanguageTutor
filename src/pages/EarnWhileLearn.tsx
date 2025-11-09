@@ -6,7 +6,7 @@ const EarnWhileLearn = () => {
   const navigate = useNavigate();
 
   const handleContinue = () => {
-    navigate("/conversation?lesson=first");
+    navigate("/sponsor");
   };
 
   return (
