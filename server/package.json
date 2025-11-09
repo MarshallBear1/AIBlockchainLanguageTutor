@@ -1,0 +1,18 @@
+{
+  "name": "toki-speak-lipsync-server",
+  "version": "1.0.0",
+  "description": "Optional Node.js server for accurate lip-sync with Rhubarb",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "elevenlabs-node": "^1.1.5",
+    "express": "^4.18.2",
+    "openai": "^4.20.0"
+  }
+}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import TokiMascot from "@/components/TokiMascot";
+import { AvatarCanvas } from "@/components/avatar/AvatarCanvas";
 import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 
@@ -12,7 +12,6 @@ const Conversation = () => {
   const [showHelp, setShowHelp] = useState(false);
   const [showWordBank, setShowWordBank] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-  const [mascotState, setMascotState] = useState<"idle" | "speaking" | "listening">("idle");
 
   // Get lesson context from URL
   const isCustom = searchParams.get("custom") === "true";
@@ -67,13 +66,13 @@ const Conversation = () => {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="max-w-2xl w-full text-center space-y-6">
-          <TokiMascot state={mascotState} size="lg" />
-          
-          <p className="text-sm text-muted-foreground">Tap to interrupt</p>
-          
-          <div className="text-2xl font-semibold text-primary">
+      <main className="flex-1 flex flex-col items-center justify-center relative">
+        {/* 3D Avatar Canvas */}
+        <AvatarCanvas className="absolute inset-0 w-full h-full" />
+
+        {/* Overlay UI */}
+        <div className="relative z-10 w-full flex flex-col items-center justify-end h-full pb-6">
+          <div className="text-2xl font-semibold text-white bg-black/50 backdrop-blur-sm px-6 py-3 rounded-full">
             {formatTime(timeLeft)} left
           </div>
         </div>

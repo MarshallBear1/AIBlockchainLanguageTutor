@@ -7,6 +7,7 @@ import Splash from "./pages/Splash";
 import Welcome from "./pages/Welcome";
 import SelectLanguage from "./pages/SelectLanguage";
 import SelectLevel from "./pages/SelectLevel";
+import SelectAvatar from "./pages/SelectAvatar";
 import Setup from "./pages/Setup";
 import Home from "./pages/Home";
 import Lessons from "./pages/Lessons";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/select-language" element={<SelectLanguage />} />
           <Route path="/select-level" element={<SelectLevel />} />
+          <Route path="/select-avatar" element={<SelectAvatar />} />
           <Route path="/setup" element={<Setup />} />
           <Route path="/home" element={<Home />} />
           <Route path="/lessons" element={<Lessons />} />

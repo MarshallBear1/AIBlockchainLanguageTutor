@@ -12,6 +12,21 @@ dist
 dist-ssr
 *.local
 
+# Environment variables (contains API keys - DO NOT COMMIT)
+.env
+.env.local
+.env.*.local
+server/.env
+
+# Temporary backend repos
+temp-frontend/
+temp-backend/
+
+# Server audio files
+server/audios/*.mp3
+server/audios/*.wav
+server/audios/*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

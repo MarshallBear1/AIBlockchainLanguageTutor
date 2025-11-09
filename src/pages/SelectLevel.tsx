@@ -39,7 +39,7 @@ const SelectLevel = () => {
   const handleNext = () => {
     if (selected) {
       localStorage.setItem("selectedLevel", selected.toString());
-      navigate("/setup");
+      navigate("/select-avatar");
     }
   };
 
