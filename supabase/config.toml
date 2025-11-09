@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.withdraw-vibe]
 verify_jwt = true
+
+[functions.test-treasury]
+verify_jwt = false

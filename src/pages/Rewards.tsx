@@ -41,6 +41,7 @@ const Rewards = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
   const [stats, setStats] = useState({
     totalEarned: 0,
     totalPaid: 0,
@@ -91,6 +92,33 @@ const Rewards = () => {
       toast.error('Failed to load rewards data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setIsTesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('test-treasury');
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(
+          <div className="space-y-1">
+            <p className="font-bold">✅ Connection Successful!</p>
+            <p>Treasury: {data.balances.vibe} {data.token.symbol}</p>
+            <p className="text-xs">Network: {data.connection.network}</p>
+          </div>,
+          { duration: 5000 }
+        );
+      } else {
+        toast.error(data.message || 'Connection test failed');
+      }
+    } catch (error: any) {
+      console.error('Test connection error:', error);
+      toast.error(error.message || 'Failed to test connection');
+    } finally {
+      setIsTesting(false);
     }
   };
 
@@ -246,17 +274,29 @@ const Rewards = () => {
           </Card>
         </div>
 
-        {/* Withdraw Button */}
+        {/* Withdraw & Test Buttons */}
         <div className="space-y-4">
-          <Button
-            onClick={() => setShowWithdrawDialog(true)}
-            disabled={bankedVibe === 0 || !walletAddress}
-            size="lg"
-            className="w-full h-14 text-lg font-bold"
-          >
-            <Wallet className="w-5 h-5 mr-2" />
-            Withdraw VIBE to Wallet
-          </Button>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <Button
+              onClick={() => setShowWithdrawDialog(true)}
+              disabled={bankedVibe === 0 || !walletAddress}
+              size="lg"
+              className="md:col-span-2 h-14 text-lg font-bold"
+            >
+              <Wallet className="w-5 h-5 mr-2" />
+              Withdraw VIBE to Wallet
+            </Button>
+            
+            <Button
+              onClick={handleTestConnection}
+              disabled={isTesting}
+              variant="outline"
+              size="lg"
+              className="h-14 text-lg font-semibold"
+            >
+              {isTesting ? 'Testing...' : '🔍 Test Connection'}
+            </Button>
+          </div>
           
           {!walletAddress && (
             <p className="text-sm text-muted-foreground text-center">
