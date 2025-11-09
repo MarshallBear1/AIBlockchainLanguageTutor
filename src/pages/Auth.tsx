@@ -117,7 +117,7 @@ const Auth = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-light-blue to-white px-4">
       <div className="mb-8">
-        <TokiMascot size="md" state="idle" />
+        <TokiMascot size="md" state="flicker" />
       </div>
 
       <Card className="w-full max-w-md">
