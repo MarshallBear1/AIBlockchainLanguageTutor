@@ -54,9 +54,22 @@ serve(async (req) => {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    // Use Whisper's auto-detect for better mixed-language handling
-    // This works better for language learning where users mix target language + English
-    console.log("Transcribing audio with Whisper (auto-detect for code-switching)...");
+    // Map user's selected language to Whisper language codes
+    const languageMap: Record<string, string> = {
+      'es': 'es', // Spanish
+      'fr': 'fr', // French
+      'de': 'de', // German
+      'it': 'it', // Italian
+      'pt': 'pt', // Portuguese
+      'ja': 'ja', // Japanese
+      'ko': 'ko', // Korean
+      'zh': 'zh', // Chinese
+    };
+
+    // Get target language, default to Spanish if not provided
+    const targetLanguage = language && languageMap[language] ? languageMap[language] : 'es';
+    
+    console.log(`Transcribing audio with Whisper (optimized for ${targetLanguage} + English bilingual detection)...`);
 
     // Decode base64 audio using chunked processing
     const bytes = processBase64Chunks(audio);
