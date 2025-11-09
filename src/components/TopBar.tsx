@@ -70,9 +70,9 @@ const TopBar = () => {
   // Load wallet balance and streak on mount and whenever component re-renders
   useEffect(() => {
     const loadData = async () => {
-      const wallet = getWallet();
+      const wallet = await getWallet();
       setVibeCoins(wallet.vibeCoins);
-      
+
       // Load streak from database
       const streak = await getStreak();
       setCurrentStreak(streak);
@@ -80,22 +80,22 @@ const TopBar = () => {
 
     loadData();
 
-    // Listen for storage changes (when coins are added in other tabs/windows)
+    // Listen for Supabase changes (when coins are added/updated)
     const handleStorageChange = async () => {
-      const updatedWallet = getWallet();
+      const updatedWallet = await getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
-      
+
       const streak = await getStreak();
       setCurrentStreak(streak);
     };
 
     window.addEventListener("storage", handleStorageChange);
 
-    // Also check periodically in same tab
+    // Also check periodically to update from Supabase
     const interval = setInterval(async () => {
-      const updatedWallet = getWallet();
+      const updatedWallet = await getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
-      
+
       const streak = await getStreak();
       setCurrentStreak(streak);
     }, 2000);
