@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Phone } from "lucide-react";
 
 interface LiveConversationProps {
   unitNumber: number;
@@ -17,16 +18,13 @@ const LiveConversation = ({ unitNumber, language, level }: LiveConversationProps
   return (
     <Button
       onClick={handleStartConversation}
-      variant="secondary"
-      className="w-full gap-2"
+      size="lg"
+      className="w-full gap-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-2xl py-6"
     >
-      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="23"/>
-        <line x1="8" y1="23" x2="16" y2="23"/>
-      </svg>
-      Live Conversation
+      <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 animate-pulse">
+        <Phone className="w-5 h-5" />
+      </div>
+      <span className="text-lg font-semibold">Call GEM for Live Practice</span>
     </Button>
   );
 };

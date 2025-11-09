@@ -104,7 +104,7 @@ const LiveConversationPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
+      <div className="flex-1 flex flex-col p-4 relative">
         {isConnecting && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-20">
             <div className="text-center space-y-4">
@@ -114,9 +114,9 @@ const LiveConversationPage = () => {
           </div>
         )}
 
-        {/* Avatar */}
-        <div className="w-full max-w-md aspect-square relative mb-8">
-          <AvatarCanvas />
+        {/* Avatar - Full height, properly zoomed */}
+        <div className="relative w-full h-[60vh] flex-shrink-0">
+          <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
         {/* Status Display */}
