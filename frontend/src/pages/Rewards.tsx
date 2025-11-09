@@ -23,6 +23,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import vibeconMascot from "@/assets/vibecon-mascot.png";
 import { useMetaMask } from "@/hooks/useMetaMask";
 
