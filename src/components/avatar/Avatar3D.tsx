@@ -14,7 +14,9 @@ interface Avatar3DProps {
 
 export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }: Avatar3DProps) {
   const { nodes, materials, scene } = useGLTF(modelPath) as any;
-  const { message, onMessagePlayed } = useAvatarChat();
+  const avatarChat = useAvatarChat();
+  const message = avatarChat?.message || null;
+  const onMessagePlayed = avatarChat?.onMessagePlayed || (() => {});
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [blink, setBlink] = useState(false);
   const [facialExpression, setFacialExpression] = useState<FacialExpression>("default");
