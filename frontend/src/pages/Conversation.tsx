@@ -443,8 +443,8 @@ const ConversationContent = () => {
           {/* Status Text - Compact */}
           <div className="text-center text-xs text-muted-foreground">
             {loading && "Toki is thinking..."}
-            {!loading && recordingState === "idle" && "Hold microphone to speak"}
-            {recordingState === "recording" && "🎤 Listening..."}
+            {!loading && recordingState === "idle" && "Click microphone to record"}
+            {recordingState === "recording" && "🎤 Recording... Click again to send"}
             {recordingState === "processing" && "Processing..."}
           </div>
         </div>
