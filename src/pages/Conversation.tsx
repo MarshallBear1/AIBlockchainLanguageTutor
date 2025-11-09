@@ -4,7 +4,7 @@ import { ArrowLeft, BookOpen, HelpCircle, Mic, Send, Keyboard } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AvatarCanvas } from "@/components/avatar/AvatarCanvas";
-import { useAvatarChat } from "@/hooks/useAvatarChat";
+import { AvatarChatProvider, useAvatarChat } from "@/hooks/useAvatarChat";
 import { useVoiceRecording } from "@/hooks/useVoiceRecording";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -14,7 +14,7 @@ import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
 
-const Conversation = () => {
+const ConversationContent = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -301,6 +301,14 @@ const Conversation = () => {
       <HelpSheet open={showHelp} onOpenChange={setShowHelp} />
       <WordBankSheet open={showWordBank} onOpenChange={setShowWordBank} />
     </div>
+  );
+};
+
+const Conversation = () => {
+  return (
+    <AvatarChatProvider>
+      <ConversationContent />
+    </AvatarChatProvider>
   );
 };
 
