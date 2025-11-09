@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wallet, ExternalLink, Trophy, Clock, Flame, Coins, TrendingUp } from "lucide-react";
+import { Wallet, ExternalLink, Trophy, Clock, Flame, Coins, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WalletConnect } from "@/components/WalletConnect";
 import TopBar from "@/components/TopBar";
@@ -19,6 +19,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Progress } from "@/components/ui/progress";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface Reward {
   id: string;
@@ -41,7 +46,7 @@ const Rewards = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
-  const [isTesting, setIsTesting] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [stats, setStats] = useState({
     totalEarned: 0,
     totalPaid: 0,
@@ -92,33 +97,6 @@ const Rewards = () => {
       toast.error('Failed to load rewards data');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleTestConnection = async () => {
-    setIsTesting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('test-treasury');
-
-      if (error) throw error;
-
-      if (data.success) {
-        toast.success(
-          <div className="space-y-1">
-            <p className="font-bold">✅ Connection Successful!</p>
-            <p>Treasury: {data.balances.vibe} {data.token.symbol}</p>
-            <p className="text-xs">Network: {data.connection.network}</p>
-          </div>,
-          { duration: 5000 }
-        );
-      } else {
-        toast.error(data.message || 'Connection test failed');
-      }
-    } catch (error: any) {
-      console.error('Test connection error:', error);
-      toast.error(error.message || 'Failed to test connection');
-    } finally {
-      setIsTesting(false);
     }
   };
 
@@ -199,248 +177,197 @@ const Rewards = () => {
     <div className="min-h-screen bg-background">
       <TopBar />
       
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">VIBE Banking</h1>
-            <p className="text-muted-foreground">Keep your streak to multiply your rewards!</p>
-          </div>
-          <Trophy className="w-8 h-8 text-primary" />
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6 pb-20">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <Trophy className="w-12 h-12 text-primary mx-auto" />
+          <h1 className="text-3xl font-bold">VIBE Banking</h1>
+          <p className="text-muted-foreground">Keep your streak to multiply your rewards!</p>
         </div>
 
-        {/* Banking Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Banked VIBE */}
-          <Card className="border-2 border-primary/20">
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <Coins className="w-4 h-4" />
-                Banked VIBE
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-primary">{bankedVibe}</div>
-              <p className="text-xs text-muted-foreground mt-1">Earn 50 per lesson</p>
-            </CardContent>
-          </Card>
-          
-          {/* Streak Multiplier */}
-          <Card className="border-2 border-orange-500/20">
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <Flame className="w-4 h-4 text-orange-500" />
-                Streak Multiplier
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-orange-500">
-                {formatMultiplier(multiplier)}
-              </div>
-              <div className="mt-2 space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{streakDays} day streak</span>
-                  {nextTier.daysNeeded > 0 && (
-                    <span className="text-muted-foreground">
-                      {nextTier.daysNeeded} to {formatMultiplier(nextTier.nextMultiplier)}
-                    </span>
-                  )}
-                </div>
-                {nextTier.daysNeeded > 0 && (
-                  <Progress 
-                    value={(streakDays / nextTier.nextTier) * 100} 
-                    className="h-1"
-                  />
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Potential Payout */}
-          <Card className="border-2 border-green-500/20 bg-green-50/50 dark:bg-green-950/20">
-            <CardHeader className="pb-2">
-              <CardDescription className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
-                Potential Payout
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {potentialPayout}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {bankedVibe} × {formatMultiplier(multiplier)} = {potentialPayout} VIBE
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Withdraw & Test Buttons */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button
-              onClick={() => setShowWithdrawDialog(true)}
-              disabled={bankedVibe === 0 || !walletAddress}
-              size="lg"
-              className="md:col-span-2 h-14 text-lg font-bold"
-            >
-              <Wallet className="w-5 h-5 mr-2" />
-              Withdraw VIBE to Wallet
-            </Button>
-            
-            <Button
-              onClick={handleTestConnection}
-              disabled={isTesting}
-              variant="outline"
-              size="lg"
-              className="h-14 text-lg font-semibold"
-            >
-              {isTesting ? 'Testing...' : '🔍 Test Connection'}
-            </Button>
-          </div>
-          
-          {!walletAddress && (
-            <p className="text-sm text-muted-foreground text-center">
-              Connect your wallet below to enable withdrawals
-            </p>
-          )}
-        </div>
-
-        {/* Wallet Connection */}
-        <WalletConnect onWalletConnected={loadData} />
-
-        {/* Withdrawal History Stats */}
-        {rewards.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total Withdrawn</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stats.totalEarned} VIBE</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Total Paid</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-green-600">{stats.totalPaid} VIBE</div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardHeader className="pb-2">
-                <CardDescription>Pending Payouts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-yellow-600">{stats.pendingPayouts}</div>
-              </CardContent>
-            </Card>
+        {/* Wallet Connection - Top Priority */}
+        {!walletAddress && (
+          <div className="animate-fade-in">
+            <WalletConnect onWalletConnected={loadData} />
           </div>
         )}
 
-        {/* Withdrawal History */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Withdrawal History</CardTitle>
-            <CardDescription>
-              View all your VIBE withdrawals and payout status
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8 text-muted-foreground">
-                Loading...
+        {/* Main Stats */}
+        <div className="space-y-3">
+          {/* Banked VIBE */}
+          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Coins className="w-5 h-5" />
+                <span className="font-medium">Bank VIBE</span>
               </div>
-            ) : rewards.length === 0 ? (
-              <div className="text-center py-8">
-                <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">No withdrawals yet</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Complete lessons to bank VIBE, then withdraw when ready!
-                </p>
+            </div>
+            <div className="text-5xl font-bold text-primary">{bankedVibe}</div>
+            <p className="text-sm text-muted-foreground mt-2">+50 per lesson completed</p>
+          </div>
+
+          {/* Streak Multiplier */}
+          <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Flame className="w-5 h-5 text-orange-500" />
+                <span className="font-medium">Streak Multiplier</span>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {rewards.map((reward) => (
-                  <div
-                    key={reward.id}
-                    className="border rounded-lg p-4 hover:bg-secondary/50 transition-colors"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
+            </div>
+            <div className="text-5xl font-bold text-orange-500">
+              {formatMultiplier(multiplier)}
+            </div>
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">{streakDays} day streak 🔥</span>
+                {nextTier.daysNeeded > 0 && (
+                  <span className="text-muted-foreground font-medium">
+                    {nextTier.daysNeeded} to {formatMultiplier(nextTier.nextMultiplier)}
+                  </span>
+                )}
+              </div>
+              {nextTier.daysNeeded > 0 && (
+                <Progress 
+                  value={(streakDays / nextTier.nextTier) * 100} 
+                  className="h-2"
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Potential Payout */}
+          <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <TrendingUp className="w-5 h-5 text-green-600" />
+                <span className="font-medium">Potential Payout</span>
+              </div>
+            </div>
+            <div className="text-5xl font-bold text-green-600 dark:text-green-400">
+              {potentialPayout}
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              {bankedVibe} × {formatMultiplier(multiplier)} = {potentialPayout} VIBE
+            </p>
+          </div>
+        </div>
+
+        {/* Withdraw Button */}
+        <Button
+          onClick={() => setShowWithdrawDialog(true)}
+          disabled={bankedVibe === 0 || !walletAddress}
+          size="lg"
+          className="w-full h-14 text-lg font-bold"
+        >
+          <Wallet className="w-5 h-5 mr-2" />
+          Withdraw VIBE
+        </Button>
+
+        {!walletAddress && (
+          <p className="text-sm text-center text-muted-foreground">
+            Connect your wallet above to enable withdrawals
+          </p>
+        )}
+
+        {/* Withdrawal History - Collapsible */}
+        {rewards.length > 0 && (
+          <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
+            <Card>
+              <CollapsibleTrigger className="w-full">
+                <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <CardTitle className="text-lg">Withdrawal History</CardTitle>
+                      <CardDescription>{rewards.length} withdrawal{rewards.length !== 1 ? 's' : ''}</CardDescription>
+                    </div>
+                    {historyOpen ? (
+                      <ChevronUp className="w-5 h-5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                    )}
+                  </div>
+                </CardHeader>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <CardContent className="space-y-3">
+                  {rewards.map((reward) => (
+                    <div
+                      key={reward.id}
+                      className="border rounded-lg p-4 space-y-2"
+                    >
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">Withdrawal #{reward.cycle_number}</h3>
-                          <Badge variant="outline" className={getStatusColor(reward.status) + " text-white"}>
+                          <h3 className="font-semibold">#{reward.cycle_number}</h3>
+                          <Badge variant="outline" className={getStatusColor(reward.status) + " text-white text-xs"}>
                             {getStatusLabel(reward.status)}
                           </Badge>
                         </div>
-                        
-                        <div className="text-sm text-muted-foreground flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          <span>
-                            {new Date(reward.cycle_end_date).toLocaleDateString()}
-                          </span>
+                        <div className="text-xl font-bold text-primary">
+                          {reward.amount_vibe}
                         </div>
-                        
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Lessons in cycle:</span> {reward.levels_completed}
-                        </div>
-                        
-                        {reward.paid_at && (
-                          <div className="text-sm text-green-600">
-                            Paid on {new Date(reward.paid_at).toLocaleDateString()}
-                          </div>
-                        )}
                       </div>
                       
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-primary">
-                          {reward.amount_vibe} VIBE
-                        </div>
-                        
-                        {reward.tx_hash && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="mt-2"
-                            onClick={() => openBlockExplorer(reward.tx_hash!)}
-                          >
-                            <ExternalLink className="w-4 h-4 mr-1" />
-                            View TX
-                          </Button>
-                        )}
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {new Date(reward.cycle_end_date).toLocaleDateString()}
                       </div>
+                      
+                      {reward.tx_hash && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => openBlockExplorer(reward.tx_hash!)}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          View on PolygonScan
+                        </Button>
+                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </CardContent>
+              </CollapsibleContent>
+            </Card>
+          </Collapsible>
+        )}
 
-        {/* Info Section */}
+        {/* How It Works */}
         <Card>
           <CardHeader>
             <CardTitle>How It Works</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm">
-              <strong className="text-primary">📚 Earn:</strong> Complete lessons to earn 50 VIBE each, added to your bank
-            </p>
-            <p className="text-sm">
-              <strong className="text-orange-500">🔥 Multiply:</strong> Keep your streak to unlock higher multipliers:
-              <span className="block ml-4 mt-1 text-muted-foreground">
-                7+ days: 1.5x • 14+ days: 2.0x • 30+ days: 2.5x • 60+ days: 3.0x
-              </span>
-            </p>
-            <p className="text-sm">
-              <strong className="text-green-600">💰 Withdraw:</strong> Connect MetaMask and withdraw anytime - tokens sent instantly!
-            </p>
-            <p className="text-sm">
-              <strong className="text-blue-600">⚡ Smart Strategy:</strong> The longer you wait and maintain your streak, the more VIBE you earn!
-            </p>
+          <CardContent className="space-y-4">
+            <div className="flex gap-3">
+              <div className="text-2xl">📚</div>
+              <div>
+                <p className="font-semibold">Earn VIBE</p>
+                <p className="text-sm text-muted-foreground">Complete lessons to earn 50 VIBE each, added to your bank</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-2xl">🔥</div>
+              <div>
+                <p className="font-semibold">Build Your Streak</p>
+                <p className="text-sm text-muted-foreground">
+                  Practice daily to unlock higher multipliers:<br/>
+                  7 days: 1.5x • 14 days: 2.0x • 30 days: 2.5x • 60 days: 3.0x
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-2xl">💰</div>
+              <div>
+                <p className="font-semibold">Withdraw Anytime</p>
+                <p className="text-sm text-muted-foreground">Connect your wallet and withdraw your rewards instantly to Polygon network</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-2xl">⚡</div>
+              <div>
+                <p className="font-semibold">Smart Strategy</p>
+                <p className="text-sm text-muted-foreground">The longer you maintain your streak, the more VIBE you earn!</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -472,12 +399,8 @@ const Rewards = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isWithdrawing}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleWithdraw}
-              disabled={isWithdrawing}
-              className="bg-green-600 hover:bg-green-700"
-            >
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleWithdraw} disabled={isWithdrawing}>
               {isWithdrawing ? 'Processing...' : 'Confirm Withdrawal'}
             </AlertDialogAction>
           </AlertDialogFooter>
