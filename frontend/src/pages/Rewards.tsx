@@ -213,13 +213,9 @@ const Rewards = () => {
         {/* Mascot Image */}
         <div className="flex justify-center py-4">
           <img 
-            src="/assets/vibecon-mascot.png" 
+            src={vibeconMascot} 
             alt="VibeCon Mascot" 
             className="w-48 h-48 object-contain"
-            onError={(e) => {
-              // Fallback if image doesn't exist
-              e.currentTarget.style.display = 'none';
-            }}
           />
         </div>
 
