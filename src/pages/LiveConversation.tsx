@@ -94,64 +94,73 @@ const LiveConversationPage = () => {
   }, []);
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
-      {/* Top Bar with End Call Button */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border p-4">
-        <div className="flex items-center justify-between max-w-2xl mx-auto">
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-            <span className="font-semibold text-sm">
-              {isConnecting ? "Connecting..." : isConnected ? "Live Conversation" : "Connection Error"}
-            </span>
-          </div>
-          
-          <Button
-            onClick={endConversation}
-            variant="destructive"
-            size="sm"
-            className="rounded-full w-10 h-10 p-0"
-          >
-            <X className="w-5 h-5" />
-          </Button>
+    <div className="h-screen flex flex-col bg-gradient-to-b from-primary/5 via-background to-background relative overflow-hidden">
+      {/* Avatar - Full screen call view */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <AvatarCanvas className="absolute inset-0 w-full h-full" initialZoom={true} />
+      </div>
+
+      {/* Top Status Bar */}
+      <div className="relative z-10 bg-gradient-to-b from-background/90 to-transparent backdrop-blur-sm p-6">
+        <div className="flex flex-col items-center gap-2">
+          <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+          <h1 className="text-2xl font-bold text-foreground">
+            {isConnecting ? "Connecting to Gem..." : isConnected ? "Call with Gem" : "Connection Error"}
+          </h1>
+          {isConnected && (
+            <p className="text-sm text-muted-foreground">
+              {isSpeaking ? "Gem is speaking..." : "Listening..."}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col p-4 relative">
-        {isConnecting && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-20">
-            <div className="text-center space-y-4">
-              <Loader2 className="w-12 h-12 animate-spin mx-auto text-primary" />
-              <p className="text-lg font-medium">Connecting to your tutor...</p>
-            </div>
+      {/* Loading Overlay */}
+      {isConnecting && (
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-md z-20">
+          <div className="text-center space-y-4">
+            <Loader2 className="w-16 h-16 animate-spin mx-auto text-primary" />
+            <p className="text-xl font-medium">Connecting to Gem...</p>
+            <p className="text-sm text-muted-foreground">This will just take a moment</p>
           </div>
-        )}
-
-        {/* Avatar - Full height, properly zoomed */}
-        <div className="relative w-full h-[60vh] flex-shrink-0">
-          <AvatarCanvas className="absolute inset-0 w-full h-full" initialZoom={true} />
         </div>
+      )}
 
-        {/* Status Display */}
-        {isConnected && (
-          <div className="text-center space-y-3">
-            <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full ${
-              isSpeaking 
-                ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' 
-                : 'bg-gradient-to-r from-primary to-purple-600 text-white'
-            } transition-all duration-300`}>
-              <div className={`w-2 h-2 rounded-full bg-white ${isSpeaking ? 'animate-pulse' : ''}`} />
-              <span className="font-semibold">
-                {isSpeaking ? "AI is speaking..." : "Listening..."}
-              </span>
+      {/* Bottom Call Controls */}
+      {isConnected && (
+        <div className="relative z-10 mt-auto bg-gradient-to-t from-background/95 to-transparent backdrop-blur-sm p-8">
+          <div className="max-w-md mx-auto space-y-4">
+            {/* Status Indicator */}
+            <div className="text-center">
+              <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${
+                isSpeaking 
+                  ? 'bg-green-500/20 border border-green-500/50' 
+                  : 'bg-primary/20 border border-primary/50'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-green-500' : 'bg-primary'} ${isSpeaking ? 'animate-pulse' : ''}`} />
+                <span className="font-medium text-sm">
+                  {isSpeaking ? "Gem is speaking" : "You can speak now"}
+                </span>
+              </div>
             </div>
-            
-            <p className="text-sm text-muted-foreground max-w-md">
-              Speak naturally in your target language. The conversation happens automatically with voice detection.
+
+            {/* End Call Button */}
+            <div className="flex justify-center">
+              <Button
+                onClick={endConversation}
+                size="lg"
+                className="rounded-full w-16 h-16 bg-destructive hover:bg-destructive/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+              >
+                <X className="w-8 h-8" />
+              </Button>
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground">
+              Tap to end call
             </p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
