@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Lock, Check, Star } from "lucide-react";
+import { Lock, Check, Star, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Lesson } from "@/data/lessonData";
 
