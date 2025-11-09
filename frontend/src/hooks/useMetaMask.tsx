@@ -13,8 +13,25 @@ export const useMetaMask = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [chainId, setChainId] = useState<string | null>(null);
 
+  // Get MetaMask provider specifically (not Coinbase or other wallets)
+  const getMetaMaskProvider = () => {
+    if (typeof window === 'undefined') return null;
+    
+    // If window.ethereum exists and is MetaMask, use it
+    if (window.ethereum?.isMetaMask && !window.ethereum?.isCoinbaseWallet) {
+      return window.ethereum;
+    }
+    
+    // If multiple providers exist, find MetaMask specifically
+    if (window.ethereum?.providers) {
+      return window.ethereum.providers.find((p: any) => p.isMetaMask && !p.isCoinbaseWallet);
+    }
+    
+    return null;
+  };
+
   // Check if MetaMask is installed
-  const isMetaMaskInstalled = typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
+  const isMetaMaskInstalled = getMetaMaskProvider() !== null;
 
   // Load saved wallet address from profile
   useEffect(() => {
