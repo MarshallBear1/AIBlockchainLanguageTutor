@@ -52,9 +52,11 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
     if (actions[animation]) {
       actions[animation]
         .reset()
-        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+        .fadeIn(0.5)
         .play();
-      return () => actions[animation]?.fadeOut(0.5);
+      return () => {
+        actions[animation]?.fadeOut(0.5);
+      };
     }
   }, [animation, actions, mixer]);
 
