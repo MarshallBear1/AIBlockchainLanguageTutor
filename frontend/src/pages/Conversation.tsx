@@ -406,14 +406,12 @@ const ConversationContent = () => {
               I'm stuck
             </Button>
 
-            {/* Circular Voice Button */}
+            {/* Circular Voice Button - Click to toggle */}
             <Button
-              onPointerDown={handleVoiceStart}
-              onPointerUp={handleVoiceEnd}
-              onPointerLeave={handleVoiceEnd}
+              onClick={handleMicClick}
               disabled={loading || recordingState === "processing"}
               size="icon"
-              className={`h-16 w-16 rounded-full transition-all touch-none select-none shadow-lg flex-shrink-0 ${
+              className={`h-16 w-16 rounded-full transition-all shadow-lg flex-shrink-0 ${
                 recordingState === "recording"
                   ? "bg-destructive hover:bg-destructive/90 animate-pulse scale-110"
                   : "bg-primary hover:bg-primary/90"
@@ -422,7 +420,10 @@ const ConversationContent = () => {
               {recordingState === "processing" ? (
                 <div className="w-7 h-7 border-4 border-primary-foreground border-t-transparent rounded-full animate-spin" />
               ) : recordingState === "recording" ? (
-                <Mic className="w-7 h-7" />
+                <>
+                  <div className="absolute inset-0 rounded-full bg-destructive/20 animate-ping" />
+                  <Mic className="w-7 h-7 relative z-10" />
+                </>
               ) : (
                 <Mic className="w-7 h-7" />
               )}
