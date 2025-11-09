@@ -48,18 +48,21 @@ const LoadingDots = (props: any) => {
 
 interface AvatarExperienceProps {
   modelPath?: string;
+  initialZoom?: boolean;
 }
 
-export const AvatarExperience = ({ modelPath }: AvatarExperienceProps) => {
+export const AvatarExperience = ({ modelPath, initialZoom = false }: AvatarExperienceProps) => {
   const cameraControls = useRef<CameraControls>(null);
   const avatarChat = useAvatarChat();
   const cameraZoomed = avatarChat?.cameraZoomed || false;
 
   useEffect(() => {
     if (cameraControls.current) {
-      cameraControls.current.setLookAt(0, 2, 5, 0, 1.5, 0);
+      // Use closer camera position for live conversation
+      const distance = initialZoom ? 3 : 5;
+      cameraControls.current.setLookAt(0, 2, distance, 0, 1.5, 0);
     }
-  }, []);
+  }, [initialZoom]);
 
   useEffect(() => {
     if (!cameraControls.current) return;

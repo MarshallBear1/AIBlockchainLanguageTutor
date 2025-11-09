@@ -122,7 +122,7 @@ const LiveConversationPage = () => {
 
         {/* Avatar - Full height, properly zoomed */}
         <div className="relative w-full h-[60vh] flex-shrink-0">
-          <AvatarCanvas className="absolute inset-0 w-full h-full" />
+          <AvatarCanvas className="absolute inset-0 w-full h-full" initialZoom={true} />
         </div>
 
         {/* Status Display */}
