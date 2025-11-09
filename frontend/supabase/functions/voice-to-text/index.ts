@@ -54,25 +54,9 @@ serve(async (req) => {
       throw new Error("OPENAI_API_KEY not configured");
     }
 
-    // Map language codes to ISO 639-1 codes for Whisper
-    const languageMap: Record<string, string> = {
-      "es": "es", // Spanish
-      "fr": "fr", // French
-      "de": "de", // German
-      "it": "it", // Italian
-      "pt": "pt", // Portuguese
-      "ja": "ja", // Japanese
-      "ko": "ko", // Korean
-      "zh": "zh", // Chinese
-    };
-
-    const whisperLanguage = language && languageMap[language] ? languageMap[language] : undefined;
-    
-    if (whisperLanguage) {
-      console.log(`Transcribing audio with Whisper for ${whisperLanguage} + English bilingual support...`);
-    } else {
-      console.log("Transcribing audio with Whisper (auto-detect language)...");
-    }
+    // Use Whisper's auto-detect for better mixed-language handling
+    // This works better for language learning where users mix target language + English
+    console.log("Transcribing audio with Whisper (auto-detect for code-switching)...");
 
     // Decode base64 audio using chunked processing
     const bytes = processBase64Chunks(audio);
