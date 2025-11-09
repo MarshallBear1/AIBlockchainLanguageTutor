@@ -115,9 +115,27 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
         // Stop all tracks
         mediaRecorder.stream.getTracks().forEach((track) => track.stop());
 
+        // Check audio blob size - if too small, likely just noise
+        if (audioBlob.size < 5000) {
+          console.log(`Audio blob too small (${audioBlob.size} bytes), ignoring`);
+          setState("idle");
+          resolve(null);
+          return;
+        }
+
         // Convert to base64
         try {
           const base64Audio = await blobToBase64(audioBlob);
+          
+          // Additional check: validate base64 length
+          if (!base64Audio || base64Audio.length < 1000) {
+            console.log("Base64 audio too short, ignoring");
+            setState("idle");
+            resolve(null);
+            return;
+          }
+          
+          console.log(`Audio processed: ${audioBlob.size} bytes, ${recordingDuration}ms duration`);
           setState("idle");
           resolve(base64Audio);
         } catch (err) {
