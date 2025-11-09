@@ -70,7 +70,7 @@ const SelectLanguage = () => {
               }`}
             >
               <div className="mb-3 flex justify-center">
-                <img src={lang.flag} alt={`${lang.name} flag`} className="w-16 h-16 object-contain rounded-lg" />
+                <img src={lang.flag} alt={`${lang.name} flag`} className="w-16 h-16 object-contain rounded-lg ring-2 ring-gray-400 dark:ring-gray-600" />
               </div>
               <div className="font-semibold text-center">{lang.name}</div>
             </Card>
