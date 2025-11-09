@@ -32,10 +32,10 @@ async function generateSpeech(text: string, elevenLabsKey: string, voiceId: stri
         },
         body: JSON.stringify({
           text,
-          model_id: "eleven_monolingual_v1",
+          model_id: "eleven_multilingual_v2",
           voice_settings: {
             stability: 0.5,
-            similarity_boost: 0.5,
+            similarity_boost: 0.75,
           },
         }),
       }
@@ -54,34 +54,8 @@ async function generateSpeech(text: string, elevenLabsKey: string, voiceId: stri
   }
 }
 
-// Simple lip-sync approximation based on text length
-// For full lip-sync, use the Node.js backend with Rhubarb
-function generateSimpleLipsync(text: string, audioDuration: number = 3) {
-  const words = text.split(" ");
-  const timePerWord = audioDuration / words.length;
-  const phonemes = ["A", "B", "C", "D", "E", "F"];
-
-  const mouthCues = [];
-  let currentTime = 0;
-
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i];
-    const wordDuration = timePerWord;
-    const syllables = Math.max(1, Math.ceil(word.length / 3));
-    const syllableDuration = wordDuration / syllables;
-
-    for (let j = 0; j < syllables; j++) {
-      mouthCues.push({
-        start: currentTime,
-        end: currentTime + syllableDuration,
-        value: phonemes[Math.floor(Math.random() * phonemes.length)],
-      });
-      currentTime += syllableDuration;
-    }
-  }
-
-  return { mouthCues };
-}
+// Note: Lip-sync is now handled client-side using wawa-lipsync library
+// which analyzes audio in real-time for accurate viseme detection
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -196,7 +170,6 @@ serve(async (req) => {
             {
               text: "API key not configured. Please set up your OpenAI API key.",
               audio: "",
-              lipsync: { mouthCues: [] },
               facialExpression: "sad",
               animation: "Idle",
             },
@@ -216,7 +189,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo-1106",
+        model: "gpt-4o-mini",
         max_tokens: 1000,
         temperature: 0.6,
         response_format: { type: "json_object" },
@@ -367,21 +340,15 @@ serve(async (req) => {
     // Convert single message to array format for consistency
     const messages = Array.isArray(messageData) ? messageData : [messageData];
 
-    // Generate audio and lip-sync for each message
+    // Generate audio for each message (lipsync handled client-side)
     for (const msg of messages) {
       if (elevenLabsKey) {
         // Generate speech using ElevenLabs
         console.log(`Generating speech for: ${msg.text.substring(0, 50)}...`);
         msg.audio = await generateSpeech(msg.text, elevenLabsKey, voiceId);
-
-        // Generate simple lip-sync (approximation)
-        // For accurate lip-sync, use the Node.js backend with Rhubarb
-        const estimatedDuration = msg.text.length * 0.05; // ~50ms per character
-        msg.lipsync = generateSimpleLipsync(msg.text, estimatedDuration);
       } else {
         // No ElevenLabs key, skip audio
         msg.audio = "";
-        msg.lipsync = { mouthCues: [] };
       }
     }
 
@@ -399,7 +366,6 @@ serve(async (req) => {
           {
             text: "I'm having trouble right now. Please try again!",
             audio: "",
-            lipsync: { mouthCues: [] },
             facialExpression: "sad",
             animation: "Idle",
           },

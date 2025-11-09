@@ -3,8 +3,10 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useAvatarChat } from "@/hooks/useAvatarChat";
-import { facialExpressions, visemeMapping } from "@/config/avatarConfig";
+import { facialExpressions } from "@/config/avatarConfig";
 import { FacialExpression } from "@/types/avatar";
+import { lipsyncManager } from "@/lib/lipsyncManager";
+import { VISEMES } from "wawa-lipsync";
 
 interface Avatar3DProps {
   modelPath?: string;
@@ -13,11 +15,11 @@ interface Avatar3DProps {
 export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }: Avatar3DProps) {
   const { nodes, materials, scene } = useGLTF(modelPath) as any;
   const { message, onMessagePlayed } = useAvatarChat();
-  const [lipsync, setLipsync] = useState<any>();
-  const [audio, setAudio] = useState<HTMLAudioElement>();
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [blink, setBlink] = useState(false);
   const [facialExpression, setFacialExpression] = useState<FacialExpression>("default");
   const [animation, setAnimation] = useState("Idle");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Load animations
   const { animations } = useGLTF("/models/animations.glb") as any;
@@ -28,19 +30,31 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
   useEffect(() => {
     if (!message) {
       setAnimation("Idle");
+      setAudio(null);
       return;
     }
 
     setAnimation(message.animation);
     setFacialExpression(message.facialExpression);
-    setLipsync(message.lipsync);
 
     // Play audio if provided
     if (message.audio) {
       const audioElement = new Audio("data:audio/mp3;base64," + message.audio);
+
+      // Connect audio to lipsync manager
+      audioElement.addEventListener('loadeddata', () => {
+        lipsyncManager.connectAudio(audioElement);
+      });
+
       audioElement.play();
       setAudio(audioElement);
-      audioElement.onended = onMessagePlayed;
+      audioRef.current = audioElement;
+
+      audioElement.onended = () => {
+        setAudio(null);
+        audioRef.current = null;
+        onMessagePlayed();
+      };
     } else {
       // If no audio, just play message for a few seconds
       setTimeout(onMessagePlayed, 3000);
@@ -98,29 +112,27 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
     lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
     lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
 
-    // Handle lip sync
-    const appliedMorphTargets: string[] = [];
-    if (message && lipsync && audio) {
-      const currentAudioTime = audio.currentTime;
-      for (let i = 0; i < lipsync.mouthCues.length; i++) {
-        const mouthCue = lipsync.mouthCues[i];
-        if (currentAudioTime >= mouthCue.start && currentAudioTime <= mouthCue.end) {
-          const viseme = visemeMapping[mouthCue.value];
-          if (viseme) {
-            appliedMorphTargets.push(viseme);
-            lerpMorphTarget(viseme, 1, 0.2);
-          }
-          break;
-        }
-      }
-    }
+    // Handle lip sync with wawa-lipsync
+    if (audio && audioRef.current && !audioRef.current.paused) {
+      // Process audio for viseme detection
+      lipsyncManager.processAudio();
+      const currentViseme = lipsyncManager.viseme;
 
-    // Reset unused visemes
-    Object.values(visemeMapping).forEach((value) => {
-      if (!appliedMorphTargets.includes(value)) {
-        lerpMorphTarget(value, 0, 0.1);
-      }
-    });
+      // Apply current viseme
+      lerpMorphTarget(currentViseme, 1, 0.2);
+
+      // Reset all other visemes
+      Object.values(VISEMES).forEach((viseme) => {
+        if (viseme !== currentViseme) {
+          lerpMorphTarget(viseme, 0, 0.1);
+        }
+      });
+    } else {
+      // Reset all visemes when not speaking
+      Object.values(VISEMES).forEach((viseme) => {
+        lerpMorphTarget(viseme, 0, 0.1);
+      });
+    }
   });
 
   // Automatic blinking

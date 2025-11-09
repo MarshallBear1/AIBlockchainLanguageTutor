@@ -14,20 +14,11 @@ export type AvatarAnimation =
 export interface AvatarMessage {
   text: string;
   audio: string; // base64 encoded audio
-  lipsync: LipsyncData;
   facialExpression: FacialExpression;
   animation: AvatarAnimation;
 }
 
-export interface LipsyncData {
-  mouthCues: MouthCue[];
-}
-
-export interface MouthCue {
-  start: number;
-  end: number;
-  value: string; // Phoneme like "A", "B", "C", etc.
-}
+// Note: Lipsync is now handled client-side using wawa-lipsync library
 
 export interface AvatarCharacter {
   id: string;
@@ -43,8 +34,4 @@ export interface FacialExpressionMap {
   [key: string]: {
     [morphTarget: string]: number;
   };
-}
-
-export interface VisemeMapping {
-  [key: string]: string;
 }

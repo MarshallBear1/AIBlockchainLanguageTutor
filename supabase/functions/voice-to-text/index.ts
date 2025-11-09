@@ -13,11 +13,25 @@ serve(async (req) => {
   }
 
   try {
-    const { audio } = await req.json();
+    const { audio, language } = await req.json();
 
     if (!audio) {
       throw new Error("No audio data provided");
     }
+
+    // Map language codes to Whisper language codes
+    const languageMap: Record<string, string> = {
+      "es": "es",
+      "fr": "fr",
+      "de": "de",
+      "it": "it",
+      "pt": "pt",
+      "ja": "ja",
+      "ko": "ko",
+      "zh": "zh",
+    };
+
+    const targetLanguage = language && languageMap[language] ? languageMap[language] : "en";
 
     const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAIApiKey) {
@@ -38,7 +52,7 @@ serve(async (req) => {
     const audioBlob = new Blob([bytes], { type: "audio/webm" });
     formData.append("file", audioBlob, "audio.webm");
     formData.append("model", "whisper-1");
-    formData.append("language", "en"); // Can be made dynamic based on user's target language
+    formData.append("language", targetLanguage);
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {

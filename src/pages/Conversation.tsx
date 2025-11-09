@@ -131,8 +131,12 @@ const ConversationContent = () => {
           }
           
           // Transcribe audio to text
+          const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
           const { data, error } = await supabase.functions.invoke("voice-to-text", {
-            body: { audio: audioBase64 },
+            body: {
+              audio: audioBase64,
+              language: selectedLanguage
+            },
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },

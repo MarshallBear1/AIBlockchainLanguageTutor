@@ -21,6 +21,7 @@ server/.env
 # Temporary backend repos
 temp-frontend/
 temp-backend/
+temp-wawa-lipsync/
 
 # Server audio files
 server/audios/*.mp3

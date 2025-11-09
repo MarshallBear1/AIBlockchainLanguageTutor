@@ -1,4 +1,4 @@
-import { FacialExpressionMap, VisemeMapping, AvatarCharacter } from "@/types/avatar";
+import { FacialExpressionMap, AvatarCharacter } from "@/types/avatar";
 
 export const facialExpressions: FacialExpressionMap = {
   default: {},
@@ -79,19 +79,6 @@ export const facialExpressions: FacialExpressionMap = {
     mouthSmileRight: 0.38,
     tongueOut: 0.96,
   },
-};
-
-// Mapping phonemes to viseme morph targets
-export const visemeMapping: VisemeMapping = {
-  A: "viseme_PP",
-  B: "viseme_kk",
-  C: "viseme_I",
-  D: "viseme_AA",
-  E: "viseme_O",
-  F: "viseme_U",
-  G: "viseme_FF",
-  H: "viseme_TH",
-  X: "viseme_PP",
 };
 
 // Available avatar characters
