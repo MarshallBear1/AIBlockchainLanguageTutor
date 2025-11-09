@@ -36,7 +36,14 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
       return;
     }
 
-    setAnimation(message.animation);
+    // Keep avatar mostly idle - only allow very subtle animations
+    // Force Idle for most animations to keep avatar calm
+    const subtleAnimations = ["Idle", "Rumba"]; // Only allow these two
+    const safeAnimation = subtleAnimations.includes(message.animation) 
+      ? message.animation 
+      : "Idle"; // Default everything else to Idle
+    
+    setAnimation(safeAnimation);
     setFacialExpression(message.facialExpression);
 
     // Play audio if provided
@@ -63,15 +70,34 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
     }
   }, [message, onMessagePlayed]);
 
-  // Handle animation changes
+  // Minimal animation control - keep avatar mostly still
   useEffect(() => {
     if (actions[animation]) {
-      actions[animation]
-        .reset()
-        .fadeIn(0.5)
-        .play();
+      // Only play animations if they're in our allowed list
+      if (animation === "Idle" || animation === "Rumba") {
+        actions[animation]
+          .reset()
+          .fadeIn(0.5)
+          .play();
+        
+        // Reduce intensity even for allowed animations
+        if (animation === "Rumba") {
+          actions[animation].setEffectiveWeight(0.6); // Less dramatic celebration
+        }
+      } else {
+        // Force idle for any other animation
+        if (actions["Idle"]) {
+          actions["Idle"]
+            .reset()
+            .fadeIn(0.5)
+            .play();
+        }
+      }
+      
       return () => {
-        actions[animation]?.fadeOut(0.5);
+        if (actions[animation]) {
+          actions[animation].fadeOut(0.5);
+        }
       };
     }
   }, [animation, actions, mixer]);
@@ -115,7 +141,8 @@ export function Avatar3D({ modelPath = "/models/64f1a714fe61576b46f27ca2.glb" }:
     lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
 
     // Handle lip sync with wawa-lipsync (works for both regular and realtime audio)
-    // Process audio for viseme detection - this works globally for any audio connected to lipsyncManager
+    // IMPORTANT: Lip sync works independently of body animations
+    // The mouth will move even when body is in Idle animation
     lipsyncManager.processAudio();
     const currentViseme = lipsyncManager.viseme;
 

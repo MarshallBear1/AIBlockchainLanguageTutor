@@ -6,7 +6,6 @@ export type AvatarAnimation =
   | "Talking_1"
   | "Talking_2"
   | "Crying"
-  | "Laughing"
   | "Rumba"
   | "Angry"
   | "Terrified";

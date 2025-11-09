@@ -96,7 +96,7 @@ app.post("/chat", async (req, res) => {
           You will always reply with a JSON array of messages. With a maximum of 3 messages.
           Each message has a text, facialExpression, and animation property.
           The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-          The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry.
+          Use ONLY these animations: Idle (for 95% of responses), Rumba (only for "Great job today!"). Keep the avatar calm and still. NEVER use Talking_0, Talking_1, Talking_2, Laughing, Crying, Terrified, or Angry - they are too dramatic.
           Keep your responses encouraging and helpful for language learning.
           Provide corrections gently and celebrate progress.
           `,

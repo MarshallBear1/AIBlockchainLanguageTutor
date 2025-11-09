@@ -128,18 +128,28 @@ const ConversationContent = () => {
         lastMessage.role === "assistant" &&
         lastMessage.text.includes("Great job today!")
       ) {
+        console.log("Detected lesson completion: 'Great job today!'");
         setIsFinalMessage(true);
 
-        // Auto-trigger completion only after avatar finishes speaking
-        // Wait 10 seconds after "Great job today!" before showing reward
-        if (message === null) {
-          setTimeout(() => {
-            handleEndConversation();
-          }, 10000); // 10 second pause
-        }
+        // Wait for avatar to finish speaking, then wait 10 seconds
+        const triggerCompletion = () => {
+          if (message === null) {
+            // Avatar finished speaking, wait 10 seconds then show reward
+            console.log("Avatar finished speaking, waiting 10 seconds...");
+            setTimeout(() => {
+              console.log("Triggering lesson completion...");
+              handleEndConversation();
+            }, 10000);
+          } else {
+            // Avatar still speaking, check again in 1 second
+            setTimeout(triggerCompletion, 1000);
+          }
+        };
+
+        triggerCompletion();
       }
     }
-  }, [conversationHistory, message]);
+  }, [conversationHistory]); // Removed message dependency to avoid infinite loops
 
   const handleEndConversation = async () => {
     // Check if lesson is actually complete (GEM said "Great job today!")
