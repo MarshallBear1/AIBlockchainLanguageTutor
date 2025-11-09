@@ -77,6 +77,17 @@ serve(async (req) => {
     // Decode base64 audio using chunked processing
     const bytes = processBase64Chunks(audio);
     console.log(`Processed audio size: ${bytes.length} bytes`);
+    
+    // Check minimum audio length (too short = likely just noise/click)
+    if (bytes.length < 5000) { // Less than ~5KB is probably too short
+      console.log("Audio too short, likely just noise");
+      return new Response(
+        JSON.stringify({ text: "" }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // Create form data for OpenAI Whisper API
     const formData = new FormData();
