@@ -58,28 +58,24 @@ const SelectLevel = () => {
 
       // Save to Supabase in background (don't wait)
       supabase.auth.getUser()
-        .then(({ data: { user }, error: userError }) => {
+        .then(async ({ data: { user }, error: userError }) => {
           if (userError) {
             console.error("Error fetching user:", userError);
             return;
           }
 
           if (user) {
-            supabase
+            const { error } = await supabase
               .from("profiles")
               .update({
                 selected_language: selectedLanguage,
                 selected_level: selected,
               })
-              .eq("id", user.id)
-              .then(({ error }) => {
-                if (error) {
-                  console.error("Profile update error:", error);
-                }
-              })
-              .catch((error) => {
-                console.error("Unexpected error updating profile:", error);
-              });
+              .eq("id", user.id);
+
+            if (error) {
+              console.error("Profile update error:", error);
+            }
           }
         })
         .catch((error) => {

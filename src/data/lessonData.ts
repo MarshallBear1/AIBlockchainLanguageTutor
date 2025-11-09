@@ -747,7 +747,7 @@ export async function completeLesson(lessonId: number, languageCode?: string): P
           const { data: authData } = await supabase.auth.getSession();
           if (authData?.session?.access_token) {
             const response = await fetch(
-              `${supabase.supabaseUrl}/functions/v1/check-cycle-completion`,
+              `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/check-cycle-completion`,
               {
                 method: 'POST',
                 headers: {

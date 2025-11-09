@@ -573,21 +573,35 @@ Then move to the next teaching point.
     if (!response.ok) {
       const errorText = await response.text();
       console.error("OpenAI API error:", response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log("OpenAI response data:", JSON.stringify(data, null, 2));
     
     // Validate response structure
-    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
-      console.error("Invalid OpenAI response structure:", JSON.stringify(data));
-      throw new Error("Invalid response from OpenAI");
+    if (!data.choices || !data.choices[0]) {
+      console.error("Invalid OpenAI response - no choices:", JSON.stringify(data));
+      throw new Error("Invalid response from OpenAI - no choices returned");
     }
 
-    const content = data.choices[0].message.content.trim();
+    const choice = data.choices[0];
+    
+    // Check for refusal or finish_reason issues
+    if (choice.finish_reason === "content_filter") {
+      console.error("OpenAI content filter triggered");
+      throw new Error("Content was filtered by OpenAI safety system");
+    }
+    
+    if (!choice.message || !choice.message.content) {
+      console.error("Invalid OpenAI response - no message content:", JSON.stringify(choice));
+      throw new Error("Invalid response from OpenAI - no message content");
+    }
+
+    const content = choice.message.content.trim();
     if (!content) {
-      console.error("Empty content from OpenAI");
-      throw new Error("Empty response from OpenAI");
+      console.error("Empty content from OpenAI. Full response:", JSON.stringify(data));
+      throw new Error("Empty response from OpenAI - please check your API key and quota");
     }
 
     let messageData;
