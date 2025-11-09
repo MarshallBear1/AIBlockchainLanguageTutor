@@ -15,16 +15,25 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
   const [error, setError] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartTimeRef = useRef<number | null>(null);
+  const lastRecordingTimeRef = useRef<number>(0);
 
   const startRecording = useCallback(async (): Promise<boolean> => {
     try {
+      // Prevent rapid triggering (debounce: minimum 500ms between recordings)
+      const now = Date.now();
+      if (now - lastRecordingTimeRef.current < 500) {
+        console.log("Recording triggered too quickly, ignoring");
+        return false;
+      }
+
       setError(null);
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 44100,
-        } 
+        }
       });
 
       // Determine the best supported MIME type
@@ -43,6 +52,7 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
 
       mediaRecorder.start();
       mediaRecorderRef.current = mediaRecorder;
+      recordingStartTimeRef.current = Date.now();
       setState("recording");
       return true;
     } catch (err) {
@@ -61,14 +71,30 @@ export const useVoiceRecording = (): UseVoiceRecordingReturn => {
         return;
       }
 
+      // Check recording duration
+      const recordingDuration = recordingStartTimeRef.current
+        ? Date.now() - recordingStartTimeRef.current
+        : 0;
+
+      // Ignore recordings shorter than 500ms (prevents Whisper hallucinations)
+      if (recordingDuration < 500) {
+        console.log(`Recording too short (${recordingDuration}ms), ignoring`);
+        mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+        mediaRecorder.stop();
+        setState("idle");
+        resolve(null);
+        return;
+      }
+
       setState("processing");
+      lastRecordingTimeRef.current = Date.now();
 
       mediaRecorder.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType });
-        
+
         // Stop all tracks
         mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-        
+
         // Convert to base64
         try {
           const base64Audio = await blobToBase64(audioBlob);

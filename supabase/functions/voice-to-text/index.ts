@@ -68,8 +68,8 @@ serve(async (req) => {
     // No language parameter - let Whisper auto-detect for bilingual conversations
 
     // Add prompt to prevent hallucinations (common YouTube subtitle watermarks, etc.)
-    // This guides Whisper to focus on actual speech content
-    formData.append("prompt", "This is a language learning conversation. Transcribe exactly what is spoken.");
+    // STRONG anti-hallucination prompt to prevent "Learn English for free www.engvid.com" etc.
+    formData.append("prompt", "Language learning practice. Only transcribe actual human speech. Ignore any background noise, silence, or artifacts. If nothing is said, return empty.");
 
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {

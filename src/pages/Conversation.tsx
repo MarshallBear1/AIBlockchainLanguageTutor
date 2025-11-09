@@ -36,11 +36,12 @@ const ConversationContent = () => {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [isFinalMessage, setIsFinalMessage] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
-  
+
   // Avatar chat context
   const { chat, loading, conversationHistory, message, stopSpeaking } = useAvatarChat();
-  
+
   // Voice recording
   const { state: recordingState, startRecording, stopRecording, error: recordingError } = useVoiceRecording();
 
@@ -124,12 +125,13 @@ const ConversationContent = () => {
         lastMessage.text.includes("Great job today!")
       ) {
         setIsFinalMessage(true);
-        
+
         // Auto-trigger completion only after avatar finishes speaking
+        // Wait 10 seconds after "Great job today!" before showing reward
         if (message === null) {
           setTimeout(() => {
             handleEndConversation();
-          }, 2000);
+          }, 10000); // 10 second pause
         }
       }
     }
@@ -205,11 +207,15 @@ const ConversationContent = () => {
       // Stop recording and process when button is released
       const audioBase64 = await stopRecording();
       if (audioBase64) {
+        // Show transcribing indicator
+        setIsTranscribing(true);
+
         try {
           // Get auth session for authenticated function calls
           const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
           if (sessionError || !session) {
+            setIsTranscribing(false);
             toast({
               title: "Authentication Error",
               description: "Please log in again to continue.",
@@ -231,6 +237,8 @@ const ConversationContent = () => {
             },
           });
 
+          setIsTranscribing(false);
+
           if (error) throw error;
 
           const transcribedText = data?.text;
@@ -245,6 +253,7 @@ const ConversationContent = () => {
           }
         } catch (err) {
           console.error("Voice processing error:", err);
+          setIsTranscribing(false);
           toast({
             title: "Error",
             description: "Failed to process voice input. Please try again.",
@@ -309,14 +318,24 @@ const ConversationContent = () => {
               </p>
             </div>
           ) : (
-            conversationHistory.map((msg, idx) => (
-              <ConversationBubble
-                key={idx}
-                role={msg.role}
-                text={msg.text}
-                timestamp={msg.timestamp}
-              />
-            ))
+            <>
+              {conversationHistory.map((msg, idx) => (
+                <ConversationBubble
+                  key={idx}
+                  role={msg.role}
+                  text={msg.text}
+                  timestamp={msg.timestamp}
+                />
+              ))}
+              {/* Show transcribing indicator */}
+              {isTranscribing && (
+                <ConversationBubble
+                  role="user"
+                  text="..."
+                  timestamp={Date.now()}
+                />
+              )}
+            </>
           )}
         </div>
       </main>

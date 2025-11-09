@@ -33,15 +33,15 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "How to say your name",
-        scenario: "Practice introducing yourself with '¿Cómo te llamas?' and 'Me llamo...'",
-        description: "Your first Spanish phrase",
+        scenario: "Practice asking someone's name and introducing yourself",
+        description: "Your first phrase",
         emoji: "👋",
         completed: false,
         locked: false,
         learningGoals: [
-          "Student can say 'Me llamo [their name]' correctly",
-          "Student understands '¿Cómo te llamas?' when asked",
-          "Student can ask someone else '¿Cómo te llamas?'",
+          "Student can say 'My name is [their name]' in the target language",
+          "Student understands when asked for their name",
+          "Student can ask someone else for their name",
           "Student can have a complete name exchange conversation"
         ],
       },
@@ -50,16 +50,16 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "Morning greetings",
-        scenario: "Learn to say 'Buenos días' and when to use it",
+        scenario: "Learn to say good morning and when to use it",
         description: "Say good morning",
         emoji: "🌅",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can pronounce 'Buenos días' correctly",
-          "Student knows when to use 'Buenos días' (morning time)",
-          "Student can greet someone with 'Buenos días' naturally",
-          "Student understands 'Buenos días' when greeted"
+          "Student can pronounce good morning correctly",
+          "Student knows when to use morning greetings (morning time)",
+          "Student can greet someone in the morning naturally",
+          "Student understands morning greetings when greeted"
         ],
       },
       {
@@ -67,15 +67,15 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "Afternoon & evening",
-        scenario: "Practice 'Buenas tardes' and 'Buenas noches'",
+        scenario: "Practice saying good afternoon and good evening",
         description: "Greet at different times",
         emoji: "🌆",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Buenas tardes' correctly",
-          "Student can say 'Buenas noches' correctly",
-          "Student knows when to use 'Buenas tardes' vs 'Buenas noches'",
+          "Student can say good afternoon correctly",
+          "Student can say good evening correctly",
+          "Student knows when to use afternoon vs evening greetings",
           "Student can greet appropriately at different times of day"
         ],
       },
@@ -84,16 +84,16 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "How are you?",
-        scenario: "Ask '¿Cómo estás?' in conversation",
+        scenario: "Ask how someone is doing in conversation",
         description: "Check on someone",
         emoji: "😊",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can pronounce '¿Cómo estás?' correctly",
+          "Student can ask 'How are you?' correctly",
           "Student understands the question when asked",
           "Student can use it naturally in conversation",
-          "Student knows when to ask '¿Cómo estás?'"
+          "Student knows when to ask how someone is doing"
         ],
       },
       {
@@ -101,16 +101,16 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "Responding to greetings",
-        scenario: "Say 'Bien, gracias', 'Regular', or 'Mal'",
+        scenario: "Respond with 'good, thanks', 'so-so', or 'not good'",
         description: "Answer how you feel",
         emoji: "💭",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Bien, gracias' correctly",
-          "Student can say 'Regular' and 'Mal'",
+          "Student can say 'good, thanks' correctly",
+          "Student can say 'so-so' and 'not good'",
           "Student knows which response matches their feeling",
-          "Student can respond naturally to '¿Cómo estás?'"
+          "Student can respond naturally to 'How are you?'"
         ],
       },
     ],
@@ -126,15 +126,15 @@ export const units: Unit[] = [
         unitId: 2,
         level: 1,
         title: "Where are you from?",
-        scenario: "Practice '¿De dónde eres?' and 'Soy de...'",
+        scenario: "Practice asking where someone is from and saying where you're from",
         description: "Talk about your origin",
         emoji: "🌍",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Soy de [their country/city]' correctly",
-          "Student understands '¿De dónde eres?' when asked",
-          "Student can ask someone '¿De dónde eres?'",
+          "Student can say 'I am from [their country/city]' in the target language",
+          "Student understands when asked where they are from",
+          "Student can ask someone where they are from",
           "Student can have a conversation about origins"
         ],
       },
@@ -143,15 +143,15 @@ export const units: Unit[] = [
         unitId: 2,
         level: 1,
         title: "Yes, No, Please, Thank you",
-        scenario: "Use 'Sí', 'No', 'Por favor', 'Gracias'",
+        scenario: "Use yes, no, please, and thank you in conversation",
         description: "Essential polite words",
         emoji: "🙏",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Sí' and 'No' correctly",
-          "Student can say 'Por favor' and use it appropriately",
-          "Student can say 'Gracias' and 'De nada'",
+          "Student can say yes and no correctly",
+          "Student can say please and use it appropriately",
+          "Student can say thank you and you're welcome",
           "Student uses polite words naturally in conversation"
         ],
       },
@@ -160,15 +160,15 @@ export const units: Unit[] = [
         unitId: 2,
         level: 1,
         title: "Nice to meet you",
-        scenario: "Say 'Mucho gusto' or 'Encantado/a'",
+        scenario: "Say 'nice to meet you' and respond appropriately",
         description: "Express pleasure meeting someone",
         emoji: "🤝",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Mucho gusto' correctly",
-          "Student understands 'Encantado/a' and gender usage",
-          "Student can respond to 'Mucho gusto' appropriately",
+          "Student can say 'nice to meet you' correctly",
+          "Student understands gender/formality variations if applicable",
+          "Student can respond to 'nice to meet you' appropriately",
           "Student uses these phrases naturally when meeting someone"
         ],
       },
@@ -177,14 +177,14 @@ export const units: Unit[] = [
         unitId: 2,
         level: 1,
         title: "Goodbye phrases",
-        scenario: "Learn 'Adiós', 'Hasta luego', 'Hasta mañana'",
+        scenario: "Learn goodbye, see you later, and see you tomorrow",
         description: "Say goodbye properly",
         emoji: "👋",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'Adiós' correctly",
-          "Student can say 'Hasta luego' and 'Hasta mañana'",
+          "Student can say goodbye correctly",
+          "Student can say see you later and see you tomorrow",
           "Student knows when to use each goodbye phrase",
           "Student can end conversations appropriately"
         ],
@@ -227,9 +227,9 @@ export const units: Unit[] = [
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can order a drink: 'Quiero un café, por favor'",
+          "Student can order a drink (e.g., 'I would like a coffee, please')",
           "Student can understand and respond to size/type questions",
-          "Student can ask 'Cuánto cuesta?' (How much does it cost?)",
+          "Student can ask 'How much does it cost?'",
           "Student can complete a full order transaction"
         ],
       },
@@ -244,9 +244,9 @@ export const units: Unit[] = [
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can ask for items: 'Necesito...' (I need...)",
+          "Student can ask for items (e.g., 'I need...')",
           "Student can understand prices and quantities",
-          "Student can ask '¿Dónde está...?' (Where is...?)",
+          "Student can ask 'Where is...?'",
           "Student can complete a shopping transaction"
         ],
       },
@@ -261,9 +261,9 @@ export const units: Unit[] = [
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can ask '¿Dónde está...?' for locations",
+          "Student can ask 'Where is...?' for locations",
           "Student can understand basic directions (left, right, straight)",
-          "Student can ask 'Está cerca?' (Is it close?)",
+          "Student can ask 'Is it close?'",
           "Student can follow simple direction sequences"
         ],
       },
@@ -279,8 +279,8 @@ export const units: Unit[] = [
         locked: true,
         learningGoals: [
           "Student can read and understand a simple menu",
-          "Student can order food: 'Para mí...' (For me...)",
-          "Student can ask for the bill: 'La cuenta, por favor'",
+          "Student can order food (e.g., 'For me...')",
+          "Student can ask for the bill",
           "Student can handle a complete restaurant interaction"
         ],
       },
@@ -295,7 +295,7 @@ export const units: Unit[] = [
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can buy a ticket: 'Un billete para...'",
+          "Student can buy a ticket (e.g., 'One ticket to...')",
           "Student can ask about routes and times",
           "Student can understand platform/gate announcements",
           "Student can navigate public transport independently"

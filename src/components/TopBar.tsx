@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getWallet } from "@/utils/wallet";
 import { getStreak } from "@/utils/streakManager";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import spanishFlag from "@/assets/flags/spanish-flag.png";
 import frenchFlag from "@/assets/flags/french-flag.png";
 import germanFlag from "@/assets/flags/german-flag.png";
@@ -20,7 +21,7 @@ const TopBar = () => {
   const [vibeCoins, setVibeCoins] = useState(0);
   const [currentStreak, setCurrentStreak] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem("selectedLanguage") || "es");
-  const selectedLevel = localStorage.getItem("selectedLevel") || "1";
+  const [selectedLevel, setSelectedLevel] = useState(localStorage.getItem("selectedLevel") || "1");
   const [open, setOpen] = useState(false);
   const { signOut } = useAuth();
   const navigate = useNavigate();
@@ -55,9 +56,46 @@ const TopBar = () => {
     zh: "Chinese",
   };
 
-  const handleLanguageChange = (langCode: string) => {
+  const handleLanguageChange = async (langCode: string) => {
+    // Update localStorage
     localStorage.setItem("selectedLanguage", langCode);
     setSelectedLanguage(langCode);
+
+    // Update Supabase profile
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ selected_language: langCode })
+          .eq("id", user.id);
+      }
+    } catch (error) {
+      console.error("Error updating language in Supabase:", error);
+    }
+
+    setOpen(false);
+    window.location.reload();
+  };
+
+  const handleLevelChange = async (level: string) => {
+    // Update localStorage
+    localStorage.setItem("selectedLevel", level);
+    setSelectedLevel(level);
+
+    // Update Supabase profile
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ selected_level: parseInt(level) })
+          .eq("id", user.id);
+      }
+    } catch (error) {
+      console.error("Error updating level in Supabase:", error);
+    }
+
     setOpen(false);
     window.location.reload();
   };
@@ -135,12 +173,29 @@ const TopBar = () => {
                   ))}
                 </div>
               </div>
+
+              <div>
+                <h3 className="font-semibold text-sm mb-2">Switch Level</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {Object.entries(levelNames).map(([level, name]) => (
+                    <Button
+                      key={level}
+                      variant={selectedLevel === level ? "default" : "outline"}
+                      className="justify-start text-xs"
+                      onClick={() => handleLevelChange(level)}
+                    >
+                      {name}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
               <Button
                 variant="destructive"
                 className="w-full gap-2"
                 onClick={handleLogout}
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4" />
                 Log Out
               </Button>
             </div>
