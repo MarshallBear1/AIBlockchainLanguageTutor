@@ -61,15 +61,8 @@ const Home = () => {
 
       <main className="flex-1 p-4 pb-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
-          {/* Header with Streak */}
+          {/* Header */}
           <div className="text-center mb-8 pt-4">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full shadow-lg">
-                <Flame className="w-5 h-5" />
-                <span className="font-bold text-lg">{currentStreak}</span>
-                <span className="text-sm">day streak</span>
-              </div>
-            </div>
             <h1 className="text-3xl font-bold mb-2">{levelNames[userLevel]} Learning Path</h1>
             <p className="text-muted-foreground">Complete lessons to unlock new adventures</p>
           </div>

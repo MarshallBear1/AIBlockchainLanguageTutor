@@ -277,7 +277,7 @@ const ConversationContent = () => {
       {/* Top Bar */}
       <div className="flex-shrink-0 bg-background border-b border-border p-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate(-1)}>
+          <Button variant="ghost" onClick={() => navigate("/home")}>
             <ArrowLeft className="w-4 h-4" />
           </Button>
           

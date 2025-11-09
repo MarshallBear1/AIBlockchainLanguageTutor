@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronDown, Coins } from "lucide-react";
+import { ChevronDown, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getWallet } from "@/utils/wallet";
 import spanishFlag from "@/assets/flags/spanish-flag.png";
@@ -10,9 +10,11 @@ import portugueseFlag from "@/assets/flags/portuguese-flag.png";
 import japaneseFlag from "@/assets/flags/japanese-flag.png";
 import koreanFlag from "@/assets/flags/korean-flag.png";
 import chineseFlag from "@/assets/flags/chinese-flag.png";
+import vibecoinLogo from "@/assets/vibecoin-logo.png";
 
 const TopBar = () => {
   const [vibeCoins, setVibeCoins] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
   const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
   const selectedLevel = localStorage.getItem("selectedLevel") || "1";
 
@@ -35,15 +37,17 @@ const TopBar = () => {
     "5": "Fluent"
   };
 
-  // Load wallet balance on mount and whenever component re-renders
+  // Load wallet balance and streak on mount and whenever component re-renders
   useEffect(() => {
     const wallet = getWallet();
     setVibeCoins(wallet.vibeCoins);
+    setCurrentStreak(wallet.currentStreak);
 
     // Listen for storage changes (when coins are added in other tabs/windows)
     const handleStorageChange = () => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
+      setCurrentStreak(updatedWallet.currentStreak);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -52,6 +56,7 @@ const TopBar = () => {
     const interval = setInterval(() => {
       const updatedWallet = getWallet();
       setVibeCoins(updatedWallet.vibeCoins);
+      setCurrentStreak(updatedWallet.currentStreak);
     }, 1000);
 
     return () => {
@@ -69,10 +74,19 @@ const TopBar = () => {
           <ChevronDown className="w-4 h-4" />
         </Button>
 
-        <Button variant="outline" className="rounded-full px-4 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">
-          <Coins className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-          <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Streak */}
+          <div className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-full shadow-md">
+            <Flame className="w-4 h-4" />
+            <span className="font-bold text-sm">{currentStreak}</span>
+          </div>
+
+          {/* Vibe Coins */}
+          <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">
+            <img src={vibecoinLogo} alt="VibeCoin" className="w-5 h-5 object-contain" />
+            <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
