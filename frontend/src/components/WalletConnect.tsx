@@ -9,7 +9,7 @@ interface WalletConnectProps {
 }
 
 export const WalletConnect = ({ onWalletConnected }: WalletConnectProps) => {
-  const { account, isConnecting, connectWallet, disconnectWallet, isMetaMaskInstalled } = useMetaMask();
+  const { account, isConnecting, connectWallet, disconnectWallet, isCoinbaseWalletInstalled } = useCoinbaseWallet();
 
   // Trigger callback when wallet connects
   useEffect(() => {
