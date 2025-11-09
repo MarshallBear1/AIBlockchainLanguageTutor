@@ -63,16 +63,20 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
           ...prev,
           { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
         ]);
-      } else if (data?.messages) {
+      } else if (data?.messages && Array.isArray(data.messages)) {
+        console.log("Received messages:", data.messages.length);
+        
+        // Add messages to queue for avatar to speak
         setMessages((prev) => [...prev, ...data.messages]);
         
-        // Add AI responses to conversation history
-        data.messages.forEach((msg: AvatarMessage) => {
-          setConversationHistory((prev) => [
-            ...prev,
-            { role: "assistant", text: msg.text, timestamp: new Date() },
-          ]);
-        });
+        // Batch add all AI responses to conversation history at once
+        const newHistoryEntries = data.messages.map((msg: AvatarMessage) => ({
+          role: "assistant" as const,
+          text: msg.text,
+          timestamp: new Date(),
+        }));
+        
+        setConversationHistory((prev) => [...prev, ...newHistoryEntries]);
       }
     } catch (err) {
       console.error("Chat error:", err);

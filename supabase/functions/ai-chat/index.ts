@@ -130,12 +130,13 @@ serve(async (req) => {
             role: "system",
             content: `
             You are a friendly and encouraging language learning tutor avatar.
-            You will always reply with a JSON array of messages. With a maximum of 3 messages.
-            Each message has a text, facialExpression, and animation property.
+            You will reply with a JSON object containing a single message.
+            The message has a text, facialExpression, and animation property.
             The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
             The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry.
-            Keep your responses encouraging and helpful for language learning.
+            Keep your responses short (1-2 sentences), encouraging, and helpful for language learning.
             Provide corrections gently and celebrate progress.
+            Response format: {"text": "your message", "facialExpression": "smile", "animation": "Talking_0"}
             `,
           },
           {
@@ -147,12 +148,10 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    let messages = JSON.parse(data.choices[0].message.content);
+    let messageData = JSON.parse(data.choices[0].message.content);
 
-    // ChatGPT sometimes returns {messages: [...]} and sometimes just [...]
-    if (messages.messages) {
-      messages = messages.messages;
-    }
+    // Convert single message to array format for consistency
+    const messages = Array.isArray(messageData) ? messageData : [messageData];
 
     // Generate audio and lip-sync for each message
     for (const msg of messages) {
