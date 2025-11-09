@@ -2,6 +2,12 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { AvatarMessage } from "@/types/avatar";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ConversationMessage {
+  role: "user" | "assistant";
+  text: string;
+  timestamp: Date;
+}
+
 interface AvatarChatContextType {
   chat: (message: string) => Promise<void>;
   message: AvatarMessage | null;
@@ -9,6 +15,7 @@ interface AvatarChatContextType {
   loading: boolean;
   cameraZoomed: boolean;
   setCameraZoomed: (zoomed: boolean) => void;
+  conversationHistory: ConversationMessage[];
 }
 
 const AvatarChatContext = createContext<AvatarChatContextType | undefined>(undefined);
@@ -22,9 +29,17 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
   const [message, setMessage] = useState<AvatarMessage | null>(null);
   const [loading, setLoading] = useState(false);
   const [cameraZoomed, setCameraZoomed] = useState(true);
+  const [conversationHistory, setConversationHistory] = useState<ConversationMessage[]>([]);
 
   const chat = async (userMessage: string) => {
     setLoading(true);
+    
+    // Add user message to conversation history
+    setConversationHistory((prev) => [
+      ...prev,
+      { role: "user", text: userMessage, timestamp: new Date() },
+    ]);
+
     try {
       // Call Supabase Edge Function for AI chat
       const { data, error } = await supabase.functions.invoke("ai-chat", {
@@ -34,17 +49,30 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
       if (error) {
         console.error("Error calling AI chat:", error);
         // Fallback to a default response
-        setMessages([
-          {
-            text: "I'm having trouble connecting right now. Please try again!",
-            audio: "",
-            lipsync: { mouthCues: [] },
-            facialExpression: "sad",
-            animation: "Idle",
-          },
+        const fallbackMessage: AvatarMessage = {
+          text: "I'm having trouble connecting right now. Please try again!",
+          audio: "",
+          lipsync: { mouthCues: [] },
+          facialExpression: "sad" as const,
+          animation: "Idle" as const,
+        };
+        setMessages([fallbackMessage]);
+        
+        // Add AI response to conversation history
+        setConversationHistory((prev) => [
+          ...prev,
+          { role: "assistant", text: fallbackMessage.text, timestamp: new Date() },
         ]);
       } else if (data?.messages) {
         setMessages((prev) => [...prev, ...data.messages]);
+        
+        // Add AI responses to conversation history
+        data.messages.forEach((msg: AvatarMessage) => {
+          setConversationHistory((prev) => [
+            ...prev,
+            { role: "assistant", text: msg.text, timestamp: new Date() },
+          ]);
+        });
       }
     } catch (err) {
       console.error("Chat error:", err);
@@ -74,6 +102,7 @@ export const AvatarChatProvider = ({ children }: AvatarChatProviderProps) => {
         loading,
         cameraZoomed,
         setCameraZoomed,
+        conversationHistory,
       }}
     >
       {children}
