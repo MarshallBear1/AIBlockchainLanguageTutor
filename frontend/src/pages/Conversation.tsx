@@ -220,9 +220,9 @@ const ConversationContent = () => {
     navigate("/home");
   };
 
-  const handleVoiceStart = async () => {
+  const handleMicClick = async () => {
     if (recordingState === "idle") {
-      // Start recording when button is pressed
+      // Start recording
       const success = await startRecording();
       if (!success) {
         toast({
@@ -231,12 +231,8 @@ const ConversationContent = () => {
           variant: "destructive",
         });
       }
-    }
-  };
-
-  const handleVoiceEnd = async () => {
-    if (recordingState === "recording") {
-      // Stop recording and process when button is released
+    } else if (recordingState === "recording") {
+      // Stop recording and process
       const audioBase64 = await stopRecording();
       if (audioBase64) {
         // Show transcribing indicator
