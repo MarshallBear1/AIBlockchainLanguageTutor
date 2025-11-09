@@ -60,12 +60,21 @@ export const LessonPath = ({ lessons }: LessonPathProps) => {
                     </div>
                   </div>
                   
-                  {/* Duration Tag */}
-                  <div className={cn("flex", isEven ? "justify-end" : "justify-start")}>
+                  {/* Duration and Reward Tags */}
+                  <div className={cn("flex gap-2 flex-wrap", isEven ? "justify-end" : "justify-start")}>
+                    {/* Time Duration Tag */}
                     <div className="inline-flex items-center gap-1 px-2 py-1 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
                       <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />
                       <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
                         {lesson.id % 10 === 1 ? "2 min" : "5 min"}
+                      </span>
+                    </div>
+                    
+                    {/* Vibe Coin Reward Tag */}
+                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-full shadow-sm border border-yellow-300 dark:border-yellow-700">
+                      <Coins className="w-3 h-3 text-yellow-600 dark:text-yellow-500" />
+                      <span className="text-xs font-medium text-yellow-700 dark:text-yellow-400">
+                        earn 50 vibe
                       </span>
                     </div>
                   </div>
