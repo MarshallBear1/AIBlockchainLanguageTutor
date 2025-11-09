@@ -81,6 +81,10 @@ serve(async (req) => {
     formData.append("model", "whisper-1");
     formData.append("language", targetLanguage);
 
+    // Add prompt to prevent hallucinations (common YouTube subtitle watermarks, etc.)
+    // This guides Whisper to focus on actual speech content
+    formData.append("prompt", "This is a language learning conversation in " + targetLanguage + ".");
+
     // Call OpenAI Whisper API
     const response = await fetch("https://api.openai.com/v1/audio/transcriptions", {
       method: "POST",
