@@ -73,6 +73,8 @@ export class RealtimeChat {
     private onMessage: (message: any) => void,
     private language: string,
     private level: string,
+    private mascot: string = "toki",
+    private scenario: string = "practice",
     onAudioReady?: () => void
   ) {
     this.audioEl = document.createElement("audio");
@@ -95,7 +97,9 @@ export class RealtimeChat {
       const { data, error } = await supabase.functions.invoke("realtime-session", {
         body: { 
           language: this.language,
-          level: this.level
+          level: this.level,
+          mascot: this.mascot,
+          scenario: this.scenario
         }
       });
 

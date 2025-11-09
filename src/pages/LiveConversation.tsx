@@ -45,6 +45,8 @@ const LiveConversationPage = () => {
         handleMessage, 
         language, 
         level,
+        "toki", // mascot
+        "practice", // scenario
         () => {
           // Connect lipsync when audio is ready
           const audioElement = chatRef.current?.getAudioElement();
