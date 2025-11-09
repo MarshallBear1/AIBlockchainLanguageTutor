@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import TopBar from "@/components/TopBar";
 import { LessonPath } from "@/components/LessonPath";
+import LiveConversation from "@/components/LiveConversation";
 import { getUnitsWithProgress, Unit } from "@/data/lessonData";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,6 +17,7 @@ const Home = () => {
   const [userLevel, setUserLevel] = useState<number>(1);
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
+  const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
 
   useEffect(() => {
     const loadProgress = async () => {
@@ -83,6 +85,15 @@ const Home = () => {
 
                 {/* Lessons */}
                 <LessonPath lessons={unit.lessons} />
+
+                {/* Live Conversation Button */}
+                <div className="px-6 max-w-md mx-auto">
+                  <LiveConversation 
+                    unitNumber={relativeUnitNumber}
+                    language={selectedLanguage}
+                    level={userLevel.toString()}
+                  />
+                </div>
               </div>
             );
           })}
