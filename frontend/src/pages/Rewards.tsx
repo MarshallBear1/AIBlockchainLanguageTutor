@@ -390,6 +390,102 @@ const Rewards = () => {
             </Card>
           </Collapsible>
         )}
+
+        {/* FAQ Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Frequently Asked Questions</CardTitle>
+            <CardDescription>Learn how the VIBE rewards system works</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>How do I earn VIBE tokens?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">
+                    You earn 50 VIBE tokens for every lesson you complete. These tokens are added to your "Vibe Earned" balance. 
+                    The more lessons you complete, the more VIBE you accumulate!
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-2">
+                <AccordionTrigger>What is the Streak Multiplier?</AccordionTrigger>
+                <AccordionContent>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>
+                      The Streak Multiplier increases your payout when you practice daily. The longer your streak, 
+                      the higher your multiplier:
+                    </p>
+                    <ul className="list-disc list-inside space-y-1 ml-2">
+                      <li>1-6 days: 1.0x (no bonus)</li>
+                      <li>7-13 days: 1.5x</li>
+                      <li>14-29 days: 2.0x</li>
+                      <li>30-59 days: 2.5x</li>
+                      <li>60+ days: 3.0x</li>
+                    </ul>
+                    <p>
+                      For example, if you have 100 VIBE earned and a 7-day streak (1.5x multiplier), 
+                      your potential payout is 150 VIBE!
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-3">
+                <AccordionTrigger>How do withdrawals work?</AccordionTrigger>
+                <AccordionContent>
+                  <div className="text-sm text-muted-foreground space-y-2">
+                    <p>To withdraw your VIBE tokens:</p>
+                    <ol className="list-decimal list-inside space-y-1 ml-2">
+                      <li>Connect your MetaMask wallet</li>
+                      <li>Earn VIBE by completing lessons</li>
+                      <li>Click the "Withdraw VIBE" button</li>
+                      <li>Your earned VIBE is multiplied by your streak multiplier</li>
+                      <li>Tokens are sent directly to your wallet on the Polygon network</li>
+                    </ol>
+                    <p className="mt-2">
+                      Note: Your streak multiplier continues after withdrawal, but your earned VIBE balance resets to 0.
+                    </p>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-4">
+                <AccordionTrigger>What happens if I miss a day?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">
+                    If you don't practice for a day, your streak resets to 0 and your multiplier goes back to 1.0x. 
+                    However, your earned VIBE balance is NOT lost - it remains safe in your account. You can still 
+                    withdraw it, but without the streak bonus. Start practicing again to rebuild your streak!
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-5">
+                <AccordionTrigger>Do I need a wallet to earn VIBE?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">
+                    No! You can earn VIBE tokens by completing lessons without a wallet connected. Your earned VIBE 
+                    is safely stored in your account. However, you'll need to connect a MetaMask wallet when you're 
+                    ready to withdraw your tokens to use them outside the platform.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="item-6">
+                <AccordionTrigger>What blockchain network is used?</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-muted-foreground">
+                    VIBE tokens are distributed on the Polygon network, which offers fast transactions and low fees. 
+                    Make sure your MetaMask wallet is connected to the Polygon network to receive your tokens. 
+                    You can view your transactions on PolygonScan after withdrawal.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Withdraw Confirmation Dialog */}
