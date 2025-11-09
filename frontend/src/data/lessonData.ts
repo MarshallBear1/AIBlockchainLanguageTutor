@@ -247,14 +247,13 @@ export const units: Unit[] = [
         unitId: 3,
         level: 2,
         title: "Coffee Shop",
-        scenario: "Order your favorite drink and chat with the barista",
+        scenario: "Order your favorite drink",
         description: "Learn ordering basics",
         emoji: "☕",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can order a drink (e.g., 'I would like a coffee, please')",
-          "Student can ask 'How much does it cost?'"
+          "Student can order a drink (e.g., 'I would like a coffee, please')"
         ],
       },
       {
