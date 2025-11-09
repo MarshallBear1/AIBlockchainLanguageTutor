@@ -374,9 +374,9 @@ const ConversationContent = () => {
         </div>
       </main>
 
-      {/* Bottom Controls - Fixed height with max-width container */}
-      <div className="flex-shrink-0 p-4 border-t border-border bg-background overflow-y-auto" style={{ minHeight: '320px' }}>
-        <div className="max-w-4xl mx-auto space-y-3">
+      {/* Bottom Controls - Reduced height for more chat space */}
+      <div className="flex-shrink-0 p-4 pb-6 border-t border-border bg-background" style={{ minHeight: '240px' }}>
+        <div className="max-w-4xl mx-auto space-y-4">
           {/* Text Input - Always Visible */}
           <div className="flex gap-2">
             <Input
@@ -384,78 +384,62 @@ const ConversationContent = () => {
               onChange={(e) => setTextMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleTextSubmit()}
               placeholder="Type your message..."
-              className="flex-1"
+              className="flex-1 h-12"
               disabled={loading || recordingState !== "idle"}
             />
             <Button
               onClick={handleTextSubmit}
               disabled={!textMessage.trim() || loading || recordingState !== "idle"}
               size="icon"
+              className="h-12 w-12"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
             </Button>
           </div>
 
-          {/* Voice Input Button - Push to Talk */}
-          <Button
-            onPointerDown={handleVoiceStart}
-            onPointerUp={handleVoiceEnd}
-            onPointerLeave={handleVoiceEnd}
-            disabled={loading || recordingState === "processing"}
-            size="lg"
-            className={`w-full h-14 transition-all touch-none select-none ${
-              recordingState === "recording"
-                ? "bg-destructive hover:bg-destructive/90 animate-pulse"
-                : ""
-            }`}
-          >
-            {recordingState === "processing" ? (
-              <>
-                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-                Processing...
-              </>
-            ) : recordingState === "recording" ? (
-              <>
-                <Mic className="w-5 h-5 mr-2" />
-                Recording... (Release to send)
-              </>
-            ) : (
-              <>
-                <Mic className="w-5 h-5 mr-2" />
-                Hold to Speak
-              </>
-            )}
-          </Button>
-
-          {/* Status Text */}
-          <div className="text-center text-sm text-muted-foreground py-1">
-            {loading && "Toki is thinking..."}
-            {!loading && recordingState === "idle" && "Type or hold button to speak"}
-            {recordingState === "recording" && "🎤 Listening..."}
-          </div>
-
-          {/* Help & Word Bank */}
-          <div className="flex gap-2">
+          {/* Voice Input & I'm Stuck Buttons - Side by Side */}
+          <div className="flex items-center justify-center gap-3">
+            {/* I'm Stuck Button */}
             <Button
               onClick={() => chat("I don't understand what you are saying, please explain it differently", false, lessonScenario, learningGoals)}
               variant="outline"
-              className="flex-1 gap-2 h-10"
               size="sm"
+              className="h-10 px-4 gap-2"
               disabled={loading}
             >
               <HelpCircle className="w-4 h-4" />
               I'm stuck
             </Button>
 
+            {/* Circular Voice Button */}
             <Button
-              onClick={() => setShowWordBank(true)}
-              variant="outline"
-              className="flex-1 gap-2 h-10"
-              size="sm"
+              onPointerDown={handleVoiceStart}
+              onPointerUp={handleVoiceEnd}
+              onPointerLeave={handleVoiceEnd}
+              disabled={loading || recordingState === "processing"}
+              size="icon"
+              className={`h-20 w-20 rounded-full transition-all touch-none select-none shadow-lg ${
+                recordingState === "recording"
+                  ? "bg-destructive hover:bg-destructive/90 animate-pulse scale-110"
+                  : "bg-primary hover:bg-primary/90"
+              }`}
             >
-              <BookOpen className="w-4 h-4" />
-              Word Bank
+              {recordingState === "processing" ? (
+                <div className="w-8 h-8 border-4 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+              ) : recordingState === "recording" ? (
+                <Mic className="w-8 h-8" />
+              ) : (
+                <Mic className="w-8 h-8" />
+              )}
             </Button>
+          </div>
+
+          {/* Status Text */}
+          <div className="text-center text-sm text-muted-foreground">
+            {loading && "Toki is thinking..."}
+            {!loading && recordingState === "idle" && "Tap and hold microphone to speak"}
+            {recordingState === "recording" && "🎤 Listening... Release to send"}
+            {recordingState === "processing" && "Processing your message..."}
           </div>
 
           {/* End Conversation */}
