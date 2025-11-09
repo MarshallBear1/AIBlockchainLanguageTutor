@@ -19,6 +19,7 @@ export type Database = {
           completed: boolean
           completed_at: string
           id: string
+          language_code: string | null
           lesson_id: number
           user_id: string
         }
@@ -26,6 +27,7 @@ export type Database = {
           completed?: boolean
           completed_at?: string
           id?: string
+          language_code?: string | null
           lesson_id: number
           user_id: string
         }
@@ -33,6 +35,7 @@ export type Database = {
           completed?: boolean
           completed_at?: string
           id?: string
+          language_code?: string | null
           lesson_id?: number
           user_id?: string
         }
@@ -82,6 +85,7 @@ export type Database = {
           streak_days: number | null
           total_minutes_practiced: number | null
           updated_at: string | null
+          vibe_coins: number | null
           xp: number | null
         }
         Insert: {
@@ -94,6 +98,7 @@ export type Database = {
           streak_days?: number | null
           total_minutes_practiced?: number | null
           updated_at?: string | null
+          vibe_coins?: number | null
           xp?: number | null
         }
         Update: {
@@ -106,6 +111,7 @@ export type Database = {
           streak_days?: number | null
           total_minutes_practiced?: number | null
           updated_at?: string | null
+          vibe_coins?: number | null
           xp?: number | null
         }
         Relationships: []

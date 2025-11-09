@@ -332,7 +332,7 @@ const ConversationContent = () => {
                 <ConversationBubble
                   role="user"
                   text="..."
-                  timestamp={Date.now()}
+                  timestamp={new Date()}
                 />
               )}
             </>

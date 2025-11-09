@@ -26,52 +26,12 @@ export async function getWallet(): Promise<WalletData> {
     }
 
     const { data, error } = await supabase
-      .from('user_stats')
-      .select('*')
-      .eq('user_id', user.id)
+      .from('profiles')
+      .select('vibe_coins, xp, streak_days, total_minutes_practiced, last_practice_date')
+      .eq('id', user.id)
       .single();
 
     if (error) {
-      // If no stats exist yet, create default entry
-      if (error.code === 'PGRST116') {
-        const defaultStats = {
-          user_id: user.id,
-          vibe_coins: 0,
-          total_earned: 0,
-          lessons_completed: 0,
-          current_streak: 0,
-          longest_streak: 0,
-          last_lesson_date: null,
-        };
-
-        const { data: newData, error: insertError } = await supabase
-          .from('user_stats')
-          .insert(defaultStats)
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error('Error creating user stats:', insertError);
-          return {
-            vibeCoins: 0,
-            totalEarned: 0,
-            lessonsCompleted: 0,
-            currentStreak: 0,
-            longestStreak: 0,
-            lastLessonDate: null,
-          };
-        }
-
-        return {
-          vibeCoins: newData.vibe_coins,
-          totalEarned: newData.total_earned,
-          lessonsCompleted: newData.lessons_completed,
-          currentStreak: newData.current_streak,
-          longestStreak: newData.longest_streak,
-          lastLessonDate: newData.last_lesson_date,
-        };
-      }
-
       console.error('Error fetching wallet:', error);
       return {
         vibeCoins: 0,
@@ -84,12 +44,12 @@ export async function getWallet(): Promise<WalletData> {
     }
 
     return {
-      vibeCoins: data.vibe_coins,
-      totalEarned: data.total_earned,
-      lessonsCompleted: data.lessons_completed,
-      currentStreak: data.current_streak,
-      longestStreak: data.longest_streak,
-      lastLessonDate: data.last_lesson_date,
+      vibeCoins: data.vibe_coins || 0,
+      totalEarned: data.xp || 0,
+      lessonsCompleted: 0, // We can calculate this from lesson_progress if needed
+      currentStreak: data.streak_days || 0,
+      longestStreak: data.streak_days || 0, // For now, use current streak
+      lastLessonDate: data.last_practice_date,
     };
   } catch (error) {
     console.error('Error in getWallet:', error);
@@ -111,18 +71,14 @@ export async function saveWallet(wallet: WalletData): Promise<boolean> {
     if (!user) return false;
 
     const { error } = await supabase
-      .from('user_stats')
-      .upsert({
-        user_id: user.id,
+      .from('profiles')
+      .update({
         vibe_coins: wallet.vibeCoins,
-        total_earned: wallet.totalEarned,
-        lessons_completed: wallet.lessonsCompleted,
-        current_streak: wallet.currentStreak,
-        longest_streak: wallet.longestStreak,
-        last_lesson_date: wallet.lastLessonDate,
-      }, {
-        onConflict: 'user_id'
-      });
+        xp: wallet.totalEarned,
+        streak_days: wallet.currentStreak,
+        last_practice_date: wallet.lastLessonDate,
+      })
+      .eq('id', user.id);
 
     if (error) {
       console.error('Error saving wallet:', error);
