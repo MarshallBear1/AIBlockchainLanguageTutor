@@ -103,7 +103,7 @@ export const WalletConnect = ({ onWalletConnected }: WalletConnectProps) => {
           <h4 className="text-sm font-semibold">How it works:</h4>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li>Complete lessons to earn locked VIBE (50 VIBE per lesson)</li>
-            <li>Connect your Coinbase Wallet</li>
+            <li>Connect your MetaMask wallet</li>
             <li>After completing 1 lesson, your tokens unlock</li>
             <li>Tokens are automatically sent to your wallet</li>
           </ul>
