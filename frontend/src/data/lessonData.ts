@@ -40,14 +40,13 @@ export const units: Unit[] = [
         unitId: 1,
         level: 1,
         title: "How to say your name",
-        scenario: "Practice asking someone's name and introducing yourself",
+        scenario: "Practice introducing yourself",
         description: "Your first phrase",
         emoji: "👋",
         completed: false,
         locked: false,
         learningGoals: [
-          "Student can say 'My name is [their name]' in the target language",
-          "Student can ask someone else for their name"
+          "Student can say 'My name is [their name]' in the target language"
         ],
         vocabulary: [
           { word: "Me llamo", translation: "My name is", category: "phrase" },
