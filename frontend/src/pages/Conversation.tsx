@@ -23,6 +23,7 @@ import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
 import { completeLesson, units } from "@/data/lessonData";
 import { RewardScreen } from "@/components/RewardScreen";
+import { TypingIndicator } from "@/components/TypingIndicator";
 
 const ConversationContent = () => {
   const navigate = useNavigate();
