@@ -30,7 +30,7 @@ export const WalletConnect = ({ onWalletConnected }: WalletConnectProps) => {
           Wallet Connection
         </CardTitle>
         <CardDescription>
-          Connect your MetaMask wallet to receive VIBE tokens after completing lessons
+          Connect your Coinbase Wallet to receive VIBE tokens after completing lessons
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
