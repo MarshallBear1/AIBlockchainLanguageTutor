@@ -180,9 +180,46 @@ const Rewards = () => {
       <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-6 pb-20">
         {/* Header */}
         <div className="text-center space-y-2">
-          <Trophy className="w-12 h-12 text-primary mx-auto" />
-          <h1 className="text-3xl font-bold">VIBE Banking</h1>
+          <h1 className="text-3xl font-bold">Wallet</h1>
           <p className="text-muted-foreground">Keep your streak to multiply your rewards!</p>
+        </div>
+
+        {/* Top Row Stats - Three columns */}
+        <div className="grid grid-cols-3 gap-3">
+          {/* Vibe Earned */}
+          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-4 text-center">
+            <div className="text-xs text-muted-foreground mb-2">Vibe Earned</div>
+            <div className="text-4xl font-bold text-primary">{bankedVibe}</div>
+          </div>
+
+          {/* Streak Multiplier */}
+          <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-4 text-center">
+            <div className="text-xs text-muted-foreground mb-2">Streak Multiplier</div>
+            <div className="text-4xl font-bold text-orange-500">
+              {formatMultiplier(multiplier)}
+            </div>
+          </div>
+
+          {/* Potential Payout */}
+          <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-4 text-center">
+            <div className="text-xs text-muted-foreground mb-2">Potential Payout</div>
+            <div className="text-4xl font-bold text-green-600 dark:text-green-400">
+              {potentialPayout}
+            </div>
+          </div>
+        </div>
+
+        {/* Mascot Image */}
+        <div className="flex justify-center py-4">
+          <img 
+            src="/assets/vibecon-mascot.png" 
+            alt="VibeCon Mascot" 
+            className="w-48 h-48 object-contain"
+            onError={(e) => {
+              // Fallback if image doesn't exist
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
 
         {/* Wallet Connection - Always visible */}
@@ -190,37 +227,20 @@ const Rewards = () => {
           <WalletConnect onWalletConnected={loadData} />
         </div>
 
-        {/* Main Stats */}
+        {/* Detailed Stats Section */}
         <div className="space-y-3">
-          {/* Banked VIBE */}
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Coins className="w-5 h-5" />
-                <span className="font-medium">Bank VIBE</span>
-              </div>
-            </div>
-            <div className="text-5xl font-bold text-primary">{bankedVibe}</div>
-            <p className="text-sm text-muted-foreground mt-2">+50 per lesson completed</p>
-          </div>
-
-          {/* Streak Multiplier */}
+          {/* Streak Progress Details */}
           <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Flame className="w-5 h-5 text-orange-500" />
-                <span className="font-medium">Streak Multiplier</span>
-              </div>
+            <div className="flex items-center gap-2 text-muted-foreground mb-3">
+              <Flame className="w-5 h-5 text-orange-500" />
+              <span className="font-medium">Streak Progress</span>
             </div>
-            <div className="text-5xl font-bold text-orange-500">
-              {formatMultiplier(multiplier)}
-            </div>
-            <div className="mt-3 space-y-2">
+            <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">{streakDays} day streak 🔥</span>
                 {nextTier.daysNeeded > 0 && (
                   <span className="text-muted-foreground font-medium">
-                    {nextTier.daysNeeded} to {formatMultiplier(nextTier.nextMultiplier)}
+                    {nextTier.daysNeeded} more days to {formatMultiplier(nextTier.nextMultiplier)}
                   </span>
                 )}
               </div>
@@ -231,21 +251,8 @@ const Rewards = () => {
                 />
               )}
             </div>
-          </div>
-
-          {/* Potential Payout */}
-          <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                <span className="font-medium">Potential Payout</span>
-              </div>
-            </div>
-            <div className="text-5xl font-bold text-green-600 dark:text-green-400">
-              {potentialPayout}
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              {bankedVibe} × {formatMultiplier(multiplier)} = {potentialPayout} VIBE
+            <p className="text-xs text-muted-foreground mt-3">
+              +50 VIBE per lesson completed
             </p>
           </div>
         </div>
