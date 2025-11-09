@@ -12,12 +12,12 @@ const StreakMultiplier = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-light-blue to-white flex flex-col items-center justify-center p-6">
       <div className="max-w-md w-full text-center space-y-8">
-        {/* Image */}
+        {/* Image - Reduced by 25% */}
         <div className="flex justify-center">
           <img
             src={streakMultiplierImage}
             alt="Streak multiplier"
-            className="w-80 h-80 object-contain animate-fade-in"
+            className="w-60 h-60 object-contain animate-fade-in"
           />
         </div>
 
