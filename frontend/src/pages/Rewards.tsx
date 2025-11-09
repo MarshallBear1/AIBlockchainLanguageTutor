@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wallet, ExternalLink, Clock, Flame, ChevronDown, ChevronUp } from "lucide-react";
+import { Wallet, ExternalLink, Clock, Flame, ChevronDown, ChevronUp, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { WalletConnect } from "@/components/WalletConnect";
 import TopBar from "@/components/TopBar";
 import { toast } from "sonner";
 import { getStreakMultiplier, getNextTierInfo, formatMultiplier } from "@/utils/streakMultiplier";
@@ -25,6 +24,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import vibeconMascot from "@/assets/vibecon-mascot.png";
+import { useMetaMask } from "@/hooks/useMetaMask";
 
 interface Reward {
   id: string;
