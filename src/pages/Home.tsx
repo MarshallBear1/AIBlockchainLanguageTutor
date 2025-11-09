@@ -71,25 +71,10 @@ const Home = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <TopBar />
 
-      {/* Unit Header */}
-      <div className="bg-gradient-to-br from-primary to-purple-600 text-white px-6 py-8 shadow-lg">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Unit {currentUnit.id}</h1>
-          <p className="text-xl opacity-90">{currentUnit.title.replace(/^Unit \d+:\s*/, '')}</p>
-          
-          {/* Progress Bar */}
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex-1 h-3 bg-white/20 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-white/90 transition-all duration-500"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <span className="text-sm font-medium whitespace-nowrap">
-              {completedCount}/{currentUnit.lessons.length}
-            </span>
-          </div>
-        </div>
+      {/* Simple Unit Header */}
+      <div className="text-center px-6 py-6 border-b border-border">
+        <h1 className="text-2xl font-bold mb-1">Unit {currentUnit.id}</h1>
+        <p className="text-base text-muted-foreground">{currentUnit.description}</p>
       </div>
 
       {/* Lesson Path */}

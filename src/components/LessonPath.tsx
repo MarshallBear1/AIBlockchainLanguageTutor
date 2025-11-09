@@ -43,22 +43,22 @@ export const LessonPath = ({ lessons }: LessonPathProps) => {
               <div className={cn("flex-1 min-w-0", isEven ? "text-right pr-2" : "text-left pl-2")}>
                 <div
                   className={cn(
-                    "inline-block p-3 rounded-xl transition-all duration-300 max-w-full",
+                    "inline-block p-4 rounded-2xl transition-all duration-300 max-w-full shadow-lg",
                     lesson.locked
-                      ? "bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60"
+                      ? "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
                       : lesson.completed
-                      ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 cursor-pointer hover:scale-105 shadow-md"
-                      : "bg-primary/10 text-primary cursor-pointer hover:scale-105 shadow-lg hover:shadow-xl border-2 border-primary",
-                    !lesson.locked && "hover:bg-primary/20"
+                      ? "bg-green-500 text-white cursor-pointer hover:scale-105"
+                      : "bg-primary text-primary-foreground cursor-pointer hover:scale-105 border-2 border-primary-foreground/20",
+                    !lesson.locked && "hover:shadow-xl"
                   )}
                   onClick={() => handleLessonClick(lesson)}
                 >
-                  <div className={cn("space-y-1", isEven ? "text-right" : "text-left")}>
-                    <div className="text-xs font-medium text-muted-foreground">
+                  <div className={cn("space-y-2", isEven ? "text-right" : "text-left")}>
+                    <div className="text-sm font-bold opacity-90">
                       Lesson {lesson.id}
                     </div>
-                    <div className="text-base font-bold break-words">{lesson.title}</div>
-                    <div className="text-xs opacity-80 break-words">{lesson.description}</div>
+                    <div className="text-lg font-bold leading-tight">{lesson.title}</div>
+                    <div className="text-sm opacity-90 leading-snug">{lesson.description}</div>
                   </div>
                 </div>
               </div>
