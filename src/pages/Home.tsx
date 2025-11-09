@@ -52,6 +52,9 @@ const Home = () => {
   }, []);
 
   const currentUnit = units[currentUnitIndex];
+  
+  // Calculate relative unit number (1-based for current level)
+  const relativeUnitNumber = currentUnitIndex + 1;
 
   if (!currentUnit) {
     return (
@@ -73,7 +76,7 @@ const Home = () => {
 
       {/* Simple Unit Header */}
       <div className="text-center px-6 py-6 border-b border-border">
-        <h1 className="text-2xl font-bold mb-1">Unit {currentUnit.id}</h1>
+        <h1 className="text-2xl font-bold mb-1">Unit {relativeUnitNumber}</h1>
         <p className="text-base text-muted-foreground">{currentUnit.description}</p>
       </div>
 
