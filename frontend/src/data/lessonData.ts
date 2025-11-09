@@ -434,14 +434,13 @@ export const units: Unit[] = [
         unitId: 5,
         level: 4,
         title: "Job Interview",
-        scenario: "Answer interview questions about your qualifications",
+        scenario: "Describe your best quality",
         description: "Professional vocabulary",
         emoji: "💼",
         completed: false,
         locked: true,
         learningGoals: [
-          "Student can say 'I am hardworking' in the target language",
-          "Student can say 'I am resourceful' in the target language"
+          "Student can say 'I am hardworking' in the target language"
         ],
       },
       {
