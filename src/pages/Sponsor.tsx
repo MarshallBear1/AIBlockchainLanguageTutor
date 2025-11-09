@@ -1,52 +1,39 @@
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import vibeconLogo from "@/assets/vibecon-sponsor.png";
+import { Button } from "@/components/ui/button";
+import tokiMascot from "@/assets/toki-mascot.png";
 
 const Sponsor = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Auto-advance after 3 seconds
-    const timer = setTimeout(() => {
-      navigate("/conversation?lesson=first");
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
-
-  const handleSkip = () => {
+  const handleBegin = () => {
     navigate("/conversation?lesson=first");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-light-blue to-white flex flex-col items-center justify-center p-6">
-      <div className="max-w-md w-full text-center space-y-8">
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-foreground animate-fade-in">
-          Our sponsor for this month is
-        </h1>
-
-        {/* VibeCoin Logo */}
-        <div className="flex justify-center animate-scale-in">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
+        {/* Toki Mascot */}
+        <div className="flex justify-center">
           <img
-            src={vibeconLogo}
-            alt="VibeCoin"
-            className="w-72 h-72 object-contain"
+            src={tokiMascot}
+            alt="Toki"
+            className="w-48 h-48 object-contain animate-bounce-soft"
           />
         </div>
 
-        {/* Subtitle */}
-        <p className="text-lg text-muted-foreground animate-fade-in">
-          Powering your learning rewards
-        </p>
+        {/* Title */}
+        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          Are you ready to meet your tutor Toki?
+        </h1>
 
-        {/* Skip button */}
-        <button
-          onClick={handleSkip}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+        {/* Begin Button */}
+        <Button
+          onClick={handleBegin}
+          size="lg"
+          className="w-full max-w-xs mx-auto h-14 text-lg"
         >
-          Skip
-        </button>
+          Begin
+        </Button>
       </div>
     </div>
   );
