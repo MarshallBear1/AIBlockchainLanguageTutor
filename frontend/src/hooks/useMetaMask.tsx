@@ -105,7 +105,9 @@ export const useMetaMask = () => {
   };
 
   const connectWallet = async () => {
-    if (!isMetaMaskInstalled) {
+    const provider = getMetaMaskProvider();
+    
+    if (!provider) {
       toast.error('MetaMask is not installed. Please install MetaMask to continue.');
       window.open('https://metamask.io/download/', '_blank');
       return;
@@ -114,7 +116,7 @@ export const useMetaMask = () => {
     setIsConnecting(true);
 
     try {
-      const accounts = await window.ethereum.request({
+      const accounts = await provider.request({
         method: 'eth_requestAccounts',
       });
 
@@ -124,12 +126,12 @@ export const useMetaMask = () => {
         await saveWalletAddress(address);
         
         // Get chain ID
-        const chainId = await window.ethereum.request({
+        const chainId = await provider.request({
           method: 'eth_chainId',
         });
         setChainId(chainId);
 
-        toast.success('Wallet connected successfully!');
+        toast.success('MetaMask wallet connected successfully!');
       }
     } catch (error: any) {
       console.error('Error connecting to MetaMask:', error);
@@ -137,7 +139,7 @@ export const useMetaMask = () => {
       if (error.code === 4001) {
         toast.error('Connection request rejected');
       } else {
-        toast.error('Failed to connect wallet');
+        toast.error('Failed to connect to MetaMask. Make sure MetaMask is installed and enabled.');
       }
     } finally {
       setIsConnecting(false);
