@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, ExternalLink, CheckCircle2 } from "lucide-react";
-import { useMetaMask } from "@/hooks/useMetaMask";
+import { useCoinbaseWallet } from "@/hooks/useCoinbaseWallet";
 import { useEffect } from "react";
 
 interface WalletConnectProps {
