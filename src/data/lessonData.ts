@@ -592,8 +592,8 @@ export const units: Unit[] = [
 
 import { supabase } from "@/integrations/supabase/client";
 
-// Helper function to get user progress from database
-export async function getUserProgress(): Promise<{
+// Helper function to get user progress from database (per language)
+export async function getUserProgress(languageCode?: string): Promise<{
   completedLessons: number[];
   currentLesson: number;
 }> {
@@ -603,10 +603,14 @@ export async function getUserProgress(): Promise<{
       return { completedLessons: [], currentLesson: 1 };
     }
 
+    // Get language from parameter or localStorage
+    const language = languageCode || localStorage.getItem("selectedLanguage") || "es";
+
     const { data, error } = await supabase
       .from('lesson_progress')
       .select('lesson_id')
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('language_code', language);
 
     if (error) {
       console.error('Error fetching progress:', error);
@@ -614,8 +618,8 @@ export async function getUserProgress(): Promise<{
     }
 
     const completedLessons = data?.map(p => p.lesson_id) || [];
-    const currentLesson = completedLessons.length > 0 
-      ? Math.max(...completedLessons) + 1 
+    const currentLesson = completedLessons.length > 0
+      ? Math.max(...completedLessons) + 1
       : 1;
 
     return { completedLessons, currentLesson };
@@ -625,21 +629,25 @@ export async function getUserProgress(): Promise<{
   }
 }
 
-// Helper function to save lesson completion to database
-export async function completeLesson(lessonId: number): Promise<{ success: boolean; coinsEarned: number }> {
+// Helper function to save lesson completion to database (per language)
+export async function completeLesson(lessonId: number, languageCode?: string): Promise<{ success: boolean; coinsEarned: number }> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { success: false, coinsEarned: 0 };
 
-    // Save lesson progress
+    // Get language from parameter or localStorage
+    const language = languageCode || localStorage.getItem("selectedLanguage") || "es";
+
+    // Save lesson progress with language tracking
     const { error } = await supabase
       .from('lesson_progress')
-      .upsert({ 
-        user_id: user.id, 
+      .upsert({
+        user_id: user.id,
         lesson_id: lessonId,
+        language_code: language,
         completed: true
       }, {
-        onConflict: 'user_id,lesson_id'
+        onConflict: 'user_id,lesson_id,language_code'
       });
 
     if (error) {
@@ -650,10 +658,10 @@ export async function completeLesson(lessonId: number): Promise<{ success: boole
     // Update streak and get coins earned
     const { updateStreak } = await import('@/utils/streakManager');
     const { coinsEarned } = await updateStreak();
-    
-    // Update VibeCoin balance in localStorage
+
+    // Update VibeCoin balance in Supabase
     const { addCoins } = await import('@/utils/wallet');
-    addCoins(coinsEarned);
+    await addCoins(coinsEarned);
 
     return { success: true, coinsEarned };
   } catch (error) {
@@ -662,9 +670,9 @@ export async function completeLesson(lessonId: number): Promise<{ success: boole
   }
 }
 
-// Get units with progress applied, filtered by user level
-export async function getUnitsWithProgress(userLevel?: number): Promise<Unit[]> {
-  const progress = await getUserProgress();
+// Get units with progress applied, filtered by user level (per language)
+export async function getUnitsWithProgress(userLevel?: number, languageCode?: string): Promise<Unit[]> {
+  const progress = await getUserProgress(languageCode);
   const level = userLevel || parseInt(localStorage.getItem("selectedLevel") || "1");
   
   // Filter units by level
