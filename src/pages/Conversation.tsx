@@ -376,7 +376,7 @@ const ConversationContent = () => {
 
         {/* Status Text */}
         <div className="text-center text-xs text-muted-foreground">
-          {loading && "AI is thinking..."}
+          {loading && "Gem is thinking..."}
           {!loading && recordingState === "idle" && "Type or hold button to speak"}
           {recordingState === "recording" && "🎤 Listening..."}
         </div>

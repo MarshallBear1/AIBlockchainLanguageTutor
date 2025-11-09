@@ -226,6 +226,12 @@ export const units: Unit[] = [
         emoji: "☕",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can order a drink: 'Quiero un café, por favor'",
+          "Student can understand and respond to size/type questions",
+          "Student can ask 'Cuánto cuesta?' (How much does it cost?)",
+          "Student can complete a full order transaction"
+        ],
       },
       {
         id: 12,
@@ -237,6 +243,12 @@ export const units: Unit[] = [
         emoji: "🛒",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can ask for items: 'Necesito...' (I need...)",
+          "Student can understand prices and quantities",
+          "Student can ask '¿Dónde está...?' (Where is...?)",
+          "Student can complete a shopping transaction"
+        ],
       },
       {
         id: 13,
@@ -248,6 +260,12 @@ export const units: Unit[] = [
         emoji: "🗺️",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can ask '¿Dónde está...?' for locations",
+          "Student can understand basic directions (left, right, straight)",
+          "Student can ask 'Está cerca?' (Is it close?)",
+          "Student can follow simple direction sequences"
+        ],
       },
       {
         id: 14,
@@ -259,6 +277,12 @@ export const units: Unit[] = [
         emoji: "🍽️",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can read and understand a simple menu",
+          "Student can order food: 'Para mí...' (For me...)",
+          "Student can ask for the bill: 'La cuenta, por favor'",
+          "Student can handle a complete restaurant interaction"
+        ],
       },
       {
         id: 15,
@@ -270,6 +294,12 @@ export const units: Unit[] = [
         emoji: "🚇",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can buy a ticket: 'Un billete para...'",
+          "Student can ask about routes and times",
+          "Student can understand platform/gate announcements",
+          "Student can navigate public transport independently"
+        ],
       },
     ],
   },
@@ -291,6 +321,12 @@ export const units: Unit[] = [
         emoji: "📅",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can suggest activities using future tense",
+          "Student can discuss and agree on times/dates",
+          "Student can accept or decline invitations naturally",
+          "Student can handle plan changes and suggestions"
+        ],
       },
       {
         id: 17,
@@ -302,6 +338,12 @@ export const units: Unit[] = [
         emoji: "🎬",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can describe movies they've seen (past tense)",
+          "Student can give opinions and recommendations",
+          "Student can ask about others' movie preferences",
+          "Student can discuss genres and actors naturally"
+        ],
       },
       {
         id: 18,
@@ -313,6 +355,12 @@ export const units: Unit[] = [
         emoji: "🌅",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can talk about past weekend activities",
+          "Student can discuss future weekend plans",
+          "Student can ask others about their weekends",
+          "Student can use past and future tenses naturally in conversation"
+        ],
       },
       {
         id: 19,
@@ -324,6 +372,12 @@ export const units: Unit[] = [
         emoji: "💪",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can discuss workout routines and exercises",
+          "Student can talk about fitness goals and health",
+          "Student can understand gym equipment and instructions",
+          "Student can have fitness-related conversations naturally"
+        ],
       },
       {
         id: 20,
@@ -335,6 +389,12 @@ export const units: Unit[] = [
         emoji: "🎉",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can give birthday wishes and congratulations",
+          "Student can discuss party activities and celebrations",
+          "Student can talk about gifts and surprises",
+          "Student can engage in celebratory conversations naturally"
+        ],
       },
     ],
   },
@@ -356,6 +416,12 @@ export const units: Unit[] = [
         emoji: "💼",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can describe their work experience professionally",
+          "Student can discuss their skills and qualifications",
+          "Student can ask intelligent questions about the role",
+          "Student can handle behavioral interview questions"
+        ],
       },
       {
         id: 22,
@@ -367,6 +433,12 @@ export const units: Unit[] = [
         emoji: "👔",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can present ideas clearly in a meeting",
+          "Student can agree or disagree professionally",
+          "Student can ask for clarification on business topics",
+          "Student can contribute meaningfully to team discussions"
+        ],
       },
       {
         id: 23,
@@ -378,6 +450,12 @@ export const units: Unit[] = [
         emoji: "📊",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can structure a professional presentation",
+          "Student can use transition phrases effectively",
+          "Student can handle questions from the audience",
+          "Student can deliver a complete business presentation"
+        ],
       },
       {
         id: 24,
@@ -389,6 +467,12 @@ export const units: Unit[] = [
         emoji: "🤝",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can introduce themselves professionally",
+          "Student can discuss their industry and work",
+          "Student can exchange contact information smoothly",
+          "Student can maintain professional small talk"
+        ],
       },
       {
         id: 25,
@@ -400,6 +484,12 @@ export const units: Unit[] = [
         emoji: "☎️",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can handle customer complaints professionally",
+          "Student can offer solutions and alternatives",
+          "Student can use polite business phone language",
+          "Student can complete a professional customer service call"
+        ],
       },
     ],
   },
@@ -421,6 +511,12 @@ export const units: Unit[] = [
         emoji: "🎭",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can discuss complex cultural concepts with nuance",
+          "Student can compare and contrast cultural perspectives",
+          "Student can use advanced vocabulary for abstract ideas",
+          "Student can engage in native-level cultural discourse"
+        ],
       },
       {
         id: 27,
@@ -432,6 +528,12 @@ export const units: Unit[] = [
         emoji: "📰",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can discuss current events with sophisticated language",
+          "Student can express political opinions respectfully",
+          "Student can analyze and debate complex issues",
+          "Student can use journalistic and formal vocabulary"
+        ],
       },
       {
         id: 28,
@@ -443,6 +545,12 @@ export const units: Unit[] = [
         emoji: "📚",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can analyze literary themes and symbolism",
+          "Student can discuss writing styles and techniques",
+          "Student can interpret poetry and metaphorical language",
+          "Student can engage in academic literary discourse"
+        ],
       },
       {
         id: 29,
@@ -454,6 +562,12 @@ export const units: Unit[] = [
         emoji: "😄",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can understand and tell jokes in target language",
+          "Student can use idiomatic expressions naturally",
+          "Student can recognize and create wordplay and puns",
+          "Student can engage in humorous banter like a native"
+        ],
       },
       {
         id: 30,
@@ -465,6 +579,12 @@ export const units: Unit[] = [
         emoji: "🌎",
         completed: false,
         locked: true,
+        learningGoals: [
+          "Student can recognize different regional accents",
+          "Student can use region-specific vocabulary and expressions",
+          "Student can adapt their language for different regions",
+          "Student can discuss linguistic and cultural variations"
+        ],
       },
     ],
   },
