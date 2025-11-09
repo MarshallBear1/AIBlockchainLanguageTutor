@@ -123,7 +123,7 @@ const Auth = () => {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-light-blue to-white px-4">
         <div className="mb-8">
-          <TokiMascot size="md" state="flicker" />
+          <TokiMascot size="md" state="idle" />
         </div>
 
         <Card className="w-full max-w-md">
@@ -204,7 +204,7 @@ const Auth = () => {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-light-blue to-white px-4">
         <div className="mb-8">
-          <TokiMascot size="md" state="flicker" />
+          <TokiMascot size="md" state="idle" />
         </div>
 
         <Card className="w-full max-w-md">
@@ -269,7 +269,7 @@ const Auth = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-light-blue to-white px-4">
       <div className="mb-8">
-        <TokiMascot size="md" state="flicker" />
+        <TokiMascot size="md" state="idle" />
       </div>
 
       <div className="w-full max-w-md text-center space-y-8">
