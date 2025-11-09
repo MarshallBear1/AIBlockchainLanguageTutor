@@ -58,7 +58,7 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           <h1 className="text-5xl font-bold text-blue-600 mb-3">
             Good job today!
           </h1>
-          <p className="text-xl text-gray-600">You're making great progress! 🎉</p>
+          <p className="text-xl text-gray-600">Keep your streak to multiply rewards! 🔥</p>
         </motion.div>
 
         {/* Coins Earned */}
@@ -71,11 +71,12 @@ export const RewardScreen = ({ coinsEarned, onContinue }: RewardScreenProps) => 
           <div className="flex items-center justify-center gap-4 mb-4">
             <Coins className="w-16 h-16 text-yellow-500" />
             <div className="text-left">
-              <p className="text-gray-600 text-sm font-medium">You Earned</p>
+              <p className="text-gray-600 text-sm font-medium">Banked</p>
               <p className="text-6xl font-bold text-blue-600">{count}</p>
             </div>
           </div>
-          <p className="text-blue-700 text-lg font-semibold">Vibe Coins</p>
+          <p className="text-blue-700 text-lg font-semibold">Vibe Coins Added to Bank</p>
+          <p className="text-blue-600 text-sm mt-2">Withdraw anytime with your streak bonus!</p>
         </motion.div>
 
         {/* Achievements */}

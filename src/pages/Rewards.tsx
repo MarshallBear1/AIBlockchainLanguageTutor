@@ -2,11 +2,23 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wallet, ExternalLink, Trophy, Clock } from "lucide-react";
+import { Wallet, ExternalLink, Trophy, Clock, Flame, Coins, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { WalletConnect } from "@/components/WalletConnect";
 import TopBar from "@/components/TopBar";
 import { toast } from "sonner";
+import { getStreakMultiplier, getNextTierInfo, formatMultiplier } from "@/utils/streakMultiplier";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Progress } from "@/components/ui/progress";
 
 interface Reward {
   id: string;
@@ -24,6 +36,11 @@ interface Reward {
 const Rewards = () => {
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bankedVibe, setBankedVibe] = useState(0);
+  const [streakDays, setStreakDays] = useState(0);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [showWithdrawDialog, setShowWithdrawDialog] = useState(false);
   const [stats, setStats] = useState({
     totalEarned: 0,
     totalPaid: 0,
@@ -31,14 +48,28 @@ const Rewards = () => {
   });
 
   useEffect(() => {
-    loadRewards();
+    loadData();
   }, []);
 
-  const loadRewards = async () => {
+  const loadData = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Load profile data
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('banked_vibe, streak_days, wallet_address')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      setBankedVibe(profile?.banked_vibe || 0);
+      setStreakDays(profile?.streak_days || 0);
+      setWalletAddress(profile?.wallet_address || null);
+
+      // Load rewards history
       const { data, error } = await supabase
         .from('vibe_rewards')
         .select('*')
@@ -56,12 +87,51 @@ const Rewards = () => {
 
       setStats({ totalEarned, totalPaid, pendingPayouts });
     } catch (error) {
-      console.error('Error loading rewards:', error);
-      toast.error('Failed to load rewards');
+      console.error('Error loading data:', error);
+      toast.error('Failed to load rewards data');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleWithdraw = async () => {
+    if (bankedVibe <= 0) {
+      toast.error('No VIBE to withdraw');
+      return;
+    }
+
+    if (!walletAddress) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    setIsWithdrawing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase.functions.invoke('withdraw-vibe', {
+        body: { userId: user.id }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Successfully withdrew ${data.payoutAmount} VIBE! (${data.bankedAmount} × ${formatMultiplier(data.multiplier)})`);
+      setShowWithdrawDialog(false);
+      
+      // Reload data
+      await loadData();
+    } catch (error: any) {
+      console.error('Withdraw error:', error);
+      toast.error(error.message || 'Failed to withdraw VIBE');
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
+
+  const multiplier = getStreakMultiplier(streakDays);
+  const potentialPayout = Math.floor(bankedVibe * multiplier);
+  const nextTier = getNextTierInfo(streakDays);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -94,8 +164,6 @@ const Rewards = () => {
   };
 
   const openBlockExplorer = (txHash: string) => {
-    // Adjust URL based on your blockchain
-    // Polygon example:
     window.open(`https://polygonscan.com/tx/${txHash}`, '_blank');
   };
 
@@ -106,64 +174,151 @@ const Rewards = () => {
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Rewards History</h1>
-            <p className="text-muted-foreground">Track your VIBE token earnings</p>
+            <h1 className="text-3xl font-bold">VIBE Banking</h1>
+            <p className="text-muted-foreground">Keep your streak to multiply your rewards!</p>
           </div>
           <Trophy className="w-8 h-8 text-primary" />
         </div>
 
-        {/* Stats Cards */}
+        {/* Banking Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card>
+          {/* Banked VIBE */}
+          <Card className="border-2 border-primary/20">
             <CardHeader className="pb-2">
-              <CardDescription>Total Earned</CardDescription>
+              <CardDescription className="flex items-center gap-2">
+                <Coins className="w-4 h-4" />
+                Banked VIBE
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalEarned} VIBE</div>
+              <div className="text-3xl font-bold text-primary">{bankedVibe}</div>
+              <p className="text-xs text-muted-foreground mt-1">Earn 50 per lesson</p>
             </CardContent>
           </Card>
           
-          <Card>
+          {/* Streak Multiplier */}
+          <Card className="border-2 border-orange-500/20">
             <CardHeader className="pb-2">
-              <CardDescription>Total Paid</CardDescription>
+              <CardDescription className="flex items-center gap-2">
+                <Flame className="w-4 h-4 text-orange-500" />
+                Streak Multiplier
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.totalPaid} VIBE</div>
+              <div className="text-3xl font-bold text-orange-500">
+                {formatMultiplier(multiplier)}
+              </div>
+              <div className="mt-2 space-y-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">{streakDays} day streak</span>
+                  {nextTier.daysNeeded > 0 && (
+                    <span className="text-muted-foreground">
+                      {nextTier.daysNeeded} to {formatMultiplier(nextTier.nextMultiplier)}
+                    </span>
+                  )}
+                </div>
+                {nextTier.daysNeeded > 0 && (
+                  <Progress 
+                    value={(streakDays / nextTier.nextTier) * 100} 
+                    className="h-1"
+                  />
+                )}
+              </div>
             </CardContent>
           </Card>
           
-          <Card>
+          {/* Potential Payout */}
+          <Card className="border-2 border-green-500/20 bg-green-50/50 dark:bg-green-950/20">
             <CardHeader className="pb-2">
-              <CardDescription>Pending Payouts</CardDescription>
+              <CardDescription className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+                Potential Payout
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{stats.pendingPayouts}</div>
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {potentialPayout}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {bankedVibe} × {formatMultiplier(multiplier)} = {potentialPayout} VIBE
+              </p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Withdraw Button */}
+        <div className="space-y-4">
+          <Button
+            onClick={() => setShowWithdrawDialog(true)}
+            disabled={bankedVibe === 0 || !walletAddress}
+            size="lg"
+            className="w-full h-14 text-lg font-bold"
+          >
+            <Wallet className="w-5 h-5 mr-2" />
+            Withdraw VIBE to Wallet
+          </Button>
+          
+          {!walletAddress && (
+            <p className="text-sm text-muted-foreground text-center">
+              Connect your wallet below to enable withdrawals
+            </p>
+          )}
         </div>
 
         {/* Wallet Connection */}
         <WalletConnect />
 
-        {/* Rewards List */}
+        {/* Withdrawal History Stats */}
+        {rewards.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total Withdrawn</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stats.totalEarned} VIBE</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total Paid</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{stats.totalPaid} VIBE</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Pending Payouts</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-600">{stats.pendingPayouts}</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Withdrawal History */}
         <Card>
           <CardHeader>
-            <CardTitle>Cycle History</CardTitle>
+            <CardTitle>Withdrawal History</CardTitle>
             <CardDescription>
-              View all your completed lesson cycles and payout status
+              View all your VIBE withdrawals and payout status
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8 text-muted-foreground">
-                Loading rewards...
+                Loading...
               </div>
             ) : rewards.length === 0 ? (
               <div className="text-center py-8">
                 <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">No rewards yet</p>
+                <p className="text-muted-foreground">No withdrawals yet</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Complete 1 lesson to earn your first reward!
+                  Complete lessons to bank VIBE, then withdraw when ready!
                 </p>
               </div>
             ) : (
@@ -176,7 +331,7 @@ const Rewards = () => {
                     <div className="flex items-start justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <h3 className="font-semibold">Cycle #{reward.cycle_number}</h3>
+                          <h3 className="font-semibold">Withdrawal #{reward.cycle_number}</h3>
                           <Badge variant="outline" className={getStatusColor(reward.status) + " text-white"}>
                             {getStatusLabel(reward.status)}
                           </Badge>
@@ -185,12 +340,12 @@ const Rewards = () => {
                         <div className="text-sm text-muted-foreground flex items-center gap-2">
                           <Clock className="w-4 h-4" />
                           <span>
-                            {new Date(reward.cycle_start_date).toLocaleDateString()} - {new Date(reward.cycle_end_date).toLocaleDateString()}
+                            {new Date(reward.cycle_end_date).toLocaleDateString()}
                           </span>
                         </div>
                         
                         <div className="text-sm">
-                          <span className="text-muted-foreground">Lessons completed:</span> {reward.levels_completed}
+                          <span className="text-muted-foreground">Lessons in cycle:</span> {reward.levels_completed}
                         </div>
                         
                         {reward.paid_at && (
@@ -230,22 +385,64 @@ const Rewards = () => {
           <CardHeader>
             <CardTitle>How It Works</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              <strong>Step 1:</strong> Complete lessons to earn locked VIBE (50 VIBE per lesson)
+          <CardContent className="space-y-3">
+            <p className="text-sm">
+              <strong className="text-primary">📚 Earn:</strong> Complete lessons to earn 50 VIBE each, added to your bank
             </p>
-            <p className="text-sm text-muted-foreground">
-              <strong>Step 2:</strong> Connect your MetaMask wallet
+            <p className="text-sm">
+              <strong className="text-orange-500">🔥 Multiply:</strong> Keep your streak to unlock higher multipliers:
+              <span className="block ml-4 mt-1 text-muted-foreground">
+                7+ days: 1.5x • 14+ days: 2.0x • 30+ days: 2.5x • 60+ days: 3.0x
+              </span>
             </p>
-            <p className="text-sm text-muted-foreground">
-              <strong>Step 3:</strong> After completing 1 lesson, your tokens unlock automatically
+            <p className="text-sm">
+              <strong className="text-green-600">💰 Withdraw:</strong> Connect MetaMask and withdraw anytime to claim your multiplied VIBE
             </p>
-            <p className="text-sm text-muted-foreground">
-              <strong>Step 4:</strong> Tokens are sent to your wallet within 24 hours
+            <p className="text-sm">
+              <strong className="text-blue-600">⚡ Smart Strategy:</strong> The longer you wait and maintain your streak, the more VIBE you earn!
             </p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Withdraw Confirmation Dialog */}
+      <AlertDialog open={showWithdrawDialog} onOpenChange={setShowWithdrawDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Withdrawal</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <div className="bg-secondary/50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-foreground">Banked VIBE:</span>
+                  <span className="font-bold text-foreground">{bankedVibe}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-foreground">Multiplier:</span>
+                  <span className="font-bold text-orange-500">{formatMultiplier(multiplier)}</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between">
+                  <span className="text-foreground font-semibold">You will receive:</span>
+                  <span className="font-bold text-green-600 text-lg">{potentialPayout} VIBE</span>
+                </div>
+              </div>
+              <p className="text-sm">
+                Your banked balance will reset to 0, but your <span className="text-orange-500 font-semibold">{streakDays}-day streak</span> continues.
+                Tokens will be sent to your wallet within 24 hours.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isWithdrawing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleWithdraw}
+              disabled={isWithdrawing}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isWithdrawing ? 'Processing...' : 'Confirm Withdrawal'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

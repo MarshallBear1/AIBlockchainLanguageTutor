@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     // Get user's current profile data
     const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('streak_days, current_cycle_start, levels_completed_in_cycle, wallet_address')
+      .select('streak_days, current_cycle_start, levels_completed_in_cycle, banked_vibe')
       .eq('id', userId)
       .single();
 
@@ -45,108 +45,40 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`[check-cycle-completion] Profile data:`, profile);
+    console.log(`[check-cycle-completion] Profile data:`, {
+      streak_days: profile.streak_days,
+      current_cycle_start: profile.current_cycle_start,
+      levels_completed_in_cycle: profile.levels_completed_in_cycle,
+      banked_vibe: profile.banked_vibe,
+    });
 
-    // Check if user has completed at least 1 lesson
-    if (profile.levels_completed_in_cycle < 1) {
-      console.log(`[check-cycle-completion] No lessons completed yet: ${profile.levels_completed_in_cycle} lessons`);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: 'No lessons completed',
-          lessonsCompleted: profile.levels_completed_in_cycle
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Add 50 VIBE to banked balance per lesson completed
+    const vibeToAdd = 50;
 
-    // Calculate cycle number
-    const { data: previousRewards, error: rewardsError } = await supabaseClient
-      .from('vibe_rewards')
-      .select('cycle_number')
-      .eq('user_id', userId)
-      .order('cycle_number', { ascending: false })
-      .limit(1);
+    console.log('[check-cycle-completion] Adding', vibeToAdd, 'VIBE to banked balance');
 
-    if (rewardsError) {
-      console.error('[check-cycle-completion] Error fetching previous rewards:', rewardsError);
-    }
-
-    const nextCycleNumber = (previousRewards && previousRewards.length > 0) 
-      ? previousRewards[0].cycle_number + 1 
-      : 1;
-
-    const cycleStartDate = new Date(profile.current_cycle_start);
-    const cycleEndDate = new Date();
-    const amountVibe = profile.levels_completed_in_cycle * 50;
-
-    console.log(`[check-cycle-completion] Creating reward for cycle ${nextCycleNumber}: ${amountVibe} VIBE`);
-
-    // Check if reward already exists for this cycle
-    const { data: existingReward } = await supabaseClient
-      .from('vibe_rewards')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('cycle_number', nextCycleNumber)
-      .single();
-
-    if (existingReward) {
-      console.log('[check-cycle-completion] Reward already exists for this cycle');
-      return new Response(
-        JSON.stringify({ 
-          success: false, 
-          message: 'Reward already created for this cycle' 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Create reward entry
-    const { data: reward, error: rewardError } = await supabaseClient
-      .from('vibe_rewards')
-      .insert({
-        user_id: userId,
-        cycle_number: nextCycleNumber,
-        cycle_start_date: cycleStartDate.toISOString(),
-        cycle_end_date: cycleEndDate.toISOString(),
-        levels_completed: profile.levels_completed_in_cycle,
-        amount_vibe: amountVibe,
-        status: profile.wallet_address ? 'pending' : 'no_wallet',
-      })
-      .select()
-      .single();
-
-    if (rewardError) {
-      console.error('[check-cycle-completion] Error creating reward:', rewardError);
-      throw rewardError;
-    }
-
-    console.log(`[check-cycle-completion] Reward created successfully:`, reward);
-
-    // Reset cycle counters (keep streak intact, only reset lesson counter)
+    // Update banked_vibe and increment levels_completed_in_cycle
     const { error: updateError } = await supabaseClient
       .from('profiles')
       .update({
-        current_cycle_start: new Date().toISOString(),
-        levels_completed_in_cycle: 0,
-        // Do NOT reset streak - user can continue learning
+        banked_vibe: (profile.banked_vibe || 0) + vibeToAdd,
+        levels_completed_in_cycle: (profile.levels_completed_in_cycle || 0) + 1,
       })
       .eq('id', userId);
 
     if (updateError) {
-      console.error('[check-cycle-completion] Error resetting cycle:', updateError);
+      console.error('[check-cycle-completion] Error updating banked VIBE:', updateError);
       throw updateError;
     }
 
-    console.log('[check-cycle-completion] Cycle reset successfully');
+    console.log('[check-cycle-completion] Successfully added VIBE to bank');
 
     return new Response(
-      JSON.stringify({
+      JSON.stringify({ 
         success: true,
-        reward,
-        message: profile.wallet_address
-          ? 'Lesson completed! Your VIBE tokens will be sent to your wallet shortly.'
-          : 'Lesson completed! Connect a wallet to receive your VIBE tokens.',
+        vibeAdded: vibeToAdd,
+        newBankedAmount: (profile.banked_vibe || 0) + vibeToAdd,
+        levelsInCycle: (profile.levels_completed_in_cycle || 0) + 1,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

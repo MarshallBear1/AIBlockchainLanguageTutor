@@ -97,6 +97,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          banked_vibe: number
           created_at: string | null
           current_cycle_start: string | null
           email: string | null
@@ -114,6 +115,7 @@ export type Database = {
           xp: number | null
         }
         Insert: {
+          banked_vibe?: number
           created_at?: string | null
           current_cycle_start?: string | null
           email?: string | null
@@ -131,6 +133,7 @@ export type Database = {
           xp?: number | null
         }
         Update: {
+          banked_vibe?: number
           created_at?: string | null
           current_cycle_start?: string | null
           email?: string | null
