@@ -4,7 +4,9 @@
       "Bash(git pull:*)",
       "Bash(git clone:*)",
       "Bash(npm install:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd 3D avatar system with voice and lip-sync support\n\n- Install Three.js, React Three Fiber, and React Three Drei\n- Add 3D character models and animations (GLB/FBX files)\n- Create Avatar3D component with facial expressions and lip-sync\n- Create AvatarExperience and AvatarCanvas components\n- Add AvatarSelector for choosing conversation partners\n- Integrate avatars into Conversation page\n- Add SelectAvatar page to onboarding flow\n- Create Supabase Edge Function with OpenAI + ElevenLabs integration\n- Create optional Node.js server for precise Rhubarb lip-sync\n- Add comprehensive setup documentation (AVATAR_SETUP.md)\n- Update .gitignore to protect API keys and temp files\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []

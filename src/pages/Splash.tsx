@@ -7,7 +7,8 @@ const Splash = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/welcome");
+      // Skip welcome, go straight to language selection
+      navigate("/select-language");
     }, 2000);
 
     return () => clearTimeout(timer);

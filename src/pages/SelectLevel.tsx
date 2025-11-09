@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const levels = [
   {
@@ -34,12 +36,53 @@ const levels = [
 
 const SelectLevel = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selected, setSelected] = useState<number>(0);
+  const [isStarting, setIsStarting] = useState(false);
 
-  const handleNext = () => {
-    if (selected) {
+  const handleNext = async () => {
+    if (!selected || isStarting) return;
+
+    setIsStarting(true);
+
+    try {
+      // Save to localStorage
+      const selectedLanguage = localStorage.getItem("selectedLanguage") || "es";
       localStorage.setItem("selectedLevel", selected.toString());
-      navigate("/select-avatar");
+
+      // Set default avatar
+      localStorage.setItem("selectedAvatar", "default");
+
+      // Save to lesson goal for first conversation
+      localStorage.setItem("lessonGoal", `Start learning ${selectedLanguage.toUpperCase()} at ${levels.find(l => l.level === selected)?.title} level`);
+
+      // Save to Supabase in background (don't wait)
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          supabase
+            .from("profiles")
+            .update({
+              selected_language: selectedLanguage,
+              selected_level: selected,
+            })
+            .eq("id", user.id)
+            .then(({ error }) => {
+              if (error) console.error("Profile update error:", error);
+            });
+        }
+      });
+
+      // Navigate straight to first conversation
+      navigate("/conversation?lesson=first");
+    } catch (error) {
+      console.error("Setup error:", error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Starting anyway...",
+        variant: "destructive",
+      });
+      // Navigate anyway
+      navigate("/conversation?lesson=first");
     }
   };
 
@@ -49,7 +92,7 @@ const SelectLevel = () => {
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-primary w-1/2 transition-all" />
+            <div className="h-full bg-primary w-full transition-all" />
           </div>
         </div>
 
@@ -88,11 +131,11 @@ const SelectLevel = () => {
 
         <Button
           onClick={handleNext}
-          disabled={!selected}
+          disabled={!selected || isStarting}
           className="w-full h-12 text-lg"
           size="lg"
         >
-          Next
+          {isStarting ? "Starting your journey..." : "Start Learning"}
         </Button>
       </div>
     </div>

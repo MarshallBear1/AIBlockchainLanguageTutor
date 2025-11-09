@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import HelpSheet from "@/components/HelpSheet";
 import WordBankSheet from "@/components/WordBankSheet";
 import ConversationBubble from "@/components/ConversationBubble";
+import { completeLesson } from "@/data/lessonData";
 
 const ConversationContent = () => {
   const navigate = useNavigate();
@@ -78,7 +79,20 @@ const ConversationContent = () => {
   };
 
   const handleEndConversation = () => {
-    // TODO: Save session to database
+    // Mark lesson as complete if this is a lesson conversation
+    const currentLessonId = localStorage.getItem("currentLessonId");
+    if (currentLessonId) {
+      const lessonNum = parseInt(currentLessonId);
+      if (!isNaN(lessonNum)) {
+        completeLesson(lessonNum);
+        toast({
+          title: "Lesson Complete! 🎉",
+          description: "Great job! You've unlocked the next lesson.",
+        });
+      }
+    }
+
+    // Navigate back to home
     navigate("/home");
   };
 
