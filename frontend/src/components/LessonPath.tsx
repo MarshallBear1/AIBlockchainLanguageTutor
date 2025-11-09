@@ -38,24 +38,36 @@ export const LessonPath = ({ lessons }: LessonPathProps) => {
             >
               {/* Lesson Card */}
               <div className={cn("flex-1 min-w-0", isEven ? "text-right pr-2" : "text-left pl-2")}>
-                <div
-                  className={cn(
-                    "inline-block p-4 rounded-2xl transition-all duration-300 max-w-full shadow-lg",
-                    lesson.locked
-                      ? "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
-                      : lesson.completed
-                      ? "bg-green-500 text-white cursor-pointer hover:scale-105"
-                      : "bg-primary text-primary-foreground cursor-pointer hover:scale-105 border-2 border-primary-foreground/20",
-                    !lesson.locked && "hover:shadow-xl"
-                  )}
-                  onClick={() => handleLessonClick(lesson)}
-                >
-                  <div className={cn("space-y-2", isEven ? "text-right" : "text-left")}>
-                    <div className="text-sm font-bold opacity-90">
-                      Lesson {lesson.id}
+                <div className="inline-block space-y-2">
+                  <div
+                    className={cn(
+                      "p-4 rounded-2xl transition-all duration-300 max-w-full shadow-lg",
+                      lesson.locked
+                        ? "bg-muted text-muted-foreground cursor-not-allowed opacity-60"
+                        : lesson.completed
+                        ? "bg-green-500 text-white cursor-pointer hover:scale-105"
+                        : "bg-primary text-primary-foreground cursor-pointer hover:scale-105 border-2 border-primary-foreground/20",
+                      !lesson.locked && "hover:shadow-xl"
+                    )}
+                    onClick={() => handleLessonClick(lesson)}
+                  >
+                    <div className={cn("space-y-2", isEven ? "text-right" : "text-left")}>
+                      <div className="text-sm font-bold opacity-90">
+                        Lesson {lesson.id}
+                      </div>
+                      <div className="text-lg font-bold leading-tight">{lesson.title}</div>
+                      <div className="text-sm opacity-90 leading-snug">{lesson.description}</div>
                     </div>
-                    <div className="text-lg font-bold leading-tight">{lesson.title}</div>
-                    <div className="text-sm opacity-90 leading-snug">{lesson.description}</div>
+                  </div>
+                  
+                  {/* Duration Tag */}
+                  <div className={cn("flex", isEven ? "justify-end" : "justify-start")}>
+                    <div className="inline-flex items-center gap-1 px-2 py-1 bg-white/90 dark:bg-slate-800/90 rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
+                      <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                        {lesson.id % 10 === 1 ? "2 min" : "5 min"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
