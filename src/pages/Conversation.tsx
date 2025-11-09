@@ -99,13 +99,23 @@ const ConversationContent = () => {
       if (audioBase64) {
         try {
           // Get auth session for authenticated function calls
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          
+          if (sessionError || !session) {
+            toast({
+              title: "Authentication Error",
+              description: "Please log in again to continue.",
+              variant: "destructive",
+            });
+            navigate("/auth");
+            return;
+          }
           
           // Transcribe audio to text
           const { data, error } = await supabase.functions.invoke("voice-to-text", {
             body: { audio: audioBase64 },
             headers: {
-              Authorization: `Bearer ${session?.access_token}`,
+              Authorization: `Bearer ${session.access_token}`,
             },
           });
 

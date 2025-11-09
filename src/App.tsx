@@ -17,6 +17,8 @@ import Roleplay from "./pages/Roleplay";
 import Vocab from "./pages/Vocab";
 import Progress from "./pages/Progress";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -28,18 +30,19 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Splash />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/select-language" element={<SelectLanguage />} />
           <Route path="/select-level" element={<SelectLevel />} />
           <Route path="/select-avatar" element={<SelectAvatar />} />
           <Route path="/setup" element={<Setup />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/lessons" element={<Lessons />} />
-          <Route path="/custom-lesson" element={<CustomLesson />} />
-          <Route path="/conversation" element={<Conversation />} />
-          <Route path="/roleplay" element={<Roleplay />} />
-          <Route path="/vocab" element={<Vocab />} />
-          <Route path="/progress" element={<Progress />} />
+          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="/lessons" element={<ProtectedRoute><Lessons /></ProtectedRoute>} />
+          <Route path="/custom-lesson" element={<ProtectedRoute><CustomLesson /></ProtectedRoute>} />
+          <Route path="/conversation" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
+          <Route path="/roleplay" element={<ProtectedRoute><Roleplay /></ProtectedRoute>} />
+          <Route path="/vocab" element={<ProtectedRoute><Vocab /></ProtectedRoute>} />
+          <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
