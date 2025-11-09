@@ -339,60 +339,75 @@ const TopBar = () => {
   return (
     <div className="sticky top-0 z-10 bg-background border-b border-border p-4">
       <div className="flex items-center justify-between max-w-2xl mx-auto">
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="rounded-full px-4 gap-2">
-              <img src={languageFlags[selectedLanguage]} alt="flag" className="w-5 h-5 object-contain rounded ring-2 ring-black/30" />
-              <span className="font-semibold">{levelNames[selectedLevel]}</span>
-              <ChevronDown className="w-4 h-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64">
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Switch Language</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(languageFlags).map(([code, flag]) => (
-                    <Button
-                      key={code}
-                      variant={selectedLanguage === code ? "default" : "outline"}
-                      className="justify-start gap-2"
-                      onClick={() => handleLanguageChange(code)}
-                    >
-                      <img src={flag} alt={code} className="w-4 h-4 object-contain rounded" />
-                      <span className="text-xs">{languageNames[code]}</span>
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-sm mb-2">Switch Level</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(levelNames).map(([level, name]) => (
-                    <Button
-                      key={level}
-                      variant={selectedLevel === level ? "default" : "outline"}
-                      className="justify-start text-xs"
-                      onClick={() => handleLevelChange(level)}
-                    >
-                      {name}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              <Button
-                variant="destructive"
-                className="w-full gap-2"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-4" />
-                Log Out
+        <div className="flex items-center gap-2">
+          {/* Language Selector */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-full px-3 gap-2">
+                <img src={languageFlags[selectedLanguage]} alt="flag" className="w-5 h-5 object-contain rounded ring-2 ring-black/30" />
+                <ChevronDown className="w-4 h-4" />
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverTrigger>
+            <PopoverContent className="w-64" align="start">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">Switch Language</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(languageFlags).map(([code, flag]) => (
+                      <Button
+                        key={code}
+                        variant={selectedLanguage === code ? "default" : "outline"}
+                        className="justify-start gap-2"
+                        onClick={() => handleLanguageChange(code)}
+                      >
+                        <img src={flag} alt={code} className="w-4 h-4 object-contain rounded" />
+                        <span className="text-xs">{languageNames[code]}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <Button
+                  variant="destructive"
+                  className="w-full gap-2"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="w-4" />
+                  Log Out
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Level/Difficulty Selector */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-full px-3 gap-2">
+                <span className="font-semibold text-sm">{levelNames[selectedLevel]}</span>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64" align="start">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-sm mb-2">Switch Level</h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {Object.entries(levelNames).map(([level, name]) => (
+                      <Button
+                        key={level}
+                        variant={selectedLevel === level ? "default" : "outline"}
+                        className="justify-start text-xs"
+                        onClick={() => handleLevelChange(level)}
+                      >
+                        {name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
 
         <div className="flex items-center gap-2">
           {/* Streak */}
