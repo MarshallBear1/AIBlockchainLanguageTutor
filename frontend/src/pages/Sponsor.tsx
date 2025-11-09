@@ -40,18 +40,9 @@ const Sponsor = () => {
           </Button>
         </div>
       ) : (
-        <div className="max-w-md w-full text-center space-y-8 animate-fade-in">
-          {/* Toki Mascot */}
-          <div className="flex justify-center">
-            <img
-              src={tokiMascot}
-              alt="Toki"
-              className="w-48 h-48 object-contain animate-bounce-soft"
-            />
-          </div>
-
+        <div className="max-w-md w-full text-center space-y-8 animate-fade-in flex flex-col justify-center min-h-[60vh]">
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground px-4">
             Are you ready to meet your tutor Toki?
           </h1>
 
