@@ -12,23 +12,23 @@ const ConversationBubble = ({ role, text, timestamp }: ConversationBubbleProps) 
   return (
     <div
       className={cn(
-        "flex w-full mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300",
+        "flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300",
         isUser ? "justify-end" : "justify-start"
       )}
     >
       <div
         className={cn(
-          "max-w-[80%] rounded-2xl px-4 py-2.5 shadow-sm",
+          "max-w-[75%] rounded-2xl px-5 py-3 shadow-sm",
           isUser
             ? "bg-primary text-primary-foreground rounded-br-sm"
             : "bg-card text-card-foreground rounded-bl-sm border border-border"
         )}
       >
-        <p className="text-sm leading-relaxed">{text}</p>
+        <p className="text-base leading-relaxed">{text}</p>
         {timestamp && (
           <p
             className={cn(
-              "text-xs mt-1 opacity-70",
+              "text-xs mt-2 opacity-70",
               isUser ? "text-primary-foreground" : "text-muted-foreground"
             )}
           >
