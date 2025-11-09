@@ -26,7 +26,12 @@ const TopBar = () => {
   const [selectedLevel, setSelectedLevel] = useState(localStorage.getItem("selectedLevel") || "1");
   const [open, setOpen] = useState(false);
   const [streakOpen, setStreakOpen] = useState(false);
+  const [coinPopoverOpen, setCoinPopoverOpen] = useState(false);
   const [lastPracticeDate, setLastPracticeDate] = useState<Date | null>(null);
+  const [streakStartDate, setStreakStartDate] = useState<Date | null>(null);
+  const [levelsInCycle, setLevelsInCycle] = useState(0);
+  const [cycleStartDate, setCycleStartDate] = useState<Date | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -119,17 +124,27 @@ const TopBar = () => {
       const streak = await getStreak();
       setCurrentStreak(streak);
 
-      // Load last practice date
+      // Load all profile data including crypto fields
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('last_practice_date')
+          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
           .eq('id', user.id)
           .single();
         
-        if (profile?.last_practice_date) {
-          setLastPracticeDate(new Date(profile.last_practice_date));
+        if (profile) {
+          if (profile.last_practice_date) {
+            setLastPracticeDate(new Date(profile.last_practice_date));
+          }
+          if (profile.streak_start_date) {
+            setStreakStartDate(new Date(profile.streak_start_date));
+          }
+          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+          if (profile.current_cycle_start) {
+            setCycleStartDate(new Date(profile.current_cycle_start));
+          }
+          setWalletAddress(profile.wallet_address);
         }
       }
     };
@@ -148,12 +163,22 @@ const TopBar = () => {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('last_practice_date')
+          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
           .eq('id', user.id)
           .single();
         
-        if (profile?.last_practice_date) {
-          setLastPracticeDate(new Date(profile.last_practice_date));
+        if (profile) {
+          if (profile.last_practice_date) {
+            setLastPracticeDate(new Date(profile.last_practice_date));
+          }
+          if (profile.streak_start_date) {
+            setStreakStartDate(new Date(profile.streak_start_date));
+          }
+          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+          if (profile.current_cycle_start) {
+            setCycleStartDate(new Date(profile.current_cycle_start));
+          }
+          setWalletAddress(profile.wallet_address);
         }
       }
     };
@@ -172,12 +197,22 @@ const TopBar = () => {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('last_practice_date')
+          .select('last_practice_date, streak_start_date, levels_completed_in_cycle, current_cycle_start, wallet_address')
           .eq('id', user.id)
           .single();
         
-        if (profile?.last_practice_date) {
-          setLastPracticeDate(new Date(profile.last_practice_date));
+        if (profile) {
+          if (profile.last_practice_date) {
+            setLastPracticeDate(new Date(profile.last_practice_date));
+          }
+          if (profile.streak_start_date) {
+            setStreakStartDate(new Date(profile.streak_start_date));
+          }
+          setLevelsInCycle(profile.levels_completed_in_cycle || 0);
+          if (profile.current_cycle_start) {
+            setCycleStartDate(new Date(profile.current_cycle_start));
+          }
+          setWalletAddress(profile.wallet_address);
         }
       }
     }, 2000);
@@ -188,17 +223,18 @@ const TopBar = () => {
     };
   }, []);
 
-  // Calculate streak dates for calendar highlighting
+  // Calculate streak dates for calendar highlighting - from streak start to today
   const getStreakDates = () => {
-    if (!lastPracticeDate || currentStreak === 0) return [];
+    if (!streakStartDate || currentStreak === 0) return [];
     
     const dates: Date[] = [];
-    const lastDate = new Date(lastPracticeDate);
-    lastDate.setHours(0, 0, 0, 0);
+    const startDate = new Date(streakStartDate);
+    startDate.setHours(0, 0, 0, 0);
     
+    // Add dates from streak start date forward
     for (let i = 0; i < currentStreak; i++) {
-      const date = new Date(lastDate);
-      date.setDate(date.getDate() - i);
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
       dates.push(date);
     }
     
@@ -302,10 +338,100 @@ const TopBar = () => {
           </Popover>
 
           {/* Vibe Coins */}
-          <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700">
-            <img src={vibecoinLogo} alt="VibeCoin" className="w-5 h-5 object-contain" />
-            <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
-          </Button>
+          <Popover open={coinPopoverOpen} onOpenChange={setCoinPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="rounded-full px-3 gap-2 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950 dark:to-orange-950 border-yellow-300 dark:border-yellow-700 cursor-pointer">
+                <img src={vibecoinLogo} alt="VibeCoin" className="w-5 h-5 object-contain" />
+                <span className="font-semibold text-yellow-700 dark:text-yellow-300">{vibeCoins}</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80" align="end">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">VIBE Token Balance</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Locked tokens earned from lessons
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <img src={vibecoinLogo} alt="VIBE" className="w-6 h-6" />
+                      <span className="font-semibold">Locked VIBE</span>
+                    </div>
+                    <span className="text-2xl font-bold">{levelsInCycle * 50}</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">30-Day Cycle Progress</span>
+                      <span className="font-semibold">{currentStreak} / 30 days</span>
+                    </div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all"
+                        style={{ width: `${Math.min((currentStreak / 30) * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2 border-t">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Lessons This Cycle</span>
+                      <span className="font-semibold">{levelsInCycle}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Days Until Unlock</span>
+                      <span className="font-semibold">
+                        {currentStreak >= 30 ? "✓ Ready!" : `${30 - currentStreak} days`}
+                      </span>
+                    </div>
+                    {cycleStartDate && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Cycle Started</span>
+                        <span className="font-semibold">
+                          {cycleStartDate.toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                    {streakStartDate && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Streak Started</span>
+                        <span className="font-semibold">
+                          {streakStartDate.toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`w-2 h-2 rounded-full ${walletAddress ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                      <span className="text-sm font-medium">
+                        {walletAddress ? 'Wallet Connected' : 'Wallet Not Connected'}
+                      </span>
+                    </div>
+                    {walletAddress ? (
+                      <p className="text-xs text-muted-foreground font-mono truncate">
+                        {walletAddress}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">
+                        Connect MetaMask to receive tokens after 30-day streak
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t">
+                  <p className="text-xs text-muted-foreground">
+                    💎 Complete a 30-day streak to unlock your VIBE tokens. Earn 50 VIBE per lesson!
+                  </p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

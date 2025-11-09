@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_checkins: {
+        Row: {
+          checkin_date: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          checkin_date: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          checkin_date?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           completed: boolean
@@ -77,42 +98,96 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null
+          current_cycle_start: string | null
           email: string | null
           id: string
           last_practice_date: string | null
+          levels_completed_in_cycle: number | null
           selected_language: string | null
           selected_level: number | null
           streak_days: number | null
+          streak_start_date: string | null
           total_minutes_practiced: number | null
           updated_at: string | null
           vibe_coins: number | null
+          wallet_address: string | null
           xp: number | null
         }
         Insert: {
           created_at?: string | null
+          current_cycle_start?: string | null
           email?: string | null
           id: string
           last_practice_date?: string | null
+          levels_completed_in_cycle?: number | null
           selected_language?: string | null
           selected_level?: number | null
           streak_days?: number | null
+          streak_start_date?: string | null
           total_minutes_practiced?: number | null
           updated_at?: string | null
           vibe_coins?: number | null
+          wallet_address?: string | null
           xp?: number | null
         }
         Update: {
           created_at?: string | null
+          current_cycle_start?: string | null
           email?: string | null
           id?: string
           last_practice_date?: string | null
+          levels_completed_in_cycle?: number | null
           selected_language?: string | null
           selected_level?: number | null
           streak_days?: number | null
+          streak_start_date?: string | null
           total_minutes_practiced?: number | null
           updated_at?: string | null
           vibe_coins?: number | null
+          wallet_address?: string | null
           xp?: number | null
+        }
+        Relationships: []
+      }
+      vibe_rewards: {
+        Row: {
+          amount_vibe: number
+          created_at: string | null
+          cycle_end_date: string
+          cycle_number: number
+          cycle_start_date: string
+          id: string
+          levels_completed: number
+          paid_at: string | null
+          status: string
+          tx_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_vibe?: number
+          created_at?: string | null
+          cycle_end_date: string
+          cycle_number: number
+          cycle_start_date: string
+          id?: string
+          levels_completed?: number
+          paid_at?: string | null
+          status?: string
+          tx_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_vibe?: number
+          created_at?: string | null
+          cycle_end_date?: string
+          cycle_number?: number
+          cycle_start_date?: string
+          id?: string
+          levels_completed?: number
+          paid_at?: string | null
+          status?: string
+          tx_hash?: string | null
+          user_id?: string
         }
         Relationships: []
       }
