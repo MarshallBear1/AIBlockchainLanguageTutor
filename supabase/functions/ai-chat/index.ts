@@ -142,14 +142,51 @@ serve(async (req) => {
     
     const levelName = levelNames[userLevel] || "Beginner";
     
-    // Scenario introductions for first message
-    const scenarioIntros: Record<number, string> = {
-      1: "Today we're going to practice ordering at a coffee shop! It's a great place to learn basic phrases. Are you ready to begin?",
-      2: "Hi! Today let's imagine we're at a café. You'll practice ordering drinks and food. Sound good?",
-      3: "Hello! Today we're going to roleplay a coffee shop scenario. You'll order, ask questions, and chat naturally. Ready to start?",
-      4: "Welcome! Today's scenario is a coffee shop conversation. We'll practice nuanced ordering and small talk. Shall we begin?",
-      5: "¡Hola! Hoy vamos a practicar en una cafetería. Conversaremos como hablantes nativos. ¿Listo?"
+    // Get lesson goal from request if available
+    const lessonGoal = (await req.json()).lessonGoal || "";
+    
+    // Scenario introductions for first message - level specific
+    const scenarioIntros: Record<number, string[]> = {
+      1: [ // Beginner - Very focused, one concept at a time
+        "Hi! Today we're going to practice saying your name in Spanish. It's super easy! Ready?",
+        "Hello! Let's learn how to greet someone in the morning. Just one simple phrase! Are you ready?",
+        "Welcome! Today we'll practice afternoon and evening greetings. Very quick lesson! Shall we start?",
+        "Hi there! Let's learn how to ask 'How are you?' in Spanish. Just one question! Ready to try?",
+        "Hello! Today we'll practice answering when someone asks how you are. Simple responses! Want to begin?"
+      ],
+      2: [ // Survival - Practical situations
+        "Today we're going to practice ordering at a coffee shop! It's a great place to learn basic phrases. Ready?",
+        "Hi! Let's practice shopping at a store. We'll learn how to ask for things and understand prices. Sound good?",
+        "Hello! Today we'll practice asking for directions. Really useful when traveling! Are you ready?",
+        "Welcome! Let's practice ordering at a restaurant. You'll learn menu words and how to order food. Ready to start?",
+        "Hi! Today we'll practice using public transport. Learn to buy tickets and ask about routes. Shall we begin?"
+      ],
+      3: [ // Conversational
+        "Hello! Today we're going to practice making plans with friends. Time to have real conversations! Ready?",
+        "Hi! Let's discuss movies and entertainment. We'll practice giving opinions and recommendations. Sound good?",
+        "Welcome! Today we'll talk about weekend activities. Practice past and future tenses naturally! Ready to start?",
+        "Hi there! Let's chat about fitness and health. Time for a real conversation at the gym! Shall we begin?",
+        "Hello! Today we're celebrating a birthday! Practice party conversations and celebrations. Ready?"
+      ],
+      4: [ // Proficient - Advanced topics
+        "Welcome! Today we'll practice a job interview scenario. Professional vocabulary and complex questions! Ready?",
+        "Hello! Let's simulate an office meeting. Business discussions and team collaboration! Shall we begin?",
+        "Hi! Today you'll present ideas to a team. Practice professional presentations and public speaking! Ready to start?",
+        "Welcome! Let's practice networking at a professional event. Make connections in Spanish! Sound good?",
+        "Hello! Today we'll handle customer service scenarios. Professional communication skills! Are you ready?"
+      ],
+      5: [ // Fluent - Native level
+        "¡Hola! Hoy vamos a debatir sobre cultura y tradiciones. Conversación profunda al nivel nativo. ¿Listo?",
+        "¡Bienvenido! Hoy discutiremos las noticias actuales y política. Todo en español, como hablantes nativos. ¿Empezamos?",
+        "¡Hola! Hoy analizaremos literatura y poesía. Conversación sofisticada totalmente en español. ¿Comenzamos?",
+        "¡Bienvenido! Hoy exploraremos el humor y los juegos de palabras. Nivel nativo completo. ¿Listo?",
+        "¡Hola! Hoy descubriremos las variaciones regionales del idioma. Dialectos y expresiones locales. ¿Empezamos?"
+      ]
     };
+    
+    // Get appropriate intro based on lesson or default to first one for the level
+    const introOptions = scenarioIntros[userLevel] || scenarioIntros[1];
+    const scenarioIntro = lessonGoal || introOptions[0];
     
     const openAIKey = Deno.env.get("OPENAI_API_KEY");
     const elevenLabsKey = Deno.env.get("ELEVEN_LABS_API_KEY");
@@ -196,7 +233,7 @@ serve(async (req) => {
             ## FIRST MESSAGE INSTRUCTIONS
             This is the VERY FIRST message of the conversation. You must:
             1. Greet the student warmly in ENGLISH
-            2. Introduce today's scenario: "${scenarioIntros[userLevel]}"
+            2. Introduce today's scenario: "${scenarioIntro}"
             3. Wait for their confirmation (they'll say "yes", "ok", "ready", etc.)
             4. Keep it brief and encouraging
             5. Use a friendly, welcoming tone

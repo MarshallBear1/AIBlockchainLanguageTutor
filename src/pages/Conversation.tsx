@@ -200,7 +200,7 @@ const ConversationContent = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* 3D Avatar Section - Upper portion */}
-        <div className="relative w-full h-[35vh] flex-shrink-0">
+        <div className="relative w-full h-[28vh] flex-shrink-0">
           <AvatarCanvas className="absolute inset-0 w-full h-full" />
         </div>
 
@@ -228,8 +228,8 @@ const ConversationContent = () => {
         </div>
       </main>
 
-      {/* Bottom Controls - Fixed Footer */}
-      <div className="flex-shrink-0 p-3 space-y-2 border-t border-border bg-background">
+      {/* Bottom Controls - Fixed at 336px height */}
+      <div className="flex-shrink-0 p-3 space-y-2 border-t border-border bg-background overflow-y-auto" style={{ height: '336px' }}>
         {/* Text Input - Always Visible */}
         <div className="flex gap-2">
           <Input

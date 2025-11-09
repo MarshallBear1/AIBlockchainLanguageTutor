@@ -1,14 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TopBar from "@/components/TopBar";
 import { LessonPath } from "@/components/LessonPath";
 import { getUnitsWithProgress } from "@/data/lessonData";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
-  const units = getUnitsWithProgress();
+  const [userLevel, setUserLevel] = useState<number>(1);
+  const [units, setUnits] = useState(getUnitsWithProgress(1));
   const [expandedUnits, setExpandedUnits] = useState<number[]>([1]); // First unit expanded by default
+
+  useEffect(() => {
+    // Get user's level from localStorage first
+    const savedLevel = parseInt(localStorage.getItem("selectedLevel") || "1");
+    setUserLevel(savedLevel);
+    setUnits(getUnitsWithProgress(savedLevel));
+    
+    // Then sync from Supabase
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from("profiles").select("selected_level").eq("id", user.id).single()
+          .then(({ data }) => {
+            if (data?.selected_level) {
+              setUserLevel(data.selected_level);
+              localStorage.setItem("selectedLevel", data.selected_level.toString());
+              setUnits(getUnitsWithProgress(data.selected_level));
+            }
+          });
+      }
+    });
+  }, []);
 
   const toggleUnit = (unitId: number) => {
     setExpandedUnits((prev) =>
